@@ -3,7 +3,7 @@ import { singleton, group, directory } from './lib/builders'
 import { VscFiles, VscServerProcess } from 'react-icons/vsc'
 
 export const structure = structureTool({
-	structure: (S) =>
+	structure: (S: any) =>
 		S.list()
 			.title('Content')
 			.items([
