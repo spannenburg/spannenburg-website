@@ -1,15 +1,9 @@
-import {defineCliConfig} from 'sanity/cli'
+import { defineCliConfig } from 'sanity/cli'
+import { projectId, dataset } from '@/sanity/lib/env'
 
 export default defineCliConfig({
-  api: {
-    projectId: '7pxpumbm',
-    dataset: 'production'
-  },
-  deployment: {
-    /**
-     * Enable auto-updates for studios.
-     * Learn more at https://www.sanity.io/docs/cli#auto-updates
-     */
-    autoUpdates: true,
-  }
+	api: {
+		projectId,
+		dataset,
+	},
 })
