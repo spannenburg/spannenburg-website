@@ -1,33 +1,29 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getPage } from '@/sanity/lib/queries'
+import { getPost } from '@/sanity/lib/queries' // <--- HIER zat de fout (was getPage)
 import Modules from '@/ui/modules'
-import { processMetadata } from '@/lib/processMetadata' // Waarschijnlijk bestaat deze nog, maar we gebruiken hem veilig
+import { processMetadata } from '@/lib/processMetadata'
 
-export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
-	// 1. Haal de parameters op (in Next.js 15+ is params een Promise)
+export default async function BlogPostPage({ params }: { params: Promise<{ slug?: string[] }> }) {
 	const { slug } = await params
+	
+	// We halen hier een POST op, geen PAGE
+	const post = await getPost({ slug })
 
-	// 2. Haal de pagina data op uit Sanity
-	const page = await getPage({ slug })
+	if (!post) notFound()
 
-	// 3. Bestaat de pagina niet? -> 404
-	if (!page) notFound()
-
-	// 4. Toon de modules (en geef de hele page data mee voor de zekerheid)
-	return <Modules modules={page?.modules} page={page} />
+	// We geven de post data mee aan de modules (dat hebben we eerder al mogelijk gemaakt)
+	return <Modules modules={post?.modules} post={post} />
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }): Promise<Metadata> {
 	const { slug } = await params
-	const page = await getPage({ slug })
+	const post = await getPost({ slug })
 
-	if (!page) return {}
+	if (!post) return {}
 
-	// Simpele Metadata (Titel & Omschrijving)
 	return {
-		title: page.metadata?.title || page.title || 'Spannenburg Art',
-		description: page.metadata?.description,
-		// Als je later afbeeldingen wilt toevoegen aan SEO, kan dat hier simpel
+		title: post.title,
+		description: post.metadata?.description,
 	}
 }
