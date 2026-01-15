@@ -1,18 +1,14 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getPost } from '@/sanity/lib/queries' // <--- HIER zat de fout (was getPage)
+import { getPost } from '@/sanity/lib/queries'
 import Modules from '@/ui/modules'
-import { processMetadata } from '@/lib/processMetadata'
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug?: string[] }> }) {
 	const { slug } = await params
-	
-	// We halen hier een POST op, geen PAGE
 	const post = await getPost({ slug })
 
 	if (!post) notFound()
 
-	// We geven de post data mee aan de modules (dat hebben we eerder al mogelijk gemaakt)
 	return <Modules modules={post?.modules} post={post} />
 }
 
