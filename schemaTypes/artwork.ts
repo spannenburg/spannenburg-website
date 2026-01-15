@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
-import { TscIcon, TagIcon, BasketIcon, ImageIcon } from '@sanity/icons'
+import { SearchIcon, TagIcon, BasketIcon, ImageIcon } from '@sanity/icons'
 
 export const artwork = defineType({
   name: 'artwork',
@@ -10,7 +10,7 @@ export const artwork = defineType({
     { name: 'content', title: 'Content', default: true },
     { name: 'specs', title: 'Technical Specs' },
     { name: 'commercial', title: 'Editions & Sales', icon: BasketIcon },
-    { name: 'seo', title: 'SEO & AI Context', icon: TscIcon },
+    { name: 'seo', title: 'SEO & AI Context', icon: SearchIcon },
   ],
   fields: [
     // --- 1. CONTENT ---
