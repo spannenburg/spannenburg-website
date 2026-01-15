@@ -1,11 +1,12 @@
-import Hero from './Hero'
-import ArtworkGrid from './ArtworkGrid'
-import PostList from './PostList'
+import Hero from '@/ui/modules/Hero'
+// Als je meer modules hebt (zoals Text, Image), importeer ze hier:
+// import Text from '@/ui/modules/Text'
 
-// FIX: We voegen nu ook ', post' toe aan de lijst met toegestane spullen.
-// Nu werkt het voor Pages én Blog Posts.
-export default function Modules({ modules, page, post }: { modules?: any[], page?: any, post?: any }) {
-  if (!modules) return null
+export default function Modules({ modules, page }: { modules?: any[], page?: any }) {
+  // VEILIGHEIDSCHECK: Als er geen modules zijn, doe niks.
+  if (!modules || !Array.isArray(modules)) {
+    return null
+  }
 
   return (
     <>
@@ -13,12 +14,13 @@ export default function Modules({ modules, page, post }: { modules?: any[], page
         switch (module._type) {
           case 'hero':
             return <Hero key={module._key} {...module} />
-          case 'artworkGrid':
-            return <ArtworkGrid key={module._key} {...module} />
-          case 'postList':
-            return <PostList key={module._key} {...module} />
+          
+          // Voeg hier later andere modules toe:
+          // case 'text':
+          //   return <Text key={module._key} {...module} />
+
           default:
-            return <div key={module._key} className="hidden" />
+            return <div key={module._key} data-type={module._type} className="hidden" />
         }
       })}
     </>
