@@ -20,10 +20,11 @@ import { documentInternationalization } from '@sanity/document-internationalizat
 import { schemaTypes } from './src/sanity/schemaTypes'
 import resolveUrl from '@/lib/resolveUrl'
 
-const singletonTypes = ['site']
+// We hebben 'site' verwijderd, dus deze lijst maken we leeg.
+const singletonTypes: string[] = []
 
 export default defineConfig({
-	title: 'SanityPress',
+	title: 'Spannenburg Art', // Ik heb de titel meteen even netjes gemaakt
 	icon,
 	projectId,
 	dataset,
@@ -50,7 +51,8 @@ export default defineConfig({
 		codeInput(),
 		documentInternationalization({
 			supportedLanguages,
-			schemaTypes: ['page', 'blog.post'],
+			// HIER ZAT DE FOUT: 'blog.post' is veranderd naar 'post'
+			schemaTypes: ['page', 'post'],
 		}),
 	],
 
@@ -63,8 +65,9 @@ export default defineConfig({
 	},
 	document: {
 		productionUrl: async (prev, { document }) => {
-			if (['page', 'blog.post'].includes(document?._type)) {
-				return resolveUrl(document as Sanity.PageBase, { base: true })
+			// HIER OOK AANGEPAST: 'blog.post' -> 'post'
+			if (['page', 'post'].includes(document?._type)) {
+				return resolveUrl(document as any, { base: true })
 			}
 			return prev
 		},
@@ -73,11 +76,3 @@ export default defineConfig({
 			if (singletonTypes.includes(schemaType)) {
 				return input.filter(
 					({ action }) =>
-						action && ['publish', 'discardChanges', 'restore'].includes(action),
-				)
-			}
-
-			return input
-		},
-	},
-})
