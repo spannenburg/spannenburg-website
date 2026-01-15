@@ -1,6 +1,30 @@
 import { defineField, defineType } from 'sanity'
 import { TfiPalette } from 'react-icons/tfi'
 
+// --- DEFINING THE LISTS ---
+// We define them here so they are easy to edit later
+
+const ARTFORMS = [
+  { title: 'Photography', value: 'Photography' },
+  { title: 'Mixed Media', value: 'Mixed Media' },
+  { title: 'Promptography', value: 'Promptography' },
+  { title: 'Digital Art', value: 'Digital Art' },
+]
+
+const MEDIUMS = [
+  { title: 'Colour Photography', value: 'Colour Photography' },
+  { title: 'Black & White Photography', value: 'Black & White Photography' },
+  { title: 'Analogue Photography', value: 'Analogue Photography' },
+  { title: 'Digital Composite', value: 'Digital Composite' },
+]
+
+const MATERIALS = [
+  { title: 'Giclée print Ultrachrome on dibond + Matt Plexiglass', value: 'Dibond Matt Plexiglass' },
+  { title: 'Giclée print Ultrachrome on dibond + Diasec-Trulife', value: 'Dibond Diasec-Trulife' },
+  { title: 'Fine art print on Baryte paper + Museum Glass', value: 'Baryte Museum Glass' },
+  { title: 'Fine art print on Hanemühle paper (Unframed)', value: 'Hanemühle Unframed' },
+]
+
 export const artwork = defineType({
   name: 'artwork',
   title: 'Artworks',
@@ -50,8 +74,7 @@ export const artwork = defineType({
     // --- IMAGERY ---
     defineField({
         name: 'mainImage',
-        title: 'Main Image (The Artwork)',
-        description: 'The pure image of the artwork itself.',
+        title: 'Main Image',
         type: 'image',
         options: { hotspot: true },
         group: 'details',
@@ -63,12 +86,9 @@ export const artwork = defineType({
             }),
         ]
     }),
-    
-    // --- CONTEXT IMAGES ---
     defineField({
         name: 'contextImages',
         title: 'In Situ / Context Images',
-        description: 'Photos of the work hanging in a room, gallery views, or mockups.',
         type: 'array',
         group: 'details',
         of: [
@@ -76,17 +96,8 @@ export const artwork = defineType({
                 type: 'image',
                 options: { hotspot: true },
                 fields: [
-                    defineField({
-                        name: 'caption',
-                        type: 'string',
-                        title: 'Caption',
-                        description: 'E.g. "Installation view at Zerp Galerie"'
-                    }),
-                    defineField({
-                        name: 'alt',
-                        type: 'string',
-                        title: 'Alt Text',
-                    }),
+                    defineField({ name: 'caption', type: 'string', title: 'Caption' }),
+                    defineField({ name: 'alt', type: 'string', title: 'Alt Text' }),
                 ]
             }
         ]
@@ -101,22 +112,18 @@ export const artwork = defineType({
       group: 'details',
     }),
 
-    // --- 2. STORY & CONTEXT BLOCK ---
-    
-    // *** NEW: VISUAL DESCRIPTION ***
+    // --- 2. STORY ---
     defineField({
       name: 'visualDescription',
       title: 'Visual Description',
-      description: 'Literal description of what is seen in the image. Useful for AI and Accessibility (Alt Text).',
+      description: 'Literal description for AI and Accessibility.',
       type: 'text',
       rows: 4,
       group: 'story', 
     }),
-
     defineField({
       name: 'description',
       title: 'Storytelling / Narrative',
-      description: 'The deeper meaning, emotion, and theme (150-300 words).',
       type: 'array',
       group: 'story',
       of: [{ type: 'block' }],
@@ -129,35 +136,31 @@ export const artwork = defineType({
       of: [{ type: 'string' }],
     }),
 
-    // --- 3. SPECIFICATIONS (Global) ---
-    defineField({
-      name: 'medium',
-      title: 'Medium',
-      description: 'E.g. Colour Photography',
-      type: 'string',
-      group: 'specs',
-    }),
+    // --- 3. SPECIFICATIONS (Structured) ---
     defineField({
       name: 'artform',
       title: 'Artform',
-      description: 'E.g. Photography',
       type: 'string',
       group: 'specs',
+      options: {
+        list: ARTFORMS, // <--- Dropdown 1
+      },
     }),
     defineField({
-      name: 'materials',
-      title: 'Materials & Technique',
-      description: 'E.g. Giclée print Ultrachrome on dibond...',
-      type: 'text',
-      rows: 3,
+      name: 'medium',
+      title: 'Medium',
+      type: 'string',
       group: 'specs',
+      options: {
+        list: MEDIUMS, // <--- Dropdown 2
+      },
     }),
 
-    // --- 4. EDITIONS & VARIANTS ---
+    // --- 4. EDITIONS & VARIANTS (With Material Dropdown) ---
     defineField({
       name: 'variants',
       title: 'Available Editions / Sizes',
-      description: 'Add the different sizes and prices here.',
+      description: 'Define the size, material, and price for each version.',
       type: 'array',
       group: 'sales',
       of: [
@@ -178,6 +181,15 @@ export const artwork = defineType({
               type: 'string',
               description: 'E.g. 40 x 60 cm',
             }),
+            // *** NEW: MATERIAL DROPDOWN INSIDE THE VARIANT ***
+            defineField({
+                name: 'material',
+                title: 'Material / Technique',
+                type: 'string',
+                options: {
+                    list: MATERIALS, // <--- Dropdown 3 (Specific finish)
+                }
+            }),
             defineField({
               name: 'edition',
               title: 'Edition Size',
@@ -188,7 +200,6 @@ export const artwork = defineType({
               name: 'price',
               title: 'Price (€)',
               type: 'number',
-              description: 'Just the number (e.g. 1850)',
             }),
             defineField({
               name: 'isSoldOut',
@@ -202,11 +213,12 @@ export const artwork = defineType({
               title: 'sizeLabel',
               dim: 'dimensions',
               price: 'price',
+              mat: 'material' // Show material in list
             },
-            prepare({ title, dim, price }) {
+            prepare({ title, dim, price, mat }) {
               return {
                 title: `${title} (${dim})`,
-                subtitle: `€ ${price}`,
+                subtitle: `€${price} - ${mat || 'No material selected'}`,
               }
             },
           },
