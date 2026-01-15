@@ -1,14 +1,11 @@
-// import { GoogleTagManager } from '@next/third-parties/google'
-import Root from '@/ui/Root'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import SkipToContent from '@/ui/SkipToContent'
-import Announcement from '@/ui/Announcement'
-import Header from '@/ui/header'
-import Footer from '@/ui/footer'
-import VisualEditingControls from '@/ui/VisualEditingControls'
+import '@/styles/app.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import '@/styles/app.css'
+import { Toaster } from 'sonner'
+import Header from '@/ui/header'
+import Footer from '@/ui/footer' // <--- Zorg dat deze import klopt
+// We verwijderen 'DraftModeToast' even tijdelijk als die errors geeft, 
+// maar meestal kan hij blijven staan. Voor nu houden we het simpel:
 
 export default async function RootLayout({
 	children,
@@ -16,24 +13,24 @@ export default async function RootLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<Root>
-			{/* <GoogleTagManager gtmId="" /> */}
-			<body className="bg-canvas text-ink antialiased">
-				<NuqsAdapter>
-					<SkipToContent />
-					<Announcement />
-					<Header />
-					<main id="main-content" role="main" tabIndex={-1}>
-						{children}
-					</main>
-					<Footer />
+		<html lang="nl">
+			<body className="bg-canvas text-ink min-h-screen flex flex-col">
+				{/* 1. De Header */}
+				<Header />
 
-					<VisualEditingControls />
-				</NuqsAdapter>
+				{/* 2. De Inhoud van de pagina */}
+				<main className="flex-1">
+					{children}
+				</main>
 
+				{/* 3. De Footer */}
+				<Footer />
+
+				{/* 4. Hulpstukken van Vercel */}
+				<Toaster />
 				<Analytics />
 				<SpeedInsights />
 			</body>
-		</Root>
+		</html>
 	)
 }
