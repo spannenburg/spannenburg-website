@@ -1,36 +1,27 @@
 import type { StructureResolver } from 'sanity/structure'
-import { singleton } from './lib/builders'
-import { VscFiles, VscServerProcess } from 'react-icons/vsc'
 
 export const structure: StructureResolver = (S) =>
-	S.list()
-		.title('Content')
-		.items([
-			// 1. SITE SETTINGS
-			singleton(S, 'site', 'Site settings').icon(VscServerProcess),
-			S.divider(),
+  S.list()
+    .title('Content')
+    .items([
+      // 1. PAGINA'S (Hier moet je straks zijn voor je Home)
+      S.documentTypeListItem('page').title('Pages'),
+      
+      S.divider(),
 
-			// 2. PAGINA'S
-			S.documentTypeListItem('page').title('All pages').icon(VscFiles),
-			S.divider(),
+      // 2. BLOG (Content Marketing)
+      S.documentTypeListItem('post').title('Blog Posts'),
+      
+      S.divider(),
 
-			// 3. JOUW KUNST
-			S.documentTypeListItem('project').title('Artwork Series'),
-			S.documentTypeListItem('artwork').title('Artworks (Individual)'),
-			S.divider(),
-
-			// 4. TRACK RECORD
-			S.documentTypeListItem('exhibition').title('Exhibitions'),
-			S.documentTypeListItem('venue').title('Venues / Locations'),
-			S.divider(),
-
-			// 5. CONTENT MARKETING
-			S.documentTypeListItem('post').title('Writing / Blog'),
-			S.documentTypeListItem('category').title('Categories'),
-			S.documentTypeListItem('author').title('Authors'),
-			S.divider(),
-
-			// 6. OVERIGE
-			S.documentTypeListItem('navigation'),
-			S.documentTypeListItem('redirect').title('Redirects'),
-		])
+      // 3. ALLE ANDERE ONDERDELEN (Automatisch)
+      // Dit zorgt dat je Artworks en Projects hier automatisch verschijnen
+      // ZODRA je de schemas hebt aangemaakt, zonder dat de boel crasht.
+      ...S.documentTypeListItems().filter(
+        (item) => 
+          item.getId() !== 'page' && 
+          item.getId() !== 'post' && 
+          item.getId() !== 'site' && // We verbergen 'site' expliciet
+          item.getId() !== 'media.tag'
+      ),
+    ])
