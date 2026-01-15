@@ -8,7 +8,7 @@ export const exhibition = defineType({
   icon: TfiMapAlt,
   groups: [
     { name: 'general', title: 'General Info' },
-    { name: 'location', title: 'Location (GEO)' },
+    { name: 'location', title: 'Location (Venue)' }, // Updated Title
     { name: 'story', title: 'Story & Visuals' },
     { name: 'artworks', title: 'Artworks & Curator' },
     { name: 'proof', title: 'Social Proof (E-E-A-T)' },
@@ -71,39 +71,22 @@ export const exhibition = defineType({
       group: 'general',
     }),
 
-    // --- 2. LOCATION (GEO & Structured Data) ---
+    // --- 2. LOCATION (LINK TO VENUE) ---
+    // REPLACED: Manual fields are gone. Now we link to the Venue document.
     defineField({
-      name: 'venueName',
-      title: 'Venue / Gallery Name',
-      type: 'string',
+      name: 'venue',
+      title: 'Venue / Location',
+      description: 'Select the gallery or location where this took place.',
+      type: 'reference',
+      to: [{ type: 'venue' }], // Links to venue.ts
       group: 'location',
     }),
     defineField({
-      name: 'location',
-      title: 'Address & Coordinates',
-      type: 'object',
-      group: 'location',
-      fields: [
-        defineField({ name: 'street', type: 'string', title: 'Street' }),
-        defineField({ name: 'city', type: 'string', title: 'City' }),
-        defineField({ name: 'zip', type: 'string', title: 'Zip Code' }),
-        defineField({ name: 'country', type: 'string', title: 'Country' }),
-        defineField({ 
-          name: 'googleMapsUrl', 
-          type: 'url', 
-          title: 'Google Maps Link' 
-        }),
-        // Optional: raw coordinates for AI/Maps API
-        defineField({ 
-            name: 'coordinates', 
-            type: 'object', 
-            title: 'Coordinates (Lat/Long)',
-            fields: [
-                {name: 'lat', type: 'number', title: 'Latitude'},
-                {name: 'lng', type: 'number', title: 'Longitude'}
-            ]
-        }),
-      ]
+        name: 'locationNotes',
+        title: 'Location Notes (Specific to this event)',
+        description: 'E.g. "Booth 42 in Hall 3" or "First floor only"',
+        type: 'string',
+        group: 'location',
     }),
 
     // --- 3. STORY & VISUALS ---
@@ -141,7 +124,7 @@ export const exhibition = defineType({
       ],
     }),
 
-    // --- 4. ARTWORKS & CURATOR (The Authority) ---
+    // --- 4. ARTWORKS & CURATOR ---
     defineField({
         name: 'curator',
         title: 'Curator / Organizer',
@@ -165,7 +148,6 @@ export const exhibition = defineType({
         of: [{type: 'string'}],
         description: 'List of foundations, museums or partners (Trust signals).'
     }),
-    // HIER KOPPELEN WE JE KUNSTWERKEN
     defineField({
       name: 'exhibitedArtworks',
       title: 'Artworks in this Exhibition',
@@ -177,19 +159,17 @@ export const exhibition = defineType({
           title: 'Artwork Entry',
           preview: {
             select: {
-              title: 'artworkReference.title', // Toon de titel van het gelinkte werk
+              title: 'artworkReference.title',
               subtitle: 'context',
             }
           },
           fields: [
-            // De link naar je database
             defineField({
               name: 'artworkReference',
               title: 'Select Artwork',
               type: 'reference',
               to: [{ type: 'artwork' }],
             }),
-            // Context specifiek voor DEZE expositie
             defineField({
                 name: 'context',
                 title: 'Presentation / Context',
@@ -230,7 +210,7 @@ export const exhibition = defineType({
         ]
     }),
 
-    // --- 5. SOCIAL PROOF & DOCUMENTS (E-E-A-T) ---
+    // --- 5. SOCIAL PROOF & DOCUMENTS ---
     defineField({
         name: 'statistics',
         title: 'Visitors / Footfall',
