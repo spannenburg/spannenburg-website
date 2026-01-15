@@ -2,7 +2,9 @@ import Hero from './Hero'
 import ArtworkGrid from './ArtworkGrid'
 import PostList from './PostList'
 
-export default function Modules({ modules }: { modules?: any[] }) {
+// FIX: We voegen ', page' toe en definiëren het type '{ modules?: any[], page?: any }'
+// Nu wordt de 'page' prop geaccepteerd en is de error weg.
+export default function Modules({ modules, page }: { modules?: any[], page?: any }) {
   if (!modules) return null
 
   return (
@@ -16,7 +18,6 @@ export default function Modules({ modules }: { modules?: any[] }) {
           case 'postList':
             return <PostList key={module._key} {...module} />
           default:
-            // Dit zorgt dat onbekende blokken niet crashen, maar gewoon niet tonen
             return <div key={module._key} className="hidden" />
         }
       })}
