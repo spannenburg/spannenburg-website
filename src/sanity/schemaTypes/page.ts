@@ -1,6 +1,5 @@
 import { defineField, defineType } from 'sanity'
 
-// Let op: We gebruiken hier 'const page' in plaats van 'default'
 export const page = defineType({
   name: 'page',
   title: 'Page',
@@ -24,18 +23,36 @@ export const page = defineType({
       },
     }),
 
-    // 3. Modules (De blokken)
+    // 3. Modules (Content)
     defineField({
       name: 'modules',
       title: 'Page Modules',
       type: 'array',
       of: [
-        // Hier verwijzen we naar je Hero module
         { type: 'hero' },
-        
-        // Zodra je meer modules hebt (bijv. tekst), zet je ze hier erbij:
-        // { type: 'artworkGrid' },
+        // Hier kun je later meer modules toevoegen, bijv: { type: 'artworkGrid' }
       ],
     }),
+
+    // 4. Metadata (SEO) - HIERMEE LOSSEN WE DE FOUTMELDING OP
+    defineField({
+      name: 'metadata',
+      title: 'SEO & Metadata',
+      type: 'metadata', // Dit verwijst naar jouw bestand metadata.ts
+    }),
   ],
+  
+  // Dit zorgt dat je in de lijstweergave de juiste titel ziet
+  preview: {
+    select: {
+      title: 'title',
+      slug: 'slug.current',
+    },
+    prepare({ title, slug }) {
+      return {
+        title: title || 'Untitled',
+        subtitle: slug ? `/${slug}` : 'No link',
+      }
+    },
+  },
 })
