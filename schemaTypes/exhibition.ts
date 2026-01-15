@@ -92,8 +92,69 @@ export const exhibition = defineType({
             layout: 'tags'
         }
     }),
-    // HIER LEGGEN WE DE RELATIE MET JE EIGEN KUNST
+    // HIER GING HET MIS IN JOUW VERSIE:
     defineField({
       name: 'featuredSeries',
       title: 'Arjan\'s Series shown here',
-      type
+      type: 'array', 
+      group: 'story',
+      of: [{ type: 'reference', to: [{ type: 'project' }] }],
+    }),
+    // DE REST VAN HET BESTAND (ook belangrijk):
+    defineField({
+      name: 'featuredArtworks',
+      title: 'Specific Artworks Highlighted',
+      type: 'array',
+      group: 'story',
+      of: [{ type: 'reference', to: [{ type: 'artwork' }] }],
+    }),
+
+    // --- 3. MEDIA (INSTALLATION VIEWS) ---
+    defineField({
+        name: 'installationViews',
+        title: 'Installation Views / Atmosphere',
+        description: 'Photos of the work hanging in the space, opening night photos, etc.',
+        type: 'array',
+        group: 'media',
+        of: [
+            defineArrayMember({
+                type: 'image',
+                options: { hotspot: true },
+                fields: [
+                    {
+                        name: 'caption',
+                        type: 'string',
+                        title: 'Caption',
+                        placeholder: 'e.g. Opening night with curator...'
+                    }
+                ]
+            })
+        ]
+    }),
+    defineField({
+        name: 'pressRelease',
+        title: 'Press Release (PDF)',
+        type: 'file',
+        group: 'media',
+        options: {
+            accept: '.pdf'
+        }
+    })
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      venue: 'venue.name',
+      date: 'startDate',
+      media: 'installationViews.0'
+    },
+    prepare({ title, venue, date, media }) {
+      const year = date ? date.split('-')[0] : 'Year?';
+      return {
+        title,
+        subtitle: `${year} | ${venue || 'No venue'}`,
+        media,
+      };
+    },
+  },
+})
