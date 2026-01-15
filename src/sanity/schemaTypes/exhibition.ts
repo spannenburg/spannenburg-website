@@ -1,160 +1,284 @@
-import { defineArrayMember, defineField, defineType } from 'sanity'
-import { CalendarIcon, UsersIcon, ImageIcon, DocumentTextIcon } from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
+import { TfiMapAlt } from 'react-icons/tfi'
 
 export const exhibition = defineType({
   name: 'exhibition',
-  title: 'Exhibition',
+  title: 'Exhibitions',
   type: 'document',
-  icon: CalendarIcon,
+  icon: TfiMapAlt,
   groups: [
-    { name: 'details', title: 'Details', default: true },
-    { name: 'story', title: 'Story & Context', icon: DocumentTextIcon },
-    { name: 'media', title: 'Media / Photos', icon: ImageIcon },
-  ],
-  orderings: [
-    {
-      title: 'Date Descending',
-      name: 'dateDesc',
-      by: [{ field: 'startDate', direction: 'desc' }],
-    },
+    { name: 'general', title: 'General Info' },
+    { name: 'location', title: 'Location (GEO)' },
+    { name: 'story', title: 'Story & Visuals' },
+    { name: 'artworks', title: 'Artworks & Curator' },
+    { name: 'proof', title: 'Social Proof (E-E-A-T)' },
+    { name: 'seo', title: 'SEO & AI' },
   ],
   fields: [
-    // --- 1. DETAILS ---
+    // --- 1. GENERAL INFO ---
     defineField({
       name: 'title',
-      title: 'Exhibition Title',
+      title: 'Exhibition Name',
       type: 'string',
-      group: 'details',
-      placeholder: 'e.g. Solo Exhibition "BOUND" or PAN Amsterdam',
-      validation: (Rule) => Rule.required(),
+      group: 'general',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      group: 'general',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'type',
       title: 'Exhibition Type',
       type: 'string',
-      group: 'details',
+      group: 'general',
       options: {
         list: [
           { title: 'Solo Exhibition', value: 'solo' },
-          { title: 'Duo Exhibition', value: 'duo' },
           { title: 'Group Exhibition', value: 'group' },
-          { title: 'Art Fair', value: 'fair' },
+          { title: 'Art Fair / Festival', value: 'fair' },
+          { title: 'Museum Exhibition', value: 'museum' },
+          { title: 'Hybrid / Online', value: 'hybrid' },
         ],
       },
-    }),
-    defineField({
-      name: 'venue',
-      title: 'Location (Venue)',
-      type: 'reference',
-      group: 'details',
-      to: [{ type: 'venue' }],
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'startDate',
       title: 'Start Date',
       type: 'date',
-      group: 'details',
-      validation: (Rule) => Rule.required(),
+      group: 'general',
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'endDate',
       title: 'End Date',
       type: 'date',
-      group: 'details',
+      group: 'general',
+    }),
+    defineField({
+      name: 'shortDescription',
+      title: 'Short Description (Teaser)',
+      description: '1-2 sentences. Used for SEO descriptions and overview pages.',
+      type: 'text',
+      rows: 3,
+      group: 'general',
     }),
 
-    // --- 2. STORY & CONTEXT ---
+    // --- 2. LOCATION (GEO & Structured Data) ---
+    defineField({
+      name: 'venueName',
+      title: 'Venue / Gallery Name',
+      type: 'string',
+      group: 'location',
+    }),
+    defineField({
+      name: 'location',
+      title: 'Address & Coordinates',
+      type: 'object',
+      group: 'location',
+      fields: [
+        defineField({ name: 'street', type: 'string', title: 'Street' }),
+        defineField({ name: 'city', type: 'string', title: 'City' }),
+        defineField({ name: 'zip', type: 'string', title: 'Zip Code' }),
+        defineField({ name: 'country', type: 'string', title: 'Country' }),
+        defineField({ 
+          name: 'googleMapsUrl', 
+          type: 'url', 
+          title: 'Google Maps Link' 
+        }),
+        // Optional: raw coordinates for AI/Maps API
+        defineField({ 
+            name: 'coordinates', 
+            type: 'object', 
+            title: 'Coordinates (Lat/Long)',
+            fields: [
+                {name: 'lat', type: 'number', title: 'Latitude'},
+                {name: 'lng', type: 'number', title: 'Longitude'}
+            ]
+        }),
+      ]
+    }),
+
+    // --- 3. STORY & VISUALS ---
     defineField({
       name: 'description',
-      title: 'About the Exhibition',
-      description: 'Describe the theme, the atmosphere, the opening event, or the curatorial statement.',
+      title: 'Long Description / Curatorial Text',
+      description: 'The story, theme, and concept (150-300 words).',
       type: 'array',
       group: 'story',
-      of: [{ type: 'block' }], // Rich Text
+      of: [{ type: 'block' }],
     }),
     defineField({
-      name: 'curator',
-      title: 'Curator',
-      type: 'string',
-      group: 'story',
-      placeholder: 'Name of the curator(s)',
-    }),
-    defineField({
-        name: 'participatingArtists',
-        title: 'Other Participating Artists',
-        description: 'Important for Group Shows. Lists other artists for context/SEO.',
-        type: 'array',
-        group: 'story',
-        icon: UsersIcon,
-        of: [{ type: 'string' }],
-        options: {
-            layout: 'tags'
-        }
-    }),
-    // HIER GING HET MIS IN JOUW VERSIE:
-    defineField({
-      name: 'featuredSeries',
-      title: 'Arjan\'s Series shown here',
-      type: 'array', 
-      group: 'story',
-      of: [{ type: 'reference', to: [{ type: 'project' }] }],
-    }),
-    // DE REST VAN HET BESTAND (ook belangrijk):
-    defineField({
-      name: 'featuredArtworks',
-      title: 'Specific Artworks Highlighted',
+      name: 'images',
+      title: 'Exhibition Photos',
+      description: 'Atmosphere shots, opening night, installation views.',
       type: 'array',
       group: 'story',
-      of: [{ type: 'reference', to: [{ type: 'artwork' }] }],
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: 'caption',
+              type: 'string',
+              title: 'Caption',
+            }),
+            defineField({
+              name: 'alt',
+              type: 'string',
+              title: 'Alt Text (SEO)',
+            }),
+          ],
+        },
+      ],
     }),
 
-    // --- 3. MEDIA (INSTALLATION VIEWS) ---
+    // --- 4. ARTWORKS & CURATOR (The Authority) ---
     defineField({
-        name: 'installationViews',
-        title: 'Installation Views / Atmosphere',
-        description: 'Photos of the work hanging in the space, opening night photos, etc.',
-        type: 'array',
-        group: 'media',
-        of: [
-            defineArrayMember({
-                type: 'image',
-                options: { hotspot: true },
-                fields: [
-                    {
-                        name: 'caption',
-                        type: 'string',
-                        title: 'Caption',
-                        placeholder: 'e.g. Opening night with curator...'
-                    }
-                ]
-            })
+        name: 'curator',
+        title: 'Curator / Organizer',
+        type: 'object',
+        group: 'artworks',
+        fields: [
+            defineField({ name: 'name', type: 'string', title: 'Name' }),
+            defineField({ 
+                name: 'bio', 
+                type: 'text', 
+                rows: 3, 
+                title: 'Short Bio (Expertise)' 
+            }),
         ]
     }),
     defineField({
-        name: 'pressRelease',
-        title: 'Press Release (PDF)',
+        name: 'partners',
+        title: 'Partners & Sponsors',
+        type: 'array',
+        group: 'artworks',
+        of: [{type: 'string'}],
+        description: 'List of foundations, museums or partners (Trust signals).'
+    }),
+    // HIER KOPPELEN WE JE KUNSTWERKEN
+    defineField({
+      name: 'exhibitedArtworks',
+      title: 'Artworks in this Exhibition',
+      type: 'array',
+      group: 'artworks',
+      of: [
+        {
+          type: 'object',
+          title: 'Artwork Entry',
+          preview: {
+            select: {
+              title: 'artworkReference.title', // Toon de titel van het gelinkte werk
+              subtitle: 'context',
+            }
+          },
+          fields: [
+            // De link naar je database
+            defineField({
+              name: 'artworkReference',
+              title: 'Select Artwork',
+              type: 'reference',
+              to: [{ type: 'artwork' }],
+            }),
+            // Context specifiek voor DEZE expositie
+            defineField({
+                name: 'context',
+                title: 'Presentation / Context',
+                type: 'string',
+                description: 'E.g. "Hung in the main hall", "First public reveal"'
+            }),
+            defineField({
+                name: 'availability',
+                title: 'Availability during show',
+                type: 'string',
+                options: {
+                    list: [
+                        {title: 'Available', value: 'available'},
+                        {title: 'Sold at event', value: 'sold'},
+                        {title: 'Display only', value: 'display'},
+                    ]
+                }
+            })
+          ],
+        },
+      ],
+    }),
+    defineField({
+        name: 'otherArtists',
+        title: 'Other Artists Present',
+        description: 'Increases Authority by association.',
+        type: 'array',
+        group: 'artworks',
+        of: [
+            {
+                type: 'object',
+                fields: [
+                    defineField({name: 'name', type: 'string', title: 'Name'}),
+                    defineField({name: 'website', type: 'url', title: 'Website'}),
+                    defineField({name: 'notes', type: 'string', title: 'Notable Awards/Info'}),
+                ]
+            }
+        ]
+    }),
+
+    // --- 5. SOCIAL PROOF & DOCUMENTS (E-E-A-T) ---
+    defineField({
+        name: 'statistics',
+        title: 'Visitors / Footfall',
+        type: 'number',
+        group: 'proof',
+        description: 'Estimated visitors (Social Proof).',
+    }),
+    defineField({
+        name: 'press',
+        title: 'Press & Reviews',
+        type: 'array',
+        group: 'proof',
+        of: [
+            {
+                type: 'object',
+                title: 'Review / Article',
+                fields: [
+                    defineField({name: 'title', type: 'string', title: 'Article Title'}),
+                    defineField({name: 'publisher', type: 'string', title: 'Publisher/Newspaper'}),
+                    defineField({name: 'url', type: 'url', title: 'Link'}),
+                    defineField({name: 'quote', type: 'text', rows: 2, title: 'Highlight Quote'}),
+                ]
+            }
+        ]
+    }),
+    defineField({
+        name: 'documentation',
+        title: 'Catalog / Documentation',
+        group: 'proof',
         type: 'file',
-        group: 'media',
-        options: {
-            accept: '.pdf'
-        }
-    })
+        description: 'Upload the PDF catalog or flyer (Proof of existence).',
+    }),
+    defineField({
+        name: 'awards',
+        title: 'Awards / Nominations',
+        group: 'proof',
+        type: 'array',
+        of: [{type: 'string'}],
+        description: 'Was this exhibition nominated for anything?'
+    }),
+
+    // --- 6. SEO & META ---
+    defineField({
+      name: 'seoKeywords',
+      title: 'SEO Keywords / Tags',
+      type: 'array',
+      group: 'seo',
+      of: [{ type: 'string' }],
+    }),
   ],
-  preview: {
-    select: {
-      title: 'title',
-      venue: 'venue.name',
-      date: 'startDate',
-      media: 'installationViews.0'
-    },
-    prepare({ title, venue, date, media }) {
-      const year = date ? date.split('-')[0] : 'Year?';
-      return {
-        title,
-        subtitle: `${year} | ${venue || 'No venue'}`,
-        media,
-      };
-    },
-  },
 })
