@@ -17,11 +17,10 @@ import { hero } from './hero'
 import { artworkGrid } from './artworkGrid'
 import { postList } from './postList'
 
-// 4. Page
+// 4. Page & Extra's
 import { page } from './page'
+import { metadata } from './metadata' // <--- NIEUW
 
-// HIER ZAT HET PROBLEEM:
-// sanity.config.ts zoekt naar 'schemaTypes' (een Array), dus dat geven we hem nu:
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Basis
   blockContent,
@@ -40,6 +39,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   artworkGrid,
   postList,
 
-  // Page
+  // Page & Metadata
   page,
+  metadata, // <--- HIER TOEGEVOEGD
 ]
