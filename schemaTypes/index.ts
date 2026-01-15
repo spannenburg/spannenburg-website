@@ -1,9 +1,12 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// documents
-import site from './documents/site'
+import { blockContent } from './blockContent'
+import { category } from './category'
+import { post } from './post'
+import { author } from './author'
+import { project } from './project' // Dit is je "Series" type
+import { artwork } from './artwork' // <-- Deze moet erbij staan!
 
-// export all schema types
-export const schemaTypes: SchemaTypeDefinition[] = [
-  site,
-]
+export const schema: { types: SchemaTypeDefinition[] } = {
+  types: [blockContent, category, post, author, project, artwork],
+}
