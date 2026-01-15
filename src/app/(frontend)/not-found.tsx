@@ -1,30 +1,13 @@
-import Modules from '@/ui/modules'
-import { fetchSanityLive } from '@/sanity/lib/fetch'
-import { groq } from 'next-sanity'
-import { MODULES_QUERY } from '@/sanity/lib/queries'
+import Link from 'next/link'
 
-export default async function NotFound() {
-	const page = await get404()
-	if (!page) return <h1 className="section text-center text-5xl">404</h1>
-	return <Modules modules={page?.modules} />
-}
-
-export async function generateMetadata() {
-	return (await get404())?.metadata
-}
-
-async function get404() {
-	return await fetchSanityLive<Sanity.Page>({
-		query: groq`*[_type == 'page' && metadata.slug.current == '404'][0]{
-			...,
-			'modules': (
-				// global modules (before)
-				*[_type == 'global-module' && path == '*'].before[]{ ${MODULES_QUERY} }
-				// page modules
-				+ modules[]{ ${MODULES_QUERY} }
-				// global modules (after)
-				+ *[_type == 'global-module' && path == '*'].after[]{ ${MODULES_QUERY} }
-			)
-		}`,
-	})
+export default function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <h1 className="text-6xl font-bold mb-4">404</h1>
+      <p className="text-xl text-gray-600 mb-8">Oeps! Deze pagina bestaat niet.</p>
+      <Link href="/" className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
+        Terug naar Home
+      </Link>
+    </div>
+  )
 }
