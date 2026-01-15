@@ -17,19 +17,31 @@ import { hero } from './hero'
 import { artworkGrid } from './artworkGrid'
 import { postList } from './postList'
 
+// 4. Page
+// Omdat je een map 'documents' BINNEN 'schemaTypes' hebt gemaakt,
+// is dit de juiste route:
+import { page } from './documents/page'
+
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    // Basis
     blockContent,
     category,
     author,
     post,
+
+    // Core
     project,
     artwork,
     venue,
     exhibition,
+
+    // Modules
     hero,
     artworkGrid,
     postList,
-    // Page is nu even weg!
+
+    // Page
+    page,
   ],
 }
