@@ -1,25 +1,24 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// 1. Basis blokken (stonden er al een uur)
+// 1. Basis blokken
 import { blockContent } from './blockContent'
 import { category } from './category'
 import { author } from './author'
 import { post } from './post'
 
-// 2. Jouw Core Business (Kunst & Track Record)
+// 2. Jouw Kunst & Track Record
 import { project } from './project'
 import { artwork } from './artwork'
 import { venue } from './venue'
 import { exhibition } from './exhibition'
 
-// 3. De Nieuwe Modules (Die de error veroorzaakten)
+// 3. De Modules voor de Homepage (Hier zat de error)
 import { hero } from './hero'
 import { artworkGrid } from './artworkGrid'
 import { postList } from './postList'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
-    // We voegen ze allemaal toe aan de lijst:
     blockContent,
     category,
     author,
