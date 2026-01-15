@@ -1,6 +1,6 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// 1. Basis
+// 1. Basis blokken
 import { blockContent } from './blockContent'
 import { category } from './category'
 import { author } from './author'
@@ -18,7 +18,8 @@ import { artworkGrid } from './artworkGrid'
 import { postList } from './postList'
 
 // 4. Page
-// HIER ZAT DE FOUT: Hij zocht in '../documents/page', maar hij staat nu hier!
+// HIER ZIT DE FIX: We importeren nu van './page' (dezelfde map)
+// We gebruiken { } omdat in page.ts 'export const page' staat.
 import { page } from './page'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
