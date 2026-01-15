@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Wrapper from './Wrapper'
 import { cn } from '@/lib/utils'
 // We commenten de oude navigation even uit, want die veroorzaakt waarschijnlijk de crash
-// import Navigation from './Navigation' 
+// import Navigation from './Navigation'
 import css from './Header.module.css'
 
 export default function Header() {
