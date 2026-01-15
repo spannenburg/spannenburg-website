@@ -3,8 +3,7 @@
 import pkg from './package.json'
 import { defineConfig } from 'sanity'
 import { projectId, dataset, apiVersion } from '@/sanity/lib/env'
-// FIX 1: We importeren de officiële tool, in plaats van jouw eigen bestand
-import { structureTool } from 'sanity/structure' 
+import { structureTool } from 'sanity/structure'
 import { presentation } from './src/sanity/presentation'
 import { icon } from '@/sanity/ui/Icon'
 import { InfoWidget } from '@/sanity/ui/InfoWidget'
@@ -16,12 +15,8 @@ import {
 import { vercelWidget } from 'sanity-plugin-dashboard-widget-vercel'
 import { visionTool } from '@sanity/vision'
 import { codeInput } from '@sanity/code-input'
-import { supportedLanguages } from '@/lib/i18n'
-import { documentInternationalization } from '@sanity/document-internationalization'
 import { schemaTypes } from './src/sanity/schemaTypes'
 import resolveUrl from '@/lib/resolveUrl'
-
-const singletonTypes: string[] = []
 
 export default defineConfig({
   title: 'Spannenburg Art',
@@ -31,8 +26,7 @@ export default defineConfig({
   basePath: '/admin',
 
   plugins: [
-    // FIX 2: We gebruiken de standaard structuur tool.
-    // Dit negeert eventuele fouten in jouw mappen en toont gewoon alles wat er is.
+    // Gewoon de standaard structuur
     structureTool(), 
 
     presentation,
@@ -52,18 +46,11 @@ export default defineConfig({
     }),
     visionTool({ defaultApiVersion: apiVersion }),
     codeInput(),
-    documentInternationalization({
-      supportedLanguages,
-      schemaTypes: ['page', 'post'],
-    }),
+    // HIER HEBBEN WE DE VERTALING PLUGIN WEGGEHAALD
   ],
 
   schema: {
     types: schemaTypes,
-    templates: (templates) =>
-      templates.filter(
-        ({ schemaType }) => !singletonTypes.includes(schemaType),
-      ),
   },
 
   document: {
@@ -72,14 +59,6 @@ export default defineConfig({
         return resolveUrl(document as any, { base: true })
       }
       return prev
-    },
-    actions: (input, { schemaType }) => {
-      if (singletonTypes.includes(schemaType)) {
-        return input.filter((item) => 
-          item.action && ['publish', 'discardChanges', 'restore'].includes(item.action)
-        )
-      }
-      return input
     },
   },
 })
