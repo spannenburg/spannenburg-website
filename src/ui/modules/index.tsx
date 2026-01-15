@@ -2,9 +2,9 @@ import Hero from './Hero'
 import ArtworkGrid from './ArtworkGrid'
 import PostList from './PostList'
 
-// FIX: We voegen ', page' toe en definiëren het type '{ modules?: any[], page?: any }'
-// Nu wordt de 'page' prop geaccepteerd en is de error weg.
-export default function Modules({ modules, page }: { modules?: any[], page?: any }) {
+// FIX: We voegen nu ook ', post' toe aan de lijst met toegestane spullen.
+// Nu werkt het voor Pages én Blog Posts.
+export default function Modules({ modules, page, post }: { modules?: any[], page?: any, post?: any }) {
   if (!modules) return null
 
   return (
