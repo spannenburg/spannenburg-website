@@ -10,7 +10,7 @@ export const artwork = defineType({
     { name: 'details', title: 'Details' },
     { name: 'story', title: 'Story & Context' },
     { name: 'specs', title: 'Specifications' },
-    { name: 'sales', title: 'Editions & Pricing' }, // Renamed for clarity
+    { name: 'sales', title: 'Editions & Pricing' },
     { name: 'seo', title: 'SEO & AI' },
   ],
   fields: [
@@ -46,17 +46,12 @@ export const artwork = defineType({
       type: 'string',
       group: 'details',
     }),
-    defineField({
-      name: 'teaser',
-      title: 'Teaser Text',
-      description: 'Short intro for SEO description (<20 words).',
-      type: 'text',
-      rows: 2,
-      group: 'details',
-    }),
+    
+    // --- IMAGERY ---
     defineField({
         name: 'mainImage',
-        title: 'Main Image',
+        title: 'Main Image (The Artwork)',
+        description: 'The pure image of the artwork itself.',
         type: 'image',
         options: { hotspot: true },
         group: 'details',
@@ -68,12 +63,60 @@ export const artwork = defineType({
             }),
         ]
     }),
+    
+    // --- CONTEXT IMAGES ---
+    defineField({
+        name: 'contextImages',
+        title: 'In Situ / Context Images',
+        description: 'Photos of the work hanging in a room, gallery views, or mockups.',
+        type: 'array',
+        group: 'details',
+        of: [
+            {
+                type: 'image',
+                options: { hotspot: true },
+                fields: [
+                    defineField({
+                        name: 'caption',
+                        type: 'string',
+                        title: 'Caption',
+                        description: 'E.g. "Installation view at Zerp Galerie"'
+                    }),
+                    defineField({
+                        name: 'alt',
+                        type: 'string',
+                        title: 'Alt Text',
+                    }),
+                ]
+            }
+        ]
+    }),
 
-    // --- 2. STORY BLOCK ---
+    defineField({
+      name: 'teaser',
+      title: 'Teaser Text',
+      description: 'Short intro for SEO description (<20 words).',
+      type: 'text',
+      rows: 2,
+      group: 'details',
+    }),
+
+    // --- 2. STORY & CONTEXT BLOCK ---
+    
+    // *** NEW: VISUAL DESCRIPTION ***
+    defineField({
+      name: 'visualDescription',
+      title: 'Visual Description',
+      description: 'Literal description of what is seen in the image. Useful for AI and Accessibility (Alt Text).',
+      type: 'text',
+      rows: 4,
+      group: 'story', 
+    }),
+
     defineField({
       name: 'description',
-      title: 'Storytelling',
-      description: 'The narrative, emotion, and theme (150-300 words).',
+      title: 'Storytelling / Narrative',
+      description: 'The deeper meaning, emotion, and theme (150-300 words).',
       type: 'array',
       group: 'story',
       of: [{ type: 'block' }],
@@ -87,7 +130,6 @@ export const artwork = defineType({
     }),
 
     // --- 3. SPECIFICATIONS (Global) ---
-    // Technical details that apply to ALL sizes
     defineField({
       name: 'medium',
       title: 'Medium',
@@ -105,13 +147,13 @@ export const artwork = defineType({
     defineField({
       name: 'materials',
       title: 'Materials & Technique',
-      description: 'E.g. Giclée print Ultrachrome on dibond mounted with Diasec-Trulife',
-      type: 'text', // Changed to text so you can paste the full description
+      description: 'E.g. Giclée print Ultrachrome on dibond...',
+      type: 'text',
       rows: 3,
       group: 'specs',
     }),
 
-    // --- 4. EDITIONS & VARIANTS (The New Part) ---
+    // --- 4. EDITIONS & VARIANTS ---
     defineField({
       name: 'variants',
       title: 'Available Editions / Sizes',
@@ -155,7 +197,6 @@ export const artwork = defineType({
               initialValue: false,
             }),
           ],
-          // This makes the list look nice in Sanity
           preview: {
             select: {
               title: 'sizeLabel',
