@@ -6,12 +6,11 @@ export const artwork = defineType({
   title: 'Artworks',
   type: 'document',
   icon: TfiPalette,
-  // Tabs to organize the fields
   groups: [
     { name: 'details', title: 'Details' },
     { name: 'story', title: 'Story & Context' },
     { name: 'specs', title: 'Specifications' },
-    { name: 'sales', title: 'Exhibition & Sales' },
+    { name: 'sales', title: 'Editions & Pricing' }, // Renamed for clarity
     { name: 'seo', title: 'SEO & AI' },
   ],
   fields: [
@@ -38,7 +37,7 @@ export const artwork = defineType({
       name: 'artist',
       title: 'Artist',
       type: 'reference',
-      to: [{ type: 'author' }], // Assuming you have an author.ts
+      to: [{ type: 'author' }],
       group: 'details',
     }),
     defineField({
@@ -50,11 +49,10 @@ export const artwork = defineType({
     defineField({
       name: 'teaser',
       title: 'Teaser Text',
-      description: 'Short, powerful intro (<20 words). Used for Description meta tag.',
+      description: 'Short intro for SEO description (<20 words).',
       type: 'text',
       rows: 2,
       group: 'details',
-      validation: (rule) => rule.max(160).warning('Keep it short for SEO!'),
     }),
     defineField({
         name: 'mainImage',
@@ -67,7 +65,6 @@ export const artwork = defineType({
                 name: 'alt',
                 type: 'string',
                 title: 'Alt Text',
-                description: 'Describe the image for SEO and accessibility',
             }),
         ]
     }),
@@ -84,13 +81,13 @@ export const artwork = defineType({
     defineField({
       name: 'themes',
       title: 'Thematic Keywords',
-      description: 'E.g. Intimacy, Identity, Queer Art (For LLM & SEO)',
       type: 'array',
       group: 'story',
       of: [{ type: 'string' }],
     }),
 
-    // --- 3. SPECIFICATIONS / TECH BLOCK ---
+    // --- 3. SPECIFICATIONS (Global) ---
+    // Technical details that apply to ALL sizes
     defineField({
       name: 'medium',
       title: 'Medium',
@@ -101,71 +98,92 @@ export const artwork = defineType({
     defineField({
       name: 'artform',
       title: 'Artform',
-      description: 'E.g. Photography, Sculpture',
+      description: 'E.g. Photography',
       type: 'string',
       group: 'specs',
     }),
     defineField({
       name: 'materials',
-      title: 'Materials Used',
-      description: 'E.g. Giclée print, Dibond, Museum glass',
-      type: 'array',
+      title: 'Materials & Technique',
+      description: 'E.g. Giclée print Ultrachrome on dibond mounted with Diasec-Trulife',
+      type: 'text', // Changed to text so you can paste the full description
+      rows: 3,
       group: 'specs',
-      of: [{ type: 'string' }],
     }),
+
+    // --- 4. EDITIONS & VARIANTS (The New Part) ---
     defineField({
-      name: 'dimensions',
-      title: 'Dimensions (cm)',
-      type: 'object',
-      group: 'specs',
-      fields: [
-        defineField({ name: 'height', type: 'number', title: 'Height' }),
-        defineField({ name: 'width', type: 'number', title: 'Width' }),
-        defineField({ name: 'depth', type: 'number', title: 'Depth (optional)' }),
+      name: 'variants',
+      title: 'Available Editions / Sizes',
+      description: 'Add the different sizes and prices here.',
+      type: 'array',
+      group: 'sales',
+      of: [
+        {
+          type: 'object',
+          title: 'Edition Variant',
+          fields: [
+            defineField({
+              name: 'sizeLabel',
+              title: 'Label',
+              type: 'string',
+              initialValue: 'Medium',
+              description: 'E.g. Medium, Large, Museum Scale',
+            }),
+            defineField({
+              name: 'dimensions',
+              title: 'Dimensions',
+              type: 'string',
+              description: 'E.g. 40 x 60 cm',
+            }),
+            defineField({
+              name: 'edition',
+              title: 'Edition Size',
+              type: 'string',
+              description: 'E.g. 8 + 2 AP',
+            }),
+            defineField({
+              name: 'price',
+              title: 'Price (€)',
+              type: 'number',
+              description: 'Just the number (e.g. 1850)',
+            }),
+            defineField({
+              name: 'isSoldOut',
+              title: 'Sold Out?',
+              type: 'boolean',
+              initialValue: false,
+            }),
+          ],
+          // This makes the list look nice in Sanity
+          preview: {
+            select: {
+              title: 'sizeLabel',
+              dim: 'dimensions',
+              price: 'price',
+            },
+            prepare({ title, dim, price }) {
+              return {
+                title: `${title} (${dim})`,
+                subtitle: `€ ${price}`,
+              }
+            },
+          },
+        },
       ],
     }),
 
-    // --- 4. EXHIBITION & SALES BLOCK ---
-    defineField({
-      name: 'edition',
-      title: 'Edition Info',
-      description: 'E.g. 6 + 2 AP',
-      type: 'string',
-      group: 'sales',
-    }),
-    defineField({
-      name: 'price',
-      title: 'Price (€)',
-      type: 'number',
-      group: 'sales',
-    }),
-    defineField({
-        name: 'availability',
-        title: 'Availability',
-        type: 'string',
-        options: {
-            list: [
-                { title: 'Available', value: 'available' },
-                { title: 'Sold', value: 'sold' },
-                { title: 'Reserved', value: 'reserved' },
-                { title: 'On Loan', value: 'loan' },
-            ]
-        },
-        group: 'sales',
-    }),
     defineField({
         name: 'gallery',
         title: 'Represented by (Gallery)',
-        type: 'string', // Or make this a reference to a 'venue' type if you want
-        description: 'Where is this sold? E.g. Zerp Galerie',
+        type: 'string',
         group: 'sales',
     }),
 
-    // --- 5. SEO & STRUCTURED DATA (Hidden helpers) ---
+    // --- 5. SEO ---
     defineField({
       name: 'seoKeywords',
       title: 'SEO Keywords',
-      description: 'Semantic keywords for Google and AI.',
       type: 'array',
       group: 'seo',
       of: [{ type: 'string' }],
