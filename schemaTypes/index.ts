@@ -6,6 +6,9 @@ import { author } from './author'
 import { project } from './project'
 import { artwork } from './artwork'
 import { post } from './post'
+// De nieuwe bestanden importeren:
+import { venue } from './venue'
+import { exhibition } from './exhibition'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -15,5 +18,8 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     project,
     artwork,
     post,
+    // De nieuwe bestanden activeren:
+    venue,
+    exhibition,
   ],
 }
