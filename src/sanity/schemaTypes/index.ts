@@ -1,45 +1,54 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// 1. Basis
-import { blockContent } from './blockContent'
-import { category } from './category'
-import { author } from './author'
-import { post } from './post'
+// ---------------------------------------------
+// 1. BESTAANDE BESTANDEN (Die los in de map staan)
+// ---------------------------------------------
+import page from './page'
+import post from './post'
+import artwork from './artwork'
+import project from './project'
+import venue from './venue'
+import exhibition from './exhibition'
+import author from './author'
+import category from './category'
+import blockContent from './blockContent'
+import metadata from './metadata'
 
-// 2. Core Business
-import { project } from './project'
-import { artwork } from './artwork'
-import { venue } from './venue'
-import { exhibition } from './exhibition'
+// Oude modules die waarschijnlijk ook los staan:
+import artworkGrid from './artworkGrid' 
+import postList from './postList' 
 
-// 3. Modules
-import { hero } from './hero'
-import { artworkGrid } from './artworkGrid'
-import { postList } from './postList'
+// ---------------------------------------------
+// 2. NIEUWE MODULES (In je nieuwe mapje)
+// ---------------------------------------------
+// We pakken specifiek de nieuwe versie die we net gemaakt hebben
+import hero from './modules/hero' 
 
-// 4. Page & Extra's
-import { page } from './page'
-import { metadata } from './metadata' // <--- NIEUW
 
+// ---------------------------------------------
+// 3. DE LIJST SAMENVOEGEN
+// ---------------------------------------------
 export const schemaTypes: SchemaTypeDefinition[] = [
-  // Basis
-  blockContent,
-  category,
-  author,
+  // Documenten (Pagina's & Posts)
+  page,
   post,
-
-  // Core
-  project,
+  
+  // Jouw Kunst & Werk (Ja, we zetten ze gewoon aan!)
   artwork,
+  project,
   venue,
   exhibition,
+  
+  // Taxonomie (Categorieën & Auteurs)
+  category,
+  author,
 
-  // Modules
-  hero,
+  // Hulpstukken
+  blockContent,
+  metadata,
+
+  // Modules (Blokken voor op de pagina)
+  hero,         // <--- Dit is de belangrijkste voor nu!
   artworkGrid,
   postList,
-
-  // Page & Metadata
-  page,
-  metadata, // <--- HIER TOEGEVOEGD
 ]
