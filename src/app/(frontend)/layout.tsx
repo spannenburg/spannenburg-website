@@ -1,11 +1,9 @@
 import '@/styles/app.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { Toaster } from 'sonner'
+// De regel met 'sonner' is hier weggehaald
 import Header from '@/ui/header'
-import Footer from '@/ui/footer' // <--- Zorg dat deze import klopt
-// We verwijderen 'DraftModeToast' even tijdelijk als die errors geeft, 
-// maar meestal kan hij blijven staan. Voor nu houden we het simpel:
+import Footer from '@/ui/footer'
 
 export default async function RootLayout({
 	children,
@@ -26,8 +24,7 @@ export default async function RootLayout({
 				{/* 3. De Footer */}
 				<Footer />
 
-				{/* 4. Hulpstukken van Vercel */}
-				<Toaster />
+				{/* 4. Analytics (mag blijven) */}
 				<Analytics />
 				<SpeedInsights />
 			</body>
