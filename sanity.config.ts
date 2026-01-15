@@ -3,7 +3,8 @@
 import pkg from './package.json'
 import { defineConfig } from 'sanity'
 import { projectId, dataset, apiVersion } from '@/sanity/lib/env'
-import { structure } from './src/sanity/structure'
+// FIX 1: We importeren de officiële tool, in plaats van jouw eigen bestand
+import { structureTool } from 'sanity/structure' 
 import { presentation } from './src/sanity/presentation'
 import { icon } from '@/sanity/ui/Icon'
 import { InfoWidget } from '@/sanity/ui/InfoWidget'
@@ -20,7 +21,6 @@ import { documentInternationalization } from '@sanity/document-internationalizat
 import { schemaTypes } from './src/sanity/schemaTypes'
 import resolveUrl from '@/lib/resolveUrl'
 
-// We hebben 'site' verwijderd, dus deze lijst is leeg.
 const singletonTypes: string[] = []
 
 export default defineConfig({
@@ -31,7 +31,10 @@ export default defineConfig({
   basePath: '/admin',
 
   plugins: [
-    structure,
+    // FIX 2: We gebruiken de standaard structuur tool.
+    // Dit negeert eventuele fouten in jouw mappen en toont gewoon alles wat er is.
+    structureTool(), 
+
     presentation,
     dashboardTool({
       name: 'deployment',
@@ -51,7 +54,6 @@ export default defineConfig({
     codeInput(),
     documentInternationalization({
       supportedLanguages,
-      // Let op: 'post' in plaats van 'blog.post'
       schemaTypes: ['page', 'post'],
     }),
   ],
@@ -66,14 +68,11 @@ export default defineConfig({
 
   document: {
     productionUrl: async (prev, { document }) => {
-      // Check of het een page of post is voor de preview URL
       if (document._type === 'page' || document._type === 'post') {
         return resolveUrl(document as any, { base: true })
       }
       return prev
     },
-
-    // Hier zat de syntax fout. Dit is de veilige versie:
     actions: (input, { schemaType }) => {
       if (singletonTypes.includes(schemaType)) {
         return input.filter((item) => 
