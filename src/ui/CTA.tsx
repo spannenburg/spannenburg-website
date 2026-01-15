@@ -40,7 +40,7 @@ export default function CTA({
 			)}
 			{...props}
 		>
-			{link.label || children || 'Lees meer'}
+			{link.label || children || 'Read more'}
 		</Link>
 	)
 }
