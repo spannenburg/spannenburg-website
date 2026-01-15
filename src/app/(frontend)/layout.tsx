@@ -11,7 +11,7 @@ export default async function RootLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<html lang="nl">
+		<html lang="en">
 			<body className="bg-canvas text-ink min-h-screen flex flex-col">
 				{/* 1. De Header */}
 				<Header />
