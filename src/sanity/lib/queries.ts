@@ -1,9 +1,8 @@
 import { defineQuery } from 'next-sanity'
-import { sanityFetch } from './live'
+import { client } from './client'
 
-// 1. De functie om gewone pagina's op te halen (Home, Over ons, etc.)
+// 1. De functie om gewone pagina's op te halen
 export const getPage = async ({ slug }: { slug?: string[] }) => {
-  // Als er geen slug is, bedoelen we de homepage ('index')
   const targetSlug = slug ? slug.join('/') : 'index'
 
   const query = defineQuery(`
@@ -25,10 +24,11 @@ export const getPage = async ({ slug }: { slug?: string[] }) => {
     }
   `)
 
-  return await sanityFetch({ query, params: { targetSlug } })
+  // HIER ZAT DE FOUT: We gebruiken nu de standaard client.fetch
+  return await client.fetch(query, { targetSlug })
 }
 
-// 2. De functie om blog posts op te halen (DIT MISTE JE)
+// 2. De functie om blog posts op te halen
 export const getPost = async ({ slug }: { slug?: string[] }) => {
   const targetSlug = slug ? slug.join('/') : ''
 
@@ -37,7 +37,7 @@ export const getPost = async ({ slug }: { slug?: string[] }) => {
       _id,
       _type,
       title,
-      modules, // Hier halen we de inhoud van de blog op
+      modules,
       metadata,
       date,
       author->{
@@ -47,10 +47,10 @@ export const getPost = async ({ slug }: { slug?: string[] }) => {
     }
   `)
 
-  return await sanityFetch({ query, params: { targetSlug } })
+  return await client.fetch(query, { targetSlug })
 }
 
-// 3. De functie om ALLE posts op te halen (voor lijstjes)
+// 3. De functie om ALLE posts op te halen
 export const getPosts = async () => {
   const query = defineQuery(`
     *[_type == "post"] | order(date desc) {
@@ -61,5 +61,5 @@ export const getPosts = async () => {
     }
   `)
   
-  return await sanityFetch({ query, params: {} })
+  return await client.fetch(query)
 }
