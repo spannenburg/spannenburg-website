@@ -1,251 +1,174 @@
-import { defineArrayMember, defineField, defineType } from 'sanity'
-import { SearchIcon, TagIcon, BasketIcon, ImageIcon } from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
+import { TfiPalette } from 'react-icons/tfi'
 
 export const artwork = defineType({
   name: 'artwork',
-  title: 'Artwork (Individual)',
+  title: 'Artworks',
   type: 'document',
-  icon: ImageIcon,
+  icon: TfiPalette,
+  // Tabs to organize the fields
   groups: [
-    { name: 'content', title: 'Content', default: true },
-    { name: 'specs', title: 'Technical Specs' },
-    { name: 'commercial', title: 'Editions & Sales', icon: BasketIcon },
-    { name: 'seo', title: 'SEO & AI Context', icon: SearchIcon },
+    { name: 'details', title: 'Details' },
+    { name: 'story', title: 'Story & Context' },
+    { name: 'specs', title: 'Specifications' },
+    { name: 'sales', title: 'Exhibition & Sales' },
+    { name: 'seo', title: 'SEO & AI' },
   ],
   fields: [
-    // --- 1. CONTENT ---
+    // --- 1. HERO / TITLE BLOCK ---
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Artwork Title',
       type: 'string',
-      group: 'content',
-      validation: (Rule) => Rule.required(),
+      group: 'details',
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      group: 'content',
+      group: 'details',
       options: {
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'mainImage',
-      title: 'Main Artwork Image',
-      type: 'image',
-      group: 'content',
-      options: {
-        hotspot: true,
-        metadata: ['lqip', 'palette', 'exif'],
-      },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alternative Text (AI Description)',
-          description: 'Describe the image for blind users and AI (e.g., "Black and white portrait of a man looking down...")',
-          type: 'text',
-          rows: 2,
-        }),
-      ],
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'parentSeries',
-      title: 'Part of Series',
+      name: 'artist',
+      title: 'Artist',
       type: 'reference',
-      group: 'content',
-      to: [{ type: 'project' }], // Verwijst naar jouw Series (projecten)
+      to: [{ type: 'author' }], // Assuming you have an author.ts
+      group: 'details',
     }),
     defineField({
-      name: 'description',
-      title: 'Description / Story',
-      type: 'array', 
-      group: 'content',
-      of: [{ type: 'block' }], // Rich text voor het verhaal achter het werk
+      name: 'year',
+      title: 'Year created',
+      type: 'string',
+      group: 'details',
     }),
     defineField({
-      name: 'videoUrl',
-      title: 'Video / Behind the Scenes (YouTube URL)',
-      type: 'url',
-      group: 'content',
-      description: 'Link to a YouTube video about this work (schema.org/video)',
+      name: 'teaser',
+      title: 'Teaser Text',
+      description: 'Short, powerful intro (<20 words). Used for Description meta tag.',
+      type: 'text',
+      rows: 2,
+      group: 'details',
+      validation: (rule) => rule.max(160).warning('Keep it short for SEO!'),
+    }),
+    defineField({
+        name: 'mainImage',
+        title: 'Main Image',
+        type: 'image',
+        options: { hotspot: true },
+        group: 'details',
+        fields: [
+            defineField({
+                name: 'alt',
+                type: 'string',
+                title: 'Alt Text',
+                description: 'Describe the image for SEO and accessibility',
+            }),
+        ]
     }),
 
-    // --- 2. TECHNICAL SPECS ---
+    // --- 2. STORY BLOCK ---
     defineField({
-      name: 'dateCreated',
-      title: 'Date Created / Year',
-      type: 'string',
-      group: 'specs',
-      placeholder: '2025 or 2018-2022',
+      name: 'description',
+      title: 'Storytelling',
+      description: 'The narrative, emotion, and theme (150-300 words).',
+      type: 'array',
+      group: 'story',
+      of: [{ type: 'block' }],
     }),
     defineField({
+      name: 'themes',
+      title: 'Thematic Keywords',
+      description: 'E.g. Intimacy, Identity, Queer Art (For LLM & SEO)',
+      type: 'array',
+      group: 'story',
+      of: [{ type: 'string' }],
+    }),
+
+    // --- 3. SPECIFICATIONS / TECH BLOCK ---
+    defineField({
       name: 'medium',
-      title: 'Art Medium (Broad)',
+      title: 'Medium',
+      description: 'E.g. Colour Photography',
       type: 'string',
       group: 'specs',
-      options: {
-        list: [
-          { title: 'Fine Art Photography', value: 'Photography' },
-          { title: 'Textile Art', value: 'Textile' },
-          { title: 'Mixed Media', value: 'Mixed Media' },
-          { title: 'Sculpture', value: 'Sculpture' },
-        ],
-      },
+    }),
+    defineField({
+      name: 'artform',
+      title: 'Artform',
+      description: 'E.g. Photography, Sculpture',
+      type: 'string',
+      group: 'specs',
     }),
     defineField({
       name: 'materials',
-      title: 'Materials (Specific)',
-      description: 'E.g. Giclée print, Dibond, Museum glass, Polyamide',
+      title: 'Materials Used',
+      description: 'E.g. Giclée print, Dibond, Museum glass',
       type: 'array',
       group: 'specs',
       of: [{ type: 'string' }],
-      options: {
-        layout: 'tags',
-      },
     }),
-
-    // --- 3. COMMERCIAL (EDITIONS) ---
     defineField({
-      name: 'editions',
-      title: 'Editions & Pricing',
-      description: 'Define the different sizes/variants available for this work',
-      type: 'array',
-      group: 'commercial',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'variant',
-          title: 'Edition Variant',
-          icon: BasketIcon,
-          fields: [
-            defineField({
-              name: 'name',
-              title: 'Edition Name',
-              type: 'string',
-              placeholder: 'Edition KLEIN (40x60)',
-            }),
-            defineField({
-              name: 'sku',
-              title: 'SKU',
-              type: 'string',
-            }),
-            defineField({
-              name: 'width',
-              title: 'Width (cm)',
-              type: 'number',
-            }),
-            defineField({
-              name: 'height',
-              title: 'Height (cm)',
-              type: 'number',
-            }),
-            defineField({
-              name: 'price',
-              title: 'Price (EUR)',
-              type: 'number',
-            }),
-            defineField({
-              name: 'availability',
-              title: 'Availability',
-              type: 'string',
-              options: {
-                list: [
-                  { title: 'In Stock / Available', value: 'https://schema.org/InStock' },
-                  { title: 'Limited Availability', value: 'https://schema.org/LimitedAvailability' },
-                  { title: 'Sold Out', value: 'https://schema.org/SoldOut' },
-                  { title: 'PreOrder', value: 'https://schema.org/PreOrder' },
-                ],
-              },
-              initialValue: 'https://schema.org/InStock',
-            }),
-          ],
-          preview: {
-            select: {
-              title: 'name',
-              price: 'price',
-              sku: 'sku',
-            },
-            prepare({ title, price, sku }) {
-              return {
-                title: title,
-                subtitle: `€${price} - SKU: ${sku}`,
-              }
-            },
-          },
-        }),
+      name: 'dimensions',
+      title: 'Dimensions (cm)',
+      type: 'object',
+      group: 'specs',
+      fields: [
+        defineField({ name: 'height', type: 'number', title: 'Height' }),
+        defineField({ name: 'width', type: 'number', title: 'Width' }),
+        defineField({ name: 'depth', type: 'number', title: 'Depth (optional)' }),
       ],
     }),
+
+    // --- 4. EXHIBITION & SALES BLOCK ---
     defineField({
-        name: 'seller',
-        title: 'Represented by / Seller',
-        type: 'string',
-        group: 'commercial',
-        placeholder: 'e.g. Zerp Galerie',
-        initialValue: 'Zerp Galerie'
+      name: 'edition',
+      title: 'Edition Info',
+      description: 'E.g. 6 + 2 AP',
+      type: 'string',
+      group: 'sales',
     }),
     defineField({
-        name: 'sellerUrl',
-        title: 'Seller Website',
-        type: 'url',
-        group: 'commercial',
-        initialValue: 'https://www.zerp.nl'
+      name: 'price',
+      title: 'Price (€)',
+      type: 'number',
+      group: 'sales',
+    }),
+    defineField({
+        name: 'availability',
+        title: 'Availability',
+        type: 'string',
+        options: {
+            list: [
+                { title: 'Available', value: 'available' },
+                { title: 'Sold', value: 'sold' },
+                { title: 'Reserved', value: 'reserved' },
+                { title: 'On Loan', value: 'loan' },
+            ]
+        },
+        group: 'sales',
+    }),
+    defineField({
+        name: 'gallery',
+        title: 'Represented by (Gallery)',
+        type: 'string', // Or make this a reference to a 'venue' type if you want
+        description: 'Where is this sold? E.g. Zerp Galerie',
+        group: 'sales',
     }),
 
-    // --- 4. SEO & AI CONTEXT ---
+    // --- 5. SEO & STRUCTURED DATA (Hidden helpers) ---
     defineField({
       name: 'seoKeywords',
       title: 'SEO Keywords',
+      description: 'Semantic keywords for Google and AI.',
       type: 'array',
       group: 'seo',
       of: [{ type: 'string' }],
-      options: { layout: 'tags' },
-      description: 'Simple keywords: e.g. "Black and white", "Ballet", "Vrijheid"',
-    }),
-    defineField({
-      name: 'semanticConcepts',
-      title: 'Semantic Concepts (The "About" field)',
-      description: 'Connect this artwork to Wikipedia entities for AI understanding.',
-      type: 'array',
-      group: 'seo',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          icon: TagIcon,
-          fields: [
-            defineField({
-              name: 'name',
-              title: 'Concept Name',
-              type: 'string',
-              placeholder: 'e.g. Social Alienation',
-            }),
-            defineField({
-              name: 'url',
-              title: 'Wikipedia/Wikidata URL',
-              type: 'url',
-              placeholder: 'https://en.wikipedia.org/wiki/Social_alienation',
-            }),
-          ],
-        }),
-      ],
     }),
   ],
-  preview: {
-    select: {
-      title: 'title',
-      media: 'mainImage',
-      series: 'parentSeries.title',
-      year: 'dateCreated'
-    },
-    prepare({ title, media, series, year }) {
-      return {
-        title,
-        subtitle: `${series ? series : 'No Series'} | ${year ? year : ''}`,
-        media,
-      }
-    },
-  },
 })
