@@ -1,51 +1,39 @@
-import { getSite } from '@/sanity/lib/queries'
-import Wrapper from './Wrapper'
 import Link from 'next/link'
-import { Img } from '@/ui/Img'
-import Navigation from './Navigation'
-import CTAList from '@/ui/CTAList'
-import Toggle from './Toggle'
+import Wrapper from './Wrapper'
 import { cn } from '@/lib/utils'
+// We commenten de oude navigation even uit, want die veroorzaakt waarschijnlijk de crash
+// import Navigation from './Navigation' 
 import css from './Header.module.css'
 
-export default async function Header() {
-	const { title, logo, ctas } = await getSite()
-
-	const logoImage = logo?.image?.dark || logo?.image?.default
+export default function Header() {
+	// We halen getSite() weg, want die data bestaat niet meer.
+	// We zetten de titel hier hardcoded neer:
+	const title = 'Spannenburg Art'
 
 	return (
-		<Wrapper className="frosted-glass border-ink/10 bg-canvas max-md:header-open:shadow-lg sticky top-0 z-10 border-b">
+		<Wrapper className="frosted-glass border-ink/10 bg-canvas sticky top-0 z-10 border-b">
 			<div
 				className={cn(
 					css.header,
-					'mx-auto grid max-w-screen-xl items-center gap-x-6 p-4',
+					'mx-auto flex max-w-screen-xl items-center justify-between p-4',
 				)}
 			>
-				<div className="[grid-area:logo]">
-					<Link
-						className={cn('h4 md:h3 grid', logo?.image && 'max-w-3xs')}
-						href="/"
-					>
-						{logoImage ? (
-							<Img
-								className="inline-block max-h-[1.2em] w-auto"
-								image={logoImage}
-								alt={logo?.name || title}
-							/>
-						) : (
-							<span className="text-gradient">{title}</span>
-						)}
+				{/* Logo / Titel */}
+				<div className="flex-shrink-0">
+					<Link className="h4 md:h3 block font-bold text-xl" href="/">
+						{title}
 					</Link>
 				</div>
 
-				<Navigation />
+				{/* Tijdelijke Simpele Navigatie (Hardcoded) */}
+				<nav className="flex gap-6 text-sm font-medium">
+					{/* Je kunt hier later weer een dynamisch menu van maken */}
+					<Link href="/" className="hover:underline">Home</Link>
+					{/* <Link href="/blog" className="hover:underline">Blog</Link> */}
+				</nav>
 
-				<CTAList
-					ctas={ctas}
-					className="max-md:header-closed:hidden [grid-area:ctas] max-md:*:w-full md:ms-auto"
-				/>
-
-				<Toggle />
+				{/* De oude Navigation component (die de crash veroorzaakt) laden we nu NIET */}
+				{/* <Navigation /> */}
 			</div>
 		</Wrapper>
 	)
