@@ -1,31 +1,27 @@
-import { BLOG_DIR } from './env'
-import { DEFAULT_LANG } from './i18n'
-import { stegaClean } from 'next-sanity'
+import { stegaClean } from '@sanity/client/stega'
 
 export default function resolveUrl(
-	page?: Sanity.PageBase,
-	{
-		base = true,
-		params,
-		language,
-	}: {
-		base?: boolean
-		params?: string
-		language?: string
-	} = {},
-) {
-	const segment = page?._type === 'blog.post' ? `/${BLOG_DIR}/` : '/'
-	const lang = language && language !== DEFAULT_LANG ? `/${language}` : ''
-	const slug = page?.metadata?.slug?.current
-	const path = slug === 'index' ? null : slug
+  document: any,
+  options?: { base?: boolean }
+): string {
+  const slug = stegaClean(document?.metadata?.slug?.current || document?.slug?.current)
+  const type = document?._type
 
-	return [
-		base && process.env.NEXT_PUBLIC_BASE_URL,
-		lang,
-		segment,
-		path,
-		stegaClean(params),
-	]
-		.filter(Boolean)
-		.join('')
+  // Basis URL (nodig voor de Studio preview link)
+  const baseUrl = options?.base 
+    ? process.env.NEXT_PUBLIC_URL || 'http://localhost:3000' 
+    : ''
+
+  // 1. Homepage
+  if (slug === 'index' || !slug) {
+    return `${baseUrl}/`
+  }
+
+  // 2. Blog Posts
+  if (type === 'post') {
+    return `${baseUrl}/blog/${slug}`
+  }
+
+  // 3. Standaard Pagina's (projecten, over ons, etc.)
+  return `${baseUrl}/${slug}`
 }
