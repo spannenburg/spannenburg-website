@@ -36,7 +36,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     venue,
     exhibition,
 
-    // Modules
+    // Modules  
     hero,
     artworkGrid,
     postList,
