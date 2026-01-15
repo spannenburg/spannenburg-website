@@ -1,47 +1,99 @@
 import { defineField, defineType } from 'sanity'
-import { PinIcon } from '@sanity/icons'
+import { TfiLocationPin } from 'react-icons/tfi'
 
 export const venue = defineType({
   name: 'venue',
-  title: 'Venue / Location',
+  title: 'Venues / Galleries',
   type: 'document',
-  icon: PinIcon,
+  icon: TfiLocationPin,
+  groups: [
+    { name: 'details', title: 'Details' },
+    { name: 'location', title: 'Address & GEO' },
+    { name: 'media', title: 'Photos' },
+  ],
   fields: [
+    // --- 1. DETAILS ---
     defineField({
       name: 'name',
-      title: 'Name of Venue',
+      title: 'Venue Name',
       type: 'string',
-      placeholder: 'e.g. Zerp Galerie or Museum Hilversum',
-      validation: (Rule) => Rule.required(),
+      group: 'details',
+      validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'url',
-      title: 'Website',
-      type: 'url',
+        name: 'type',
+        title: 'Venue Type',
+        type: 'string',
+        group: 'details',
+        options: {
+            list: [
+                { title: 'Commercial Gallery', value: 'gallery' },
+                { title: 'Museum / Institution', value: 'museum' },
+                { title: 'Art Fair', value: 'fair' },
+                { title: 'Pop-up Location', value: 'popup' },
+                { title: 'Public Space', value: 'public' },
+            ]
+        }
     }),
     defineField({
-      name: 'type',
-      title: 'Venue Type',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Art Gallery', value: 'gallery' },
-          { title: 'Museum / Institution', value: 'museum' },
-          { title: 'Art Fair Location', value: 'fair' },
-          { title: 'Public Space', value: 'public' },
-        ],
-      },
+        name: 'website',
+        title: 'Website',
+        type: 'url',
+        group: 'details',
+    }),
+    
+    // *** THE MISSING PIECE: DESCRIPTION ***
+    defineField({
+      name: 'description',
+      title: 'About the Venue',
+      description: 'Describe the reputation, history, and focus of this venue. (Great for E-E-A-T)',
+      type: 'array', // Rich text
+      group: 'details',
+      of: [{ type: 'block' }],
+    }),
+
+    // --- 2. LOCATION (Structured for SEO) ---
+    defineField({
+        name: 'city',
+        title: 'City',
+        type: 'string',
+        group: 'location',
     }),
     defineField({
-      name: 'city',
-      title: 'City',
-      type: 'string',
+        name: 'country',
+        title: 'Country',
+        type: 'string',
+        group: 'location',
     }),
     defineField({
-      name: 'country',
-      title: 'Country',
-      type: 'string',
-      initialValue: 'The Netherlands',
+        name: 'address',
+        title: 'Full Address',
+        type: 'text',
+        rows: 3,
+        group: 'location',
+    }),
+    defineField({
+        name: 'googleMapsUrl',
+        title: 'Google Maps Link',
+        type: 'url',
+        group: 'location',
+    }),
+
+    // --- 3. IMAGES ---
+    defineField({
+      name: 'image',
+      title: 'Venue Photo',
+      description: 'Exterior or interior shot of the space.',
+      type: 'image',
+      group: 'media',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+        }),
+      ],
     }),
   ],
 })
