@@ -17,7 +17,8 @@ import { hero } from './hero'
 import { artworkGrid } from './artworkGrid'
 import { postList } from './postList'
 
-// 4. Page (Nu ook gewoon hier!)
+// 4. Page
+// HIER ZAT DE FOUT: Hij zocht in '../documents/page', maar hij staat nu hier!
 import { page } from './page'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
