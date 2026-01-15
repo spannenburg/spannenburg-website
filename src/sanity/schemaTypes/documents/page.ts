@@ -1,5 +1,4 @@
 import { defineField, defineType } from 'sanity'
-import modules from '../fragments/modules'
 import {
 	VscHome,
 	VscQuestion,
@@ -8,6 +7,7 @@ import {
 	VscEdit,
 	VscMortarBoard,
 } from 'react-icons/vsc'
+// We behouden deze import voor de icoontjes-logica onderaan
 import { BLOG_DIR } from '@/lib/env'
 
 export default defineType({
@@ -22,10 +22,24 @@ export default defineType({
 			group: 'content',
 			validation: (Rule) => Rule.required(),
 		}),
+		
+		// HIER ZIT DE GROTE VERANDERING:
 		defineField({
-			...modules,
+			name: 'modules',
+			title: 'Page Content',
+			type: 'array',
 			group: 'content',
+			of: [
+				// Dit zijn jouw 3 nieuwe "meubels":
+				{ type: 'hero' },
+				{ type: 'artworkGrid' },
+				{ type: 'postList' },
+				
+				// Optioneel: Gewone tekst (handig voor een 'About' pagina)
+				{ type: 'blockContent' }, 
+			],
 		}),
+
 		defineField({
 			name: 'metadata',
 			type: 'metadata',
@@ -60,7 +74,7 @@ export default defineType({
 				(slug === '404' && VscQuestion) ||
 				(slug === 'search' && VscSearch) ||
 				(slug === BLOG_DIR && VscEdit) ||
-				(slug.startsWith('docs') && VscMortarBoard) ||
+				(slug?.startsWith('docs') && VscMortarBoard) ||
 				(noindex && VscEyeClosed),
 		}),
 	},
