@@ -1,6 +1,6 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// 1. Basis blokken
+// 1. Basis
 import { blockContent } from './blockContent'
 import { category } from './category'
 import { author } from './author'
@@ -17,31 +17,19 @@ import { hero } from './hero'
 import { artworkGrid } from './artworkGrid'
 import { postList } from './postList'
 
-// 4. Page
-// HIER ZIT DE FIX: We importeren nu van './page' (dezelfde map)
-// We gebruiken { } omdat in page.ts 'export const page' staat.
-import { page } from './page'
-
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
-    // Basis
     blockContent,
     category,
     author,
     post,
-
-    // Core
     project,
     artwork,
     venue,
     exhibition,
-
-    // Modules  
     hero,
     artworkGrid,
     postList,
-
-    // Page
-    page,
+    // Page is nu even weg!
   ],
 }
