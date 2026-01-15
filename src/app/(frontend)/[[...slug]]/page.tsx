@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPage } from '@/sanity/lib/queries'
 import Modules from '@/ui/modules'
-import { processMetadata } from '@/lib/processMetadata'
 
 export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
 	const { slug } = await params
