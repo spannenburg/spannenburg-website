@@ -30,7 +30,8 @@ export const page = defineType({
       type: 'array',
       of: [
         { type: 'hero' },
-        // Hier kun je later meer modules toevoegen, bijv: { type: 'artworkGrid' }
+        { type: 'text-module' }, // (If you added this earlier)
+        { type: 'artwork-grid' },
       ],
     }),
 
