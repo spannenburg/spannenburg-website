@@ -8,10 +8,10 @@ export const artwork = defineType({
   icon: TfiPalette,
   groups: [
     { name: 'general', title: 'Core Data' },
-    { name: 'content', title: 'Narrative & SEO' }, // Voor EEAT en LLMO
+    { name: 'content', title: 'Narrative & SEO' }, 
     { name: 'media', title: 'Visuals' },
     { name: 'editions', title: 'Pricing & Sizes' },
-    { name: 'exhibitions', title: 'History (GEO)' }, // Voor GEO/Local SEO
+    { name: 'exhibitions', title: 'History (GEO)' }, 
     { name: 'migration', title: 'Migration' },
   ],
   fields: [
@@ -26,7 +26,7 @@ export const artwork = defineType({
     defineField({
       name: 'headline',
       title: 'Headline (JSON-LD)',
-      description: 'Bijv: "Indringend zwart-wit portret over kwetsbaarheid..."',
+      description: 'Example: "Intense black-and-white portrait exploring vulnerability..."',
       type: 'string',
       group: 'general',
     }),
@@ -46,11 +46,20 @@ export const artwork = defineType({
       placeholder: '2017',
     }),
 
-    // --- 2. NARRATIVE & SEO (Verrijking voor AI/LLM) ---
+    // --- 2. NARRATIVE & SEO (Enrichment for AI/LLM) ---
+    // NEW: Linked Categories for thematic landing pages
+    defineField({
+      name: 'categories',
+      title: 'Thematic Categories',
+      description: 'Link this work to global themes like "Fetish" or "Portraiture" for specific gallery hubs.',
+      type: 'array',
+      group: 'content',
+      of: [{ type: 'reference', to: [{ type: 'category' }] }],
+    }),
     defineField({
       name: 'description',
       title: 'Emotional Description',
-      description: 'De diepere betekenis, de "waarom". Essentieel voor EEAT.',
+      description: 'The deeper meaning and "why". Essential for E-E-A-T.',
       type: 'array',
       group: 'content',
       of: [{ type: 'block' }],
@@ -58,7 +67,7 @@ export const artwork = defineType({
     defineField({
       name: 'visualDescription',
       title: 'Visual / Raw Description',
-      description: 'Beschrijf wat we ZIEN (voor AI-beeldherkenning en LLMO).',
+      description: 'Describe what we SEE (for AI image recognition and LLMO).',
       type: 'text',
       group: 'content',
     }),
@@ -75,7 +84,7 @@ export const artwork = defineType({
     defineField({
       name: 'material',
       title: 'Materials / Techniques',
-      description: 'Bijv: Giclée print, Piezography, etc.',
+      description: 'E.g.: Giclée print, Piezography, Hahnemühle paper.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
@@ -86,7 +95,7 @@ export const artwork = defineType({
       title: 'Keywords (SEO)',
       type: 'text',
       group: 'content',
-      description: 'Komma-gescheiden lijst voor de meta-tags.'
+      description: 'Comma-separated list for meta-tags.',
     }),
 
     // --- 3. VISUALS ---
@@ -101,7 +110,7 @@ export const artwork = defineType({
           name: 'alt',
           type: 'string',
           title: 'Alt Text (SEO & AI)',
-          description: 'Heel belangrijk voor Google Images.'
+          description: 'Crucial for Google Images ranking.',
         },
       ],
     }),
@@ -118,8 +127,8 @@ export const artwork = defineType({
     // --- 5. EXHIBITION HISTORY (GEO/Local SEO) ---
     defineField({
       name: 'exhibitions',
-      title: 'Exhibitions where this was shown',
-      description: 'Verbind dit werk aan locaties voor GEO-verrijking.',
+      title: 'Exhibition History',
+      description: 'Connect this work to locations for GEO-enrichment.',
       type: 'array',
       group: 'exhibitions',
       of: [{ type: 'reference', to: [{ type: 'exhibition' }] }],
@@ -129,6 +138,7 @@ export const artwork = defineType({
     defineField({
       name: 'sourceUrlDutch',
       title: 'Original Dutch Website URL',
+      description: 'Reference link to the existing page on arjanspannenburg.nl.',
       type: 'url',
       group: 'migration',
     }),
