@@ -53,7 +53,7 @@ export const post = defineType({
       of: [{ type: 'block' }, { type: 'image' }],
     }),
 
-    // --- 2. RELATIONS (Research Logic Added Here) ---
+    // --- 2. RELATIONS (The Logic Hub) ---
     defineField({
       name: 'isResearchPost',
       title: 'Is this a Research post?',
@@ -68,10 +68,28 @@ export const post = defineType({
       description: 'Link the specific artworks that were born from this research project.',
       type: 'array',
       group: 'links',
-      // This field ONLY shows up if the toggle above is TRUE
       hidden: ({ document }) => !document?.isResearchPost,
       of: [{ type: 'reference', to: [{ type: 'artwork' }] }],
     }),
+
+    // NEW: EXTERNAL SOURCES (Semantic SEO/LLMO)
+    defineField({
+      name: 'externalEntities',
+      title: 'External Research Sources',
+      description: 'Link to Wikipedia, RKD, or museum sources you cited for this post.',
+      type: 'array',
+      group: 'links',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'label', title: 'Source Name (e.g. Tate Modern Glossary)', type: 'string' },
+            { name: 'url', title: 'URL', type: 'url' }
+          ]
+        }
+      ]
+    }),
+
     defineField({
       name: 'dutchSourceUrl',
       title: 'Original Dutch Article URL',
