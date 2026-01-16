@@ -41,7 +41,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   exhibition,
   author,
   category,
-  awards,
+  award,
   
   // Hulpstukken
   blockContent,
