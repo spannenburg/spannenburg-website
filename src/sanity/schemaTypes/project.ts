@@ -3,127 +3,78 @@ import { TfiLayers } from 'react-icons/tfi'
 
 export const project = defineType({
   name: 'project',
-  title: 'Projects & Series',
+  title: 'Projects / Series',
   type: 'document',
   icon: TfiLayers,
   groups: [
-    { name: 'general', title: '1. Setup & Hierarchy' },
-    { name: 'content', title: '2. Narrative & Artworks' },
-    { name: 'seo', title: '3. SEO & Metadata' },
+    { name: 'general', title: 'Core Data' },
+    { name: 'content', title: 'Story & Narrative' },
+    { name: 'visuals', title: 'Visuals' },
+    { name: 'seo', title: 'SEO' },
   ],
   fields: [
-    // --- INSTRUCTIONAL HEADER (Visual only in Studio) ---
-    defineField({
-      name: 'setupInstruction',
-      title: 'READ BEFORE STARTING',
-      type: 'string',
-      group: 'general',
-      description: 'STEP 1: Create specific series first (e.g., CUPIDO). STEP 2: Create the Parent collection (e.g., Historical Figures) and link the series to it.',
-      readOnly: true,
-    }),
-
-    // --- 1. GENERAL INFO ---
+    // --- 1. CORE DATA ---
     defineField({
       name: 'title',
-      title: 'Title',
-      description: 'The name of the series or collection. Example: "CUPIDO" or "Historical Figures".',
+      title: 'Project Title',
+      description: 'Name of the series (e.g. "CUPIDO" or "ESTRANGED").',
       type: 'string',
       group: 'general',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
-      title: 'URL Slug',
-      description: 'Unique URL path. Click "Generate" after typing the title.',
+      title: 'Slug',
       type: 'slug',
       group: 'general',
-      options: { source: 'title' },
+      options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'hierarchy',
-      title: 'Project Hierarchy',
-      description: 'CRITICAL: Set to "Standalone" for a specific series like CUPIDO. Set to "Parent" for a group of series like Historical Figures.',
+      name: 'date',
+      title: 'Release Year',
       type: 'string',
       group: 'general',
-      initialValue: 'standalone',
-      options: {
-        list: [
-          { title: 'Standalone Series (Contains Artworks)', value: 'standalone' },
-          { title: 'Parent Collection (Contains other Series)', value: 'parent' },
-        ],
-        layout: 'radio',
-      },
+      placeholder: '2020-2022',
     }),
 
-    // --- 2. CONTENT SECTION ---
+    // --- 2. CONTENT ---
     defineField({
       name: 'description',
-      title: 'Project Statement / Concept',
-      description: 'Describe the philosophy, inspiration, and story behind this specific work or collection.',
+      title: 'Project Description',
+      description: 'The overarching story/theme of this series. What binds these works together?',
       type: 'array',
       group: 'content',
       of: [{ type: 'block' }],
     }),
-
-    // OPTION A: For Parent Collections
-    defineField({
-      name: 'subProjects',
-      title: 'Included Series (Sub-projects)',
-      description: 'ONLY FOR PARENT COLLECTIONS: Add the series that belong here. You must choose one image to represent that series on the overview page.',
-      type: 'array',
-      group: 'content',
-      hidden: ({ document }) => document?.hierarchy !== 'parent',
-      of: [
-        {
-          type: 'object',
-          name: 'subProjectItem',
-          title: 'Linked Series',
-          fields: [
-            defineField({ 
-              name: 'projectRef', 
-              title: 'Select Series', 
-              type: 'reference', 
-              to: [{ type: 'project' }],
-              description: 'Select an existing standalone series.'
-            }),
-            defineField({ 
-              name: 'highlightImage', 
-              title: 'Overview Highlight Image', 
-              type: 'image', 
-              options: { hotspot: true },
-              description: 'The representative image for this series within the Parent page.' 
-            }),
-          ],
-          preview: {
-            select: { title: 'projectRef.title', media: 'highlightImage' },
-            prepare({ title, media }) {
-              return { title: title, media: media }
-            }
-          },
-        },
-      ],
-    }),
-
-    // OPTION B: For Standalone Series
+    
+    // De koppeling met de Artworks (De Bron van je Keywords!)
     defineField({
       name: 'artworks',
       title: 'Artworks in this Series',
-      description: 'ONLY FOR STANDALONE SERIES: Link the individual artworks that belong to this series.',
+      description: 'Add the artworks here. The website will automatically pull their individual keywords.',
       type: 'array',
       group: 'content',
-      hidden: ({ document }) => document?.hierarchy === 'parent',
       of: [{ type: 'reference', to: [{ type: 'artwork' }] }],
     }),
 
-    // --- 3. SEO ---
+    // --- 3. VISUALS ---
+    defineField({
+      name: 'mainImage',
+      title: 'Cover Image',
+      description: 'The "Hero" image representing the entire series.',
+      type: 'image',
+      group: 'visuals',
+      options: { hotspot: true },
+    }),
+
+    // --- 4. SEO ---
     defineField({
       name: 'seoKeywords',
-      title: 'SEO Keywords',
-      description: 'Help AI and Search Engines find this project. E.g., "Queer History, Religious Iconography, Contemporary Portraiture".',
-      type: 'array',
+      title: 'Extra Keywords (Collection Level)',
+      description: 'ONLY add broad terms here (e.g. "Fine Art Series"). Do NOT re-type keywords from the individual artworks; the website automatically merges those.',
+      type: 'text',
       group: 'seo',
-      of: [{ type: 'string' }],
     }),
   ],
 })
