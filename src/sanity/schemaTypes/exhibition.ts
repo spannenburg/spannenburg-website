@@ -8,7 +8,7 @@ export const exhibition = defineType({
   icon: TfiMapAlt,
   groups: [
     { name: 'general', title: 'General Info' },
-    { name: 'location', title: 'Location (Venue)' }, // Updated Title
+    { name: 'location', title: 'Location (Venue)' },
     { name: 'story', title: 'Story & Visuals' },
     { name: 'artworks', title: 'Artworks & Curator' },
     { name: 'proof', title: 'Social Proof (E-E-A-T)' },
@@ -71,20 +71,22 @@ export const exhibition = defineType({
       group: 'general',
     }),
 
-    // --- 2. LOCATION (LINK TO VENUE) ---
-    // REPLACED: Manual fields are gone. Now we link to the Venue document.
+    // --- 2. LOCATION (STRICT VENUE SELECTION) ---
     defineField({
       name: 'venue',
       title: 'Venue / Location',
-      description: 'Select the gallery or location where this took place.',
-      type: 'reference',
-      to: [{ type: 'venue' }], // Links to venue.ts
+      description: 'Select the existing Venue/Gallery. Address data will be pulled from there.',
+      type: 'reference', // <--- This enforces selection
+      to: [{ type: 'venue' }], // <--- Can only be a Venue
       group: 'location',
+      validation: (rule) => rule.required().error('You must select a venue.'), // <--- Mandatory
     }),
+    
+    // We keep this for specific details (e.g. "Booth 4B") that are NOT part of the address
     defineField({
         name: 'locationNotes',
-        title: 'Location Notes (Specific to this event)',
-        description: 'E.g. "Booth 42 in Hall 3" or "First floor only"',
+        title: 'Specific Location Notes',
+        description: 'E.g. "Booth 42", "First floor", or "Online Viewing Room link".',
         type: 'string',
         group: 'location',
     }),
@@ -109,16 +111,8 @@ export const exhibition = defineType({
           type: 'image',
           options: { hotspot: true },
           fields: [
-            defineField({
-              name: 'caption',
-              type: 'string',
-              title: 'Caption',
-            }),
-            defineField({
-              name: 'alt',
-              type: 'string',
-              title: 'Alt Text (SEO)',
-            }),
+            defineField({ name: 'caption', type: 'string', title: 'Caption' }),
+            defineField({ name: 'alt', type: 'string', title: 'Alt Text (SEO)' }),
           ],
         },
       ],
@@ -132,12 +126,7 @@ export const exhibition = defineType({
         group: 'artworks',
         fields: [
             defineField({ name: 'name', type: 'string', title: 'Name' }),
-            defineField({ 
-                name: 'bio', 
-                type: 'text', 
-                rows: 3, 
-                title: 'Short Bio (Expertise)' 
-            }),
+            defineField({ name: 'bio', type: 'text', rows: 3, title: 'Short Bio' }),
         ]
     }),
     defineField({
@@ -146,7 +135,6 @@ export const exhibition = defineType({
         type: 'array',
         group: 'artworks',
         of: [{type: 'string'}],
-        description: 'List of foundations, museums or partners (Trust signals).'
     }),
     defineField({
       name: 'exhibitedArtworks',
@@ -174,7 +162,7 @@ export const exhibition = defineType({
                 name: 'context',
                 title: 'Presentation / Context',
                 type: 'string',
-                description: 'E.g. "Hung in the main hall", "First public reveal"'
+                description: 'E.g. "Hung in the main hall"'
             }),
             defineField({
                 name: 'availability',
@@ -195,7 +183,6 @@ export const exhibition = defineType({
     defineField({
         name: 'otherArtists',
         title: 'Other Artists Present',
-        description: 'Increases Authority by association.',
         type: 'array',
         group: 'artworks',
         of: [
@@ -210,13 +197,12 @@ export const exhibition = defineType({
         ]
     }),
 
-    // --- 5. SOCIAL PROOF & DOCUMENTS ---
+    // --- 5. SOCIAL PROOF ---
     defineField({
         name: 'statistics',
         title: 'Visitors / Footfall',
         type: 'number',
         group: 'proof',
-        description: 'Estimated visitors (Social Proof).',
     }),
     defineField({
         name: 'press',
@@ -241,7 +227,6 @@ export const exhibition = defineType({
         title: 'Catalog / Documentation',
         group: 'proof',
         type: 'file',
-        description: 'Upload the PDF catalog or flyer (Proof of existence).',
     }),
     defineField({
         name: 'awards',
@@ -249,10 +234,9 @@ export const exhibition = defineType({
         group: 'proof',
         type: 'array',
         of: [{type: 'string'}],
-        description: 'Was this exhibition nominated for anything?'
     }),
 
-    // --- 6. SEO & META ---
+    // --- 6. SEO ---
     defineField({
       name: 'seoKeywords',
       title: 'SEO Keywords / Tags',
