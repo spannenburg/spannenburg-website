@@ -8,7 +8,7 @@ export const artworkEdition = defineType({
     defineField({
       name: 'sizeTemplate',
       title: 'Select Size Template',
-      description: 'Linked to global pricing and physical specs.',
+      description: 'Linked to physical dimensions and the global price tier.',
       type: 'reference',
       to: [{ type: 'sizeTemplate' }],
       validation: (Rule) => Rule.required(),
@@ -16,6 +16,7 @@ export const artworkEdition = defineType({
     defineField({
       name: 'orientation',
       title: 'Orientation',
+      description: 'Determines if width and height are swapped (e.g., 60x40 vs 40x60).',
       type: 'string',
       initialValue: 'landscape',
       options: {
@@ -25,6 +26,27 @@ export const artworkEdition = defineType({
           { title: 'Square', value: 'square' },
         ],
         layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'seller',
+      title: 'Seller / Gallery',
+      description: 'The gallery or entity selling this specific edition (e.g., Zerp for NL, or a US-based partner).',
+      type: 'reference',
+      to: [{ type: 'venue' }],
+    }),
+    defineField({
+      name: 'stockStatus',
+      title: 'Stock Status',
+      type: 'string',
+      initialValue: 'available',
+      options: {
+        list: [
+          { title: 'Available', value: 'available' },
+          { title: 'Limited Availability', value: 'limited' },
+          { title: 'Sold Out', value: 'sold_out' },
+          { title: 'Reserved', value: 'reserved' },
+        ],
       },
     }),
   ],
