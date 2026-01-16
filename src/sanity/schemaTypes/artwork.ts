@@ -47,7 +47,6 @@ export const artwork = defineType({
     }),
 
     // --- 2. NARRATIVE & SEO (Enrichment for AI/LLM) ---
-    // NEW: Linked Categories for thematic landing pages
     defineField({
       name: 'categories',
       title: 'Thematic Categories',
@@ -59,7 +58,7 @@ export const artwork = defineType({
     defineField({
       name: 'description',
       title: 'Emotional Description',
-      description: 'The deeper meaning and "why". Essential for E-E-A-T.',
+      description: 'The deeper meaning and the "why". Essential for E-E-A-T.',
       type: 'array',
       group: 'content',
       of: [{ type: 'block' }],
@@ -71,6 +70,25 @@ export const artwork = defineType({
       type: 'text',
       group: 'content',
     }),
+    
+    // NEW: EXTERNAL AUTHORITY LINKS (Semantic SEO)
+    defineField({
+      name: 'externalReferences',
+      title: 'External Authority Links',
+      description: 'Link to Wikipedia, RKD, or Museum databases to provide historical or technical context (JSON-LD SameAs).',
+      type: 'array',
+      group: 'content',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'label', title: 'Context Name (e.g. Wikipedia: Saint Sebastian)', type: 'string' },
+            { name: 'url', title: 'URL', type: 'url' }
+          ]
+        }
+      ]
+    }),
+
     defineField({
       name: 'genre',
       title: 'Genres / Tags',
