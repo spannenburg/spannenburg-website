@@ -1,54 +1,106 @@
 import { defineField, defineType } from 'sanity'
-import { DocumentsIcon } from '@sanity/icons'
+import { TfiLayers } from 'react-icons/tfi'
 
 export const project = defineType({
   name: 'project',
-  title: 'Artwork Series', // Dit is de naam die je in de Studio ziet
+  title: 'Projects / Series',
   type: 'document',
-  icon: DocumentsIcon,
+  icon: TfiLayers,
+  groups: [
+    { name: 'details', title: 'Project Details' },
+    { name: 'story', title: 'Statement & Context' },
+    { name: 'gallery', title: 'The Artworks' },
+    { name: 'seo', title: 'SEO' },
+  ],
   fields: [
+    // --- 1. DETAILS ---
     defineField({
       name: 'title',
-      title: 'Series Title',
+      title: 'Project / Series Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      group: 'details',
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
+      group: 'details',
       options: {
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+        name: 'status',
+        title: 'Status',
+        type: 'string',
+        group: 'details',
+        options: {
+            list: [
+                { title: 'Ongoing', value: 'ongoing' },
+                { title: 'Completed', value: 'completed' },
+                { title: 'Archived', value: 'archived' },
+            ],
+            layout: 'radio'
+        }
     }),
     defineField({
       name: 'period',
       title: 'Time Period',
       type: 'string',
-      placeholder: 'e.g. 2018-2022',
+      description: 'E.g. "2020 - Present" or "2012"',
+      group: 'details',
     }),
     defineField({
-      name: 'coverImage',
-      title: 'Cover Image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternative Text',
-        }
-      ]
+        name: 'coverImage',
+        title: 'Cover Image (Representative Work)',
+        type: 'image',
+        options: { hotspot: true },
+        group: 'details',
+    }),
+
+    // --- 2. STORY (The Concept) ---
+    defineField({
+      name: 'intro',
+      title: 'Short Introduction',
+      description: 'Appears on the overview page. Hook the reader.',
+      type: 'text',
+      rows: 3,
+      group: 'story',
     }),
     defineField({
-      name: 'description',
-      title: 'Series Concept / Description',
+      name: 'statement',
+      title: 'Project Statement / Concept',
+      description: 'Deep dive into the philosophy of this specific series. (LLMO/AI context).',
       type: 'array',
-      of: [{ type: 'block' }], // Rich text
+      group: 'story',
+      of: [{ type: 'block' }],
+    }),
+
+    // --- 3. THE ARTWORKS (UX: The Gallery) ---
+    defineField({
+        name: 'artworks',
+        title: 'Artworks in this Series',
+        description: 'Select the artworks that belong to this project. Drag to reorder.',
+        type: 'array',
+        group: 'gallery',
+        of: [
+            {
+                type: 'reference',
+                to: [{ type: 'artwork' }]
+            }
+        ]
+    }),
+
+    // --- 4. SEO ---
+    defineField({
+      name: 'seoKeywords',
+      title: 'SEO Keywords',
+      type: 'array',
+      group: 'seo',
+      of: [{ type: 'string' }],
     }),
   ],
 })
