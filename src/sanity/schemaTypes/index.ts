@@ -14,6 +14,7 @@ import { category } from './category'
 import { blockContent } from './blockContent'
 import { metadata } from './metadata'
 import { award } from './award'
+import { siteSettings } from './siteSettings'
 
 // ---------------------------------------------
 // 2. OUDE MODULES (Die los in de map staan)
@@ -33,6 +34,7 @@ import text from './modules/text' // <--- DEZE HEB IK NU GEACTIVEERD
 // ---------------------------------------------
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Documenten
+  siteSettings,
   page,
   post,
   artwork,
