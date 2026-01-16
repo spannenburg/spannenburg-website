@@ -1,8 +1,5 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// ---------------------------------------------
-// 1. DOCUMENTEN (Je Core Data)
-// ---------------------------------------------
 import { page } from './page'
 import { post } from './post'
 import { artwork } from './artwork'
@@ -16,46 +13,32 @@ import { metadata } from './metadata'
 import { award } from './award'
 import { siteSettings } from './siteSettings'
 import { priceTier } from './priceTier'
+import { sizeTemplate } from './sizeTemplate'     // Added
 import { artworkEdition } from './artworkEdition'
 
-// ---------------------------------------------
-// 2. OUDE MODULES (Die los in de map staan)
-// ---------------------------------------------
 import { postList } from './postList'
-// import { artworkGrid } from './artworkGrid' // OUD: Uitgezet voor de zekerheid
-
-// ---------------------------------------------
-// 3. NIEUWE MODULES (Uit de 'modules' map)
-// ---------------------------------------------
 import hero from './modules/hero'
 import artworkGridNew from './modules/artworkGrid' 
-import text from './modules/text' // <--- DEZE HEB IK NU GEACTIVEERD
+import text from './modules/text'
 
-// ---------------------------------------------
-// 4. DE LIJST SAMENVOEGEN
-// ---------------------------------------------
 export const schemaTypes: SchemaTypeDefinition[] = [
-  // Documenten
   siteSettings,
+  author,
   page,
   post,
   artwork,
   project,
   venue,
   exhibition,
-  author,
   category,
   award,
   priceTier,
+  sizeTemplate,    // Added
   artworkEdition,
-  
-  // Hulpstukken
   blockContent,
   metadata,
-
-  // Modules
   hero,
   artworkGridNew,
-  text,           // <--- DEZE IS TOEGEVOEGD AAN DE LIJST
-  postList,       
+  text,
+  postList,        
 ]
