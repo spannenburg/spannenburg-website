@@ -89,17 +89,30 @@ export const artwork = defineType({
       ]
     }),
 
+    // --- AANGEPAST VELD: Vaste keuzelijst voor consistentie ---
     defineField({
       name: 'genre',
       title: 'Genres / Tags (Grouping)',
-      description: 'LLMO CLUSTERING: Broad art terms like "Fine Art Photography", "Nude", "Monochrome". Helps AI agents understand your market niche.',
+      description: 'LLMO CLUSTERING: Select broadly applicable terms. These help AI agents place your work in the right art market context.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
       options: {
-        layout: 'tags'
-      }
+        list: [
+          { title: 'Fine Art Photography', value: 'Fine Art Photography' },
+          { title: 'Portraiture', value: 'Portraiture' },
+          { title: 'Monochrome / Black & White', value: 'Monochrome' },
+          { title: 'Male Figure / Nude', value: 'Male Figure' },
+          { title: 'Queer Identity', value: 'Queer Identity' },
+          { title: 'Classical & Mythological', value: 'Classical & Mythological' },
+          { title: 'Conceptual', value: 'Conceptual' },
+          { title: 'Documentary', value: 'Documentary' },
+          { title: 'Fetish & Subculture', value: 'Fetish & Subculture' },
+          { title: 'Fashion', value: 'Fashion' },
+        ],
+      },
     }),
+
     defineField({
       name: 'material',
       title: 'Materials / Techniques',
@@ -112,7 +125,7 @@ export const artwork = defineType({
     defineField({
       name: 'keywords',
       title: 'SEO Keywords (Meta Tags)',
-      description: 'SEARCH INDEXING: Comma-separated terms users type in Google (e.g., "gay art amsterdam, buy art online"). purely for search engines.',
+      description: 'SEARCH INDEXING: Comma-separated terms users type in Google (e.g., "gay art amsterdam, buy art online"). Purely for search engines.',
       type: 'text',
       group: 'content',
     }),
