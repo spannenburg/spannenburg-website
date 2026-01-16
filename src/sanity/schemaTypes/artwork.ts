@@ -26,7 +26,7 @@ export const artwork = defineType({
     defineField({
       name: 'headline',
       title: 'Headline (JSON-LD)',
-      description: 'Example: "Intense black-and-white portrait exploring vulnerability..."',
+      description: 'A short, punchy sentence for Google results. Example: "Intense black-and-white portrait exploring vulnerability."',
       type: 'string',
       group: 'general',
     }),
@@ -49,33 +49,33 @@ export const artwork = defineType({
     // --- 2. NARRATIVE & SEO (Enrichment for AI/LLM) ---
     defineField({
       name: 'categories',
-      title: 'Thematic Categories',
-      description: 'Link this work to global themes like "Fetish" or "Portraiture" for specific gallery hubs.',
+      title: 'Thematic Categories (Landing Pages)',
+      description: 'STRATEGY: Select the broad themes (e.g., Fetish, Portraiture). This automatically adds this artwork to those specific "Hub" pages on your site.',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
     defineField({
       name: 'description',
-      title: 'Emotional Description',
-      description: 'The deeper meaning and the "why". Essential for E-E-A-T.',
+      title: 'Emotional Description (The "Why")',
+      description: 'EEAT & STORYTELLING: Describe the concept, inspiration, and emotional depth. This tells Google you are an "Authority" with artistic intent.',
       type: 'array',
       group: 'content',
       of: [{ type: 'block' }],
     }),
     defineField({
       name: 'visualDescription',
-      title: 'Visual / Raw Description',
-      description: 'Describe what we SEE (for AI image recognition and LLMO).',
+      title: 'Visual / Raw Description (The "What")',
+      description: 'AI VISION: Describe literally what is seen (e.g., "A muscular man in shadow, holding a golden bow"). Essential for AI image recognition.',
       type: 'text',
       group: 'content',
     }),
     
-    // NEW: EXTERNAL AUTHORITY LINKS (Semantic SEO)
+    // EXTERNAL AUTHORITY LINKS (Semantic SEO)
     defineField({
       name: 'externalReferences',
-      title: 'External Authority Links',
-      description: 'Link to Wikipedia, RKD, or Museum databases to provide historical or technical context (JSON-LD SameAs).',
+      title: 'External Authority Links (Entity Linking)',
+      description: 'SEMANTIC SEO: Link to Wikipedia or RKD entries for the subject (e.g., the myth of Cupid). This "anchors" your work to established global knowledge.',
       type: 'array',
       group: 'content',
       of: [
@@ -91,7 +91,8 @@ export const artwork = defineType({
 
     defineField({
       name: 'genre',
-      title: 'Genres / Tags',
+      title: 'Genres / Tags (Grouping)',
+      description: 'LLMO CLUSTERING: Broad art terms like "Fine Art Photography", "Nude", "Monochrome". Helps AI agents understand your market niche.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
@@ -102,7 +103,7 @@ export const artwork = defineType({
     defineField({
       name: 'material',
       title: 'Materials / Techniques',
-      description: 'E.g.: Giclée print, Piezography, Hahnemühle paper.',
+      description: 'TECHNICAL SPECS: E.g., Giclée print, Piezography, Hahnemühle paper.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
@@ -110,10 +111,10 @@ export const artwork = defineType({
     }),
     defineField({
       name: 'keywords',
-      title: 'Keywords (SEO)',
+      title: 'SEO Keywords (Meta Tags)',
+      description: 'SEARCH INDEXING: Comma-separated terms users type in Google (e.g., "gay art amsterdam, buy art online"). purely for search engines.',
       type: 'text',
       group: 'content',
-      description: 'Comma-separated list for meta-tags.',
     }),
 
     // --- 3. VISUALS ---
@@ -127,8 +128,8 @@ export const artwork = defineType({
         {
           name: 'alt',
           type: 'string',
-          title: 'Alt Text (SEO & AI)',
-          description: 'Crucial for Google Images ranking.',
+          title: 'Alt Text (SEO)',
+          description: 'Crucial description for visually impaired users and Google Images ranking.',
         },
       ],
     }),
@@ -146,7 +147,7 @@ export const artwork = defineType({
     defineField({
       name: 'exhibitions',
       title: 'Exhibition History',
-      description: 'Connect this work to locations for GEO-enrichment.',
+      description: 'GEO-AUTHORITY: Connect this work to specific locations/venues to boost local ranking.',
       type: 'array',
       group: 'exhibitions',
       of: [{ type: 'reference', to: [{ type: 'exhibition' }] }],
@@ -156,7 +157,7 @@ export const artwork = defineType({
     defineField({
       name: 'sourceUrlDutch',
       title: 'Original Dutch Website URL',
-      description: 'Reference link to the existing page on arjanspannenburg.nl.',
+      description: 'THE BRIDGE: Link to the original page on arjanspannenburg.nl to transfer authority.',
       type: 'url',
       group: 'migration',
     }),
