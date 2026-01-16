@@ -13,6 +13,7 @@ import { author } from './author'
 import { category } from './category'
 import { blockContent } from './blockContent'
 import { metadata } from './metadata'
+import { award } from './award'
 
 // ---------------------------------------------
 // 2. OUDE MODULES (Die los in de map staan)
@@ -40,6 +41,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   exhibition,
   author,
   category,
+  awards,
   
   // Hulpstukken
   blockContent,
