@@ -10,7 +10,7 @@ export const exhibition = defineType({
     { name: 'general', title: 'General Info' },
     { name: 'location', title: 'Location (Venue)' },
     { name: 'story', title: 'Story & Visuals' },
-    { name: 'artworks', title: 'Artworks & Curator' },
+    { name: 'artworks', title: 'Artworks & Peers' }, // Hernoemd voor LLMO context
     { name: 'proof', title: 'Social Proof (E-E-A-T)' },
     { name: 'seo', title: 'SEO & AI' },
   ],
@@ -76,13 +76,12 @@ export const exhibition = defineType({
       name: 'venue',
       title: 'Venue / Location',
       description: 'Select the existing Venue/Gallery. Address data will be pulled from there.',
-      type: 'reference', // <--- This enforces selection
-      to: [{ type: 'venue' }], // <--- Can only be a Venue
+      type: 'reference',
+      to: [{ type: 'venue' }],
       group: 'location',
-      validation: (rule) => rule.required().error('You must select a venue.'), // <--- Mandatory
+      validation: (rule) => rule.required().error('You must select a venue.'),
     }),
     
-    // We keep this for specific details (e.g. "Booth 4B") that are NOT part of the address
     defineField({
         name: 'locationNotes',
         title: 'Specific Location Notes',
@@ -118,7 +117,7 @@ export const exhibition = defineType({
       ],
     }),
 
-    // --- 4. ARTWORKS & CURATOR ---
+    // --- 4. ARTWORKS & PEERS ---
     defineField({
         name: 'curator',
         title: 'Curator / Organizer',
@@ -128,13 +127,6 @@ export const exhibition = defineType({
             defineField({ name: 'name', type: 'string', title: 'Name' }),
             defineField({ name: 'bio', type: 'text', rows: 3, title: 'Short Bio' }),
         ]
-    }),
-    defineField({
-        name: 'partners',
-        title: 'Partners & Sponsors',
-        type: 'array',
-        group: 'artworks',
-        of: [{type: 'string'}],
     }),
     defineField({
       name: 'exhibitedArtworks',
@@ -180,24 +172,18 @@ export const exhibition = defineType({
         },
       ],
     }),
+    
+    // VERVANGING VAN "Other Artists Present": Nu met artist references
     defineField({
-        name: 'otherArtists',
-        title: 'Other Artists Present',
+        name: 'coArtists',
+        title: 'Co-Exhibiting Artists (Peers)',
+        description: 'Select artists you are exhibiting with. This builds authority through association (Entity Linking).',
         type: 'array',
         group: 'artworks',
-        of: [
-            {
-                type: 'object',
-                fields: [
-                    defineField({name: 'name', type: 'string', title: 'Name'}),
-                    defineField({name: 'website', type: 'url', title: 'Website'}),
-                    defineField({name: 'notes', type: 'string', title: 'Notable Awards/Info'}),
-                ]
-            }
-        ]
+        of: [{ type: 'reference', to: [{ type: 'artist' }] }],
     }),
 
-    // --- 5. SOCIAL PROOF ---
+    // --- 5. SOCIAL PROOF (E-E-A-T) ---
     defineField({
         name: 'statistics',
         title: 'Visitors / Footfall',
@@ -228,15 +214,17 @@ export const exhibition = defineType({
         group: 'proof',
         type: 'file',
     }),
+    // Nu gekoppeld aan je Award schema voor maximale E-E-A-T
     defineField({
-        name: 'awards',
-        title: 'Awards / Nominations',
+        name: 'relatedAwards',
+        title: 'Exhibition Awards / Nominations',
+        description: 'Did this exhibition or a work in it win an award?',
         group: 'proof',
         type: 'array',
-        of: [{type: 'string'}],
+        of: [{ type: 'reference', to: [{ type: 'award' }] }],
     }),
 
-    // --- 6. SEO ---
+    // --- 6. SEO & AI ---
     defineField({
       name: 'seoKeywords',
       title: 'SEO Keywords / Tags',
