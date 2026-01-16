@@ -73,7 +73,7 @@ export const author = defineType({
         group: 'general',
         description: 'City, Country (e.g. "Utrecht, The Netherlands"). Crucial for Local SEO.',
     }),
-    // Nieuw: Representatie (uit JSON: Sponsor/Zerp)
+    // Representatie (Sponsor/Galerie)
     defineField({
         name: 'representedBy',
         title: 'Represented By (Gallery)',
@@ -135,29 +135,22 @@ export const author = defineType({
         type: 'file',
         group: 'authority',
     }),
+    
+    // *** AANGEPAST: NU GEKOPPELD AAN HET 'AWARD' DOCUMENT ***
     defineField({
         name: 'awards',
         title: 'Awards & Honors',
+        description: 'Select awards from your database.',
         type: 'array',
         group: 'authority',
         of: [
             {
-                type: 'object',
-                fields: [
-                    defineField({name: 'year', type: 'string', title: 'Year'}),
-                    defineField({name: 'title', type: 'string', title: 'Award Title'}),
-                    defineField({name: 'organization', type: 'string', title: 'Organization/Event'}),
-                    defineField({name: 'isWinner', type: 'boolean', title: 'Winner?', initialValue: true}),
-                ],
-                preview: {
-                    select: { title: 'title', subtitle: 'organization', year: 'year' },
-                    prepare({title, subtitle, year}) {
-                        return { title: `${year} - ${title}`, subtitle: subtitle }
-                    }
-                }
+                type: 'reference', // <--- Verwijst nu naar je award bestand
+                to: [{ type: 'award' }]
             }
         ]
     }),
+
     defineField({
         name: 'education',
         title: 'Education (AlumniOf)',
