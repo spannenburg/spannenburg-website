@@ -7,58 +7,92 @@ export const artwork = defineType({
   type: 'document',
   icon: TfiPalette,
   groups: [
-    { name: 'general', title: 'General Info' },
+    { name: 'general', title: 'Core Data' },
+    { name: 'content', title: 'Narrative & SEO' }, // Voor EEAT en LLMO
     { name: 'media', title: 'Visuals' },
     { name: 'editions', title: 'Pricing & Sizes' },
-    { name: 'migration', title: 'Migration & SEO' },
+    { name: 'exhibitions', title: 'History (GEO)' }, // Voor GEO/Local SEO
+    { name: 'migration', title: 'Migration' },
   ],
   fields: [
-    // --- 1. GENERAL INFO ---
+    // --- 1. CORE DATA ---
     defineField({
       name: 'title',
-      title: 'Artwork Title',
+      title: 'Title / Name',
       type: 'string',
       group: 'general',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'headline',
+      title: 'Headline (JSON-LD)',
+      description: 'Bijv: "Indringend zwart-wit portret over kwetsbaarheid..."',
+      type: 'string',
+      group: 'general',
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       group: 'general',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'year',
+      name: 'dateCreated',
       title: 'Year Created',
       type: 'string',
       group: 'general',
-      initialValue: () => new Date().getFullYear().toString(),
-    }),
-    defineField({
-      name: 'medium',
-      title: 'Medium / Technique',
-      type: 'string',
-      group: 'general',
-      description: 'e.g., Fine Art Print on Hahnemühle Paper',
-    }),
-    defineField({
-      name: 'description',
-      title: 'Description / Story',
-      description: 'The background story or artistic motivation for this work.',
-      type: 'array',
-      group: 'general',
-      of: [{ type: 'block' }],
+      placeholder: '2017',
     }),
 
-    // --- 2. VISUALS ---
+    // --- 2. NARRATIVE & SEO (Verrijking voor AI/LLM) ---
+    defineField({
+      name: 'description',
+      title: 'Emotional Description',
+      description: 'De diepere betekenis, de "waarom". Essentieel voor EEAT.',
+      type: 'array',
+      group: 'content',
+      of: [{ type: 'block' }],
+    }),
+    defineField({
+      name: 'visualDescription',
+      title: 'Visual / Raw Description',
+      description: 'Beschrijf wat we ZIEN (voor AI-beeldherkenning en LLMO).',
+      type: 'text',
+      group: 'content',
+    }),
+    defineField({
+      name: 'genre',
+      title: 'Genres / Tags',
+      type: 'array',
+      group: 'content',
+      of: [{ type: 'string' }],
+      options: {
+        layout: 'tags'
+      }
+    }),
+    defineField({
+      name: 'material',
+      title: 'Materials / Techniques',
+      description: 'Bijv: Giclée print, Piezography, etc.',
+      type: 'array',
+      group: 'content',
+      of: [{ type: 'string' }],
+      options: { layout: 'tags' }
+    }),
+    defineField({
+      name: 'keywords',
+      title: 'Keywords (SEO)',
+      type: 'text',
+      group: 'content',
+      description: 'Komma-gescheiden lijst voor de meta-tags.'
+    }),
+
+    // --- 3. VISUALS ---
     defineField({
       name: 'mainImage',
-      title: 'Artwork Image',
+      title: 'Main Artwork Image',
       type: 'image',
       group: 'media',
       options: { hotspot: true },
@@ -66,29 +100,35 @@ export const artwork = defineType({
         {
           name: 'alt',
           type: 'string',
-          title: 'Alt Text (SEO)',
-          description: 'Crucial for accessibility and AI search visibility.',
-          validation: (Rule) => Rule.required(),
+          title: 'Alt Text (SEO & AI)',
+          description: 'Heel belangrijk voor Google Images.'
         },
       ],
     }),
 
-    // --- 3. PRICING & EDITIONS ---
-    // This connects to artworkEdition.ts, which links to sizeTemplate.ts, which links to priceTier.ts
+    // --- 4. PRICING & EDITIONS ---
     defineField({
       name: 'editions',
       title: 'Available Editions',
-      description: 'Add the different sizes available for this work. Prices are managed via Templates.',
       type: 'array',
       group: 'editions',
       of: [{ type: 'artworkEdition' }],
     }),
 
-    // --- 4. MIGRATION & SEO ---
+    // --- 5. EXHIBITION HISTORY (GEO/Local SEO) ---
+    defineField({
+      name: 'exhibitions',
+      title: 'Exhibitions where this was shown',
+      description: 'Verbind dit werk aan locaties voor GEO-verrijking.',
+      type: 'array',
+      group: 'exhibitions',
+      of: [{ type: 'reference', to: [{ type: 'exhibition' }] }],
+    }),
+
+    // --- 6. MIGRATION ---
     defineField({
       name: 'sourceUrlDutch',
       title: 'Original Dutch Website URL',
-      description: 'Reference link to the current live page on arjanspannenburg.nl.',
       type: 'url',
       group: 'migration',
     }),
@@ -96,13 +136,13 @@ export const artwork = defineType({
   preview: {
     select: {
       title: 'title',
-      year: 'year',
+      date: 'dateCreated',
       media: 'mainImage',
     },
-    prepare({ title, year, media }) {
+    prepare({ title, date, media }) {
       return {
-        title: title || 'Untitled Artwork',
-        subtitle: year || 'Year not set',
+        title: title || 'Untitled',
+        subtitle: date || 'No date',
         media: media,
       }
     },
