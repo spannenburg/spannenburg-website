@@ -7,48 +7,37 @@ export const artworkEdition = defineType({
   fields: [
     defineField({
       name: 'sizeTemplate',
-      title: 'Dimensions',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Standard Small (60 x 40 cm)', value: '60_40' },
-          { title: 'Standard Large (120 x 80 cm)', value: '120_80' },
-          { title: 'Custom Size', value: 'custom' },
-        ],
-      },
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-        name: 'customDimensions',
-        title: 'Custom Dimensions (if selected above)',
-        type: 'string',
-        hidden: ({ parent }) => parent?.sizeTemplate !== 'custom',
+      title: 'Select Size & Price Template',
+      description: 'Linked to global pricing. Updates automatically.',
+      type: 'reference',
+      to: [{ type: 'sizeTemplate' }],
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'orientation',
-      title: 'Orientation',
+      title: 'Image Orientation',
       type: 'string',
+      initialValue: 'landscape',
       options: {
         list: [
-          { title: 'Landscape', value: 'landscape' },
-          { title: 'Portrait', value: 'portrait' },
+          { title: 'Landscape (Long side = Width)', value: 'landscape' },
+          { title: 'Portrait (Long side = Height)', value: 'portrait' },
           { title: 'Square', value: 'square' },
         ],
         layout: 'radio',
       },
     }),
     defineField({
-        name: 'priceTier',
-        title: 'Price Tier',
-        description: 'Link this edition to a global price.',
-        type: 'reference',
-        to: [{ type: 'priceTier' }],
-    }),
-    defineField({
-        name: 'editionSize',
-        title: 'Edition Size',
+        name: 'stockStatus',
+        title: 'Stock Status',
         type: 'string',
-        description: 'e.g., 8 + 2 AP',
+        options: {
+            list: [
+                {title: 'In Stock', value: 'in_stock'},
+                {title: 'Sold Out', value: 'sold_out'},
+                {title: 'Last Ones Available', value: 'low_stock'},
+            ]
+        }
     }),
   ],
 })
