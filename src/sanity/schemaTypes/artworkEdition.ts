@@ -4,7 +4,7 @@ import { TfiRulerPencil } from 'react-icons/tfi'
 export const artworkEdition = defineType({
   name: 'artworkEdition',
   title: 'Edition',
-  type: 'object', // It is an object inside Artwork, not a standalone document
+  type: 'object', 
   icon: TfiRulerPencil,
   fields: [
     defineField({
@@ -17,14 +17,14 @@ export const artworkEdition = defineType({
     defineField({
       name: 'price',
       title: 'Base Price (€)',
-      description: 'The starting price for this size (with standard material).',
+      description: 'The price for this size in the STANDARD material (Multiplier 1.0).',
       type: 'number',
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: 'limit',
       title: 'Edition Limit',
-      description: 'How many copies exist? (e.g., 5, 10, or leave empty for Open Edition).',
+      description: 'Total copies available (leave empty for Open Edition).',
       type: 'number',
     }),
     defineField({
