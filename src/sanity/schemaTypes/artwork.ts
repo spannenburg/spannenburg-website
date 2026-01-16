@@ -15,7 +15,7 @@ export const artwork = defineType({
     { name: 'migration', title: 'Migration' },
   ],
   fields: [
-    // --- 0. AI HELPER (De Verbeterde Prompt) ---
+    // --- 0. AI HELPER (Prompt Update) ---
     defineField({
       name: 'aiInstruction',
       title: 'Copy-Paste Prompt for Gemini/ChatGPT',
@@ -53,13 +53,19 @@ OUTPUT TASK - GENERATE THESE FIELDS:
    - Start with: "A [Black & White / Color] [Portrait / Landscape / Square] photograph showing..."
    - Describe literally what is visible for AI Vision & Accessibility tools.
    - Length: 50-80 words.
-8. EXTERNAL LINKS (E-E-A-T): 
-   - Suggest 2-3 high-authority links (Museum collections, Art History terms, Mythological sources).
-   - Explain WHY this link increases the authority of the artwork.
+8. EXTERNAL LINKS (E-E-A-T Strategy - Total 5 suggestions): 
+   - 2x Wikipedia Links (Essential context).
+   - 2x High-Authority Non-Wikipedia Links (Museums like Rijksmuseum/Tate, RKD, MoMA, or authoritative Art History definitions).
+   - 1x Curator's Choice (The most relevant remaining link).
+   - Explain WHY each link increases the authority of the artwork.
 9. KEYWORDS: 
    - List 10-15 specific terms. 
    - Mix specific visual elements with thematic concepts.
 10. ALT TEXT: Write a specific SEO-optimized alt text for the image.
+11. FILENAME: Generate the optimal filename for the image file. 
+    - Format: "arjan-spannenburg-[slug]-[keyword].webp"
+    - Use lowercase and hyphens only. 
+    - Why? Google reads filenames for ranking!
 
 TONE: Sophisticated, curated, 3rd person. No sales-talk.
 READY? Ask me for the Image and the Artist's Notes.
@@ -92,7 +98,6 @@ READY? Ask me for the Image and the Artist's Notes.
       validation: (Rule) => Rule.required(),
     }),
     
-    // --- DATUM (UI Instructie geüpdatet) ---
     defineField({
       name: 'dateCreated',
       title: 'Date Created',
@@ -105,14 +110,13 @@ READY? Ask me for the Image and the Artist's Notes.
     // --- 2. NARRATIVE & SEO ---
     defineField({
       name: 'categories',
-      title: 'Categories', // AANGEPAST: Terug naar 'Categories'
+      title: 'Categories', 
       description: 'Choose at least one category to which this artwork belongs. Only add a new category if this is essential. There are category pages with a collection of these artworks.',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
     
-    // GENRES (UI Instructie geüpdatet)
     defineField({
       name: 'genre',
       title: 'Genres / Tags',
@@ -152,11 +156,10 @@ READY? Ask me for the Image and the Artist's Notes.
       group: 'content',
     }),
     
-    // EXTERNAL AUTHORITY LINKS
     defineField({
       name: 'externalReferences',
       title: 'External Authority Links (Entity Linking)',
-      description: 'AUTHORITY BUILDER: Link to high-quality external sources (Museums, Art History definitions, Myths). This connects your art to the global art canon in Google\'s eyes. Try to find 2 or 3 links.',
+      description: 'AUTHORITY BUILDER: The AI suggests 5 links. Select the best ones (e.g. 2 Wikipedia + 1 Museum link). This connects your art to the global art canon in Google\'s eyes.',
       type: 'array',
       group: 'content',
       of: [
@@ -188,10 +191,12 @@ READY? Ask me for the Image and the Artist's Notes.
       of: [{ type: 'reference', to: [{ type: 'material' }] }],
     }),
 
-    // --- 3. VISUALS ---
+    // --- 3. VISUALS (Aangepast met instructie) ---
     defineField({
       name: 'mainImage',
       title: 'Main Artwork Image',
+      // NIEUW: Instructie voor bestandsnaam
+      description: 'IMPORTANT: Before uploading, rename your file! Use the filename suggested by the AI (e.g., "arjan-spannenburg-title.webp"). This is crucial for Image SEO.',
       type: 'image',
       group: 'media',
       options: { hotspot: true },
