@@ -18,7 +18,7 @@ import { codeInput } from '@sanity/code-input'
 import { schemaTypes } from './src/sanity/schemaTypes'
 import resolveUrl from '@/lib/resolveUrl'
 
-// Importeer de Icons voor de menustructuur
+// Import Icons for the menu structure
 import { 
   TfiSettings, 
   TfiUser, 
@@ -29,7 +29,8 @@ import {
   TfiMapAlt, 
   TfiWrite, 
   TfiFiles,
-  TfiTag
+  TfiTag,
+  TfiMoney // Added for Price Tiers
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -40,13 +41,13 @@ export default defineConfig({
   basePath: '/admin',
 
   plugins: [
-    // Aangepaste Desk Structuur (Structure Builder)
+    // Custom Desk Structure (Structure Builder)
     structureTool({
       structure: (S: any) =>
         S.list()
           .title('Spannenburg Studio')
           .items([
-            // 1. DE BASIS (Singletons)
+            // 1. THE BASIS (Singletons)
             S.listItem()
               .title('Site Settings')
               .icon(TfiSettings)
@@ -68,7 +69,7 @@ export default defineConfig({
 
             S.divider(),
 
-            // 2. STAMDATA (Ondersteunend)
+            // 2. SUPPORTIVE DATA (Define these first)
             S.listItem()
               .title('Venues & Galleries')
               .icon(TfiLocationPin)
@@ -77,6 +78,10 @@ export default defineConfig({
               .title('Awards & Honors')
               .icon(TfiMedall)
               .child(S.documentTypeList('award')),
+            S.listItem()
+              .title('Price Tiers') // Added Price Tiers here
+              .icon(TfiMoney)
+              .child(S.documentTypeList('priceTier')),
             S.listItem()
               .title('Categories')
               .icon(TfiTag)
@@ -96,7 +101,7 @@ export default defineConfig({
 
             S.divider(),
 
-            // 4. ACTUALITEIT
+            // 4. TIMELINE & UPDATES
             S.listItem()
               .title('Exhibitions')
               .icon(TfiMapAlt)
@@ -114,10 +119,10 @@ export default defineConfig({
               .icon(TfiFiles)
               .child(S.documentTypeList('page')),
 
-            // Filter voor eventuele overige documenttypes
+            // Filter out types already added manually to avoid duplicates
             ...S.documentTypeListItems().filter(
               (listItem: any) => 
-                !['siteSettings', 'author', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page'].includes(listItem.getId() || '')
+                !['siteSettings', 'author', 'venue', 'award', 'priceTier', 'category', 'project', 'artwork', 'exhibition', 'post', 'page'].includes(listItem.getId() || '')
             ),
           ]),
     }),
