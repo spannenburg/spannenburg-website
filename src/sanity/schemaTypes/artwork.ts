@@ -11,7 +11,7 @@ export const artwork = defineType({
     { name: 'content', title: 'Narrative & SEO' }, 
     { name: 'media', title: 'Visuals' },
     { name: 'editions', title: 'Pricing & Sizes' },
-    { name: 'exhibitions', title: 'History (GEO)' }, 
+    // Group 'exhibitions' verwijderd
     { name: 'migration', title: 'Migration' },
   ],
   fields: [
@@ -46,7 +46,7 @@ export const artwork = defineType({
       placeholder: '2017',
     }),
 
-    // --- 2. NARRATIVE & SEO (Enrichment for AI/LLM) ---
+    // --- 2. NARRATIVE & SEO ---
     defineField({
       name: 'categories',
       title: 'Thematic Categories (Landing Pages)',
@@ -71,7 +71,7 @@ export const artwork = defineType({
       group: 'content',
     }),
     
-    // EXTERNAL AUTHORITY LINKS (Semantic SEO)
+    // EXTERNAL AUTHORITY LINKS
     defineField({
       name: 'externalReferences',
       title: 'External Authority Links (Entity Linking)',
@@ -89,7 +89,7 @@ export const artwork = defineType({
       ]
     }),
 
-    // --- AANGEPAST VELD: Vaste keuzelijst voor consistentie ---
+    // GENRES (Fixed List)
     defineField({
       name: 'genre',
       title: 'Genres / Tags (Grouping)',
@@ -113,6 +113,7 @@ export const artwork = defineType({
       },
     }),
 
+    // MATERIAL (Reference)
     defineField({
       name: 'material',
       title: 'Materials & Finishes',
@@ -121,6 +122,7 @@ export const artwork = defineType({
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'material' }] }],
     }),
+
     defineField({
       name: 'keywords',
       title: 'SEO Keywords (Meta Tags)',
@@ -155,15 +157,8 @@ export const artwork = defineType({
       of: [{ type: 'artworkEdition' }],
     }),
 
-    // --- 5. EXHIBITION HISTORY (GEO/Local SEO) ---
-    defineField({
-      name: 'exhibitions',
-      title: 'Exhibition History',
-      description: 'GEO-AUTHORITY: Connect this work to specific locations/venues to boost local ranking.',
-      type: 'array',
-      group: 'exhibitions',
-      of: [{ type: 'reference', to: [{ type: 'exhibition' }] }],
-    }),
+    // --- 5. EXHIBITIONS VERWIJDERD ---
+    // Dit wordt nu beheerd vanuit het Exhibition document zelf.
 
     // --- 6. MIGRATION ---
     defineField({
