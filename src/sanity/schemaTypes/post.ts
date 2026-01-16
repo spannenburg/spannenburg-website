@@ -7,90 +7,91 @@ export const post = defineType({
   type: 'document',
   icon: TfiWrite,
   groups: [
-    { name: 'content', title: 'Content' },
-    { name: 'media', title: 'Visuals' },
-    { name: 'relations', title: 'Links & Shop' },
+    { name: 'content', title: 'Story Content' },
+    { name: 'links', title: 'Cross-Domain Linking (Bridge)' },
+    { name: 'seo', title: 'SEO & AI Meta' },
   ],
   fields: [
-    // --- 1. BASIS ---
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Post Title',
       type: 'string',
       group: 'content',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       group: 'content',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      options: { source: 'title' },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'publishedAt',
-      title: 'Published at',
+      title: 'Published At',
       type: 'datetime',
       group: 'content',
-      initialValue: (new Date()).toISOString(),
+      initialValue: () => new Date().toISOString(),
     }),
-
-    // --- 2. DE BODY (Tekst + Beelden tussen de tekst) ---
-    defineField({
-      name: 'body',
-      title: 'Post Content',
-      description: 'Schrijf hier je verhaal. Je kunt hier ook losse beelden tussen de paragrafen voegen.',
-      type: 'blockContent', 
-      group: 'content',
-    }),
-
-    // --- 3. DE SERIE / GALLERY (Visuals Tab) ---
     defineField({
       name: 'mainImage',
-      title: 'Main Image (Cover)',
-      description: 'Het beeld dat in het overzicht verschijnt.',
+      title: 'Main Image',
       type: 'image',
-      group: 'media',
+      group: 'content',
       options: { hotspot: true },
-      fields: [
-        defineField({ name: 'alt', type: 'string', title: 'Alt Text' })
-      ]
+      fields: [{ name: 'alt', type: 'string', title: 'Alt Text' }],
     }),
     defineField({
-        name: 'imageGallery',
-        title: 'Image Gallery / Series',
-        description: 'Voeg hier een serie beelden toe die bij dit bericht horen (bijv. een reportage).',
-        type: 'array',
-        group: 'media',
-        of: [
-            {
-                type: 'image',
-                options: { hotspot: true },
-                fields: [
-                    defineField({ name: 'caption', type: 'string', title: 'Caption' }),
-                    defineField({ name: 'alt', type: 'string', title: 'Alt Text' })
-                ]
-            }
-        ]
+      name: 'body',
+      title: 'Body Text',
+      description: 'Write your story here. Use headings for SEO structure.',
+      type: 'array',
+      group: 'content',
+      of: [{ type: 'block' }, { type: 'image' }],
     }),
 
-    // --- 4. RELATIES (Upselling & E-E-A-T) ---
+    // --- CROSS-DOMAIN LINKING (The Dutch Bridge) ---
     defineField({
-        name: 'relatedArtworks',
-        title: 'Mentioned Artworks',
-        description: 'Link naar de kunstwerken die je in dit bericht bespreekt.',
-        type: 'array',
-        group: 'relations',
-        of: [{ type: 'reference', to: [{ type: 'artwork' }] }]
+      name: 'dutchSourceUrl',
+      title: 'Original Dutch Article URL',
+      description: 'Link to the original page on arjanspannenburg.nl. This helps Google connect your Dutch authority to this new English site.',
+      type: 'url',
+      group: 'links',
     }),
     defineField({
-        name: 'relatedExhibition',
-        title: 'Related Exhibition',
+      name: 'relatedArtwork',
+      title: 'Featured Artwork',
+      description: 'Is this post about a specific piece or series (e.g., "Behind the scenes of CUPIDO")?',
+      type: 'reference',
+      to: [{ type: 'artwork' }, { type: 'project' }],
+      group: 'links',
+    }),
+    defineField({
+        name: 'relatedVenue',
+        title: 'Related Venue (GEO)',
+        description: 'If this post is about an opening or gallery visit, link it here for GEO-SEO.',
         type: 'reference',
-        group: 'relations',
-        to: [{ type: 'exhibition' }]
+        to: [{ type: 'venue' }],
+        group: 'links',
+      }),
+
+    // --- SEO & AI ---
+    defineField({
+      name: 'excerpt',
+      title: 'Excerpt (LLMO)',
+      description: 'A 150-character summary for Google and AI agents.',
+      type: 'text',
+      rows: 3,
+      group: 'seo',
+    }),
+    defineField({
+      name: 'tags',
+      title: 'Topic Tags',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: { layout: 'tags' },
+      group: 'seo',
     }),
   ],
 })
