@@ -3,7 +3,7 @@ import { TfiRulerPencil } from 'react-icons/tfi'
 
 export const sizeTemplate = defineType({
   name: 'sizeTemplate',
-  title: 'Size Templates & Base Prices',
+  title: 'Size Templates',
   type: 'document',
   icon: TfiRulerPencil,
   fields: [
@@ -35,13 +35,14 @@ export const sizeTemplate = defineType({
       type: 'number',
     }),
 
-    // --- BASE PRICE (Nu Verplicht!) ---
+    // --- DE KOPPELING (Hier kies je de Prijsgroep) ---
     defineField({
-      name: 'basePrice',
-      title: 'Global Base Price (€)',
-      description: 'The standard price for this size (e.g., 1200). APs will automatically be x1.25 this amount.',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(0),
+      name: 'priceTier',
+      title: 'Price Tier',
+      description: 'Select the pricing category for this size.',
+      type: 'reference',
+      to: [{ type: 'priceTier' }],
+      validation: (Rule) => Rule.required(),
     }),
   ],
   preview: {
@@ -49,12 +50,17 @@ export const sizeTemplate = defineType({
       title: 'name',
       width: 'width',
       height: 'height',
-      price: 'basePrice',
+      // We halen de naam van de gekoppelde prijsgroep op
+      tier: 'priceTier.name', 
+      price: 'priceTier.price' // En de prijs om te tonen
     },
-    prepare({ title, width, height, price }) {
+    prepare({ title, width, height, tier, price }) {
+      const tierInfo = tier ? ` | ${tier}` : '';
+      const priceInfo = price ? ` (€${price})` : '';
+      
       return {
         title: title,
-        subtitle: `${width}x${height} cm | Base: €${price}`,
+        subtitle: `${width}x${height} cm${tierInfo}${priceInfo}`,
         media: TfiRulerPencil,
       }
     },
