@@ -7,37 +7,25 @@ export const artworkEdition = defineType({
   fields: [
     defineField({
       name: 'sizeTemplate',
-      title: 'Select Size & Price Template',
-      description: 'Linked to global pricing. Updates automatically.',
+      title: 'Select Size Template',
+      description: 'Linked to global pricing and physical specs.',
       type: 'reference',
       to: [{ type: 'sizeTemplate' }],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'orientation',
-      title: 'Image Orientation',
+      title: 'Orientation',
       type: 'string',
       initialValue: 'landscape',
       options: {
         list: [
-          { title: 'Landscape (Long side = Width)', value: 'landscape' },
-          { title: 'Portrait (Long side = Height)', value: 'portrait' },
+          { title: 'Landscape', value: 'landscape' },
+          { title: 'Portrait', value: 'portrait' },
           { title: 'Square', value: 'square' },
         ],
         layout: 'radio',
       },
-    }),
-    defineField({
-        name: 'stockStatus',
-        title: 'Stock Status',
-        type: 'string',
-        options: {
-            list: [
-                {title: 'In Stock', value: 'in_stock'},
-                {title: 'Sold Out', value: 'sold_out'},
-                {title: 'Last Ones Available', value: 'low_stock'},
-            ]
-        }
     }),
   ],
 })
