@@ -9,24 +9,36 @@ export const artworkEdition = defineType({
   fields: [
     defineField({
       name: 'size',
-      title: 'Size Template',
+      title: 'Select Size Template',
+      description: 'The price is now automatically pulled from this template.',
       type: 'reference',
       to: [{ type: 'sizeTemplate' }],
       validation: (Rule) => Rule.required(),
     }),
+
+    // --- NIEUW: AP of Regular ---
     defineField({
-      name: 'price',
-      title: 'Base Price (€)',
-      description: 'The price for this size in the STANDARD material (Multiplier 1.0).',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(0),
+      name: 'type',
+      title: 'Edition Type',
+      type: 'string',
+      initialValue: 'regular',
+      options: {
+        list: [
+          { title: 'Regular Edition', value: 'regular' },
+          { title: 'Artist Proof (AP) - (+25% Price)', value: 'ap' },
+        ],
+        layout: 'radio' // Ziet eruit als bolletjes om aan te vinken
+      },
+      validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'limit',
       title: 'Edition Limit',
-      description: 'Total copies available (leave empty for Open Edition).',
+      description: 'Total copies available (e.g., 5). Leave empty for Open Edition.',
       type: 'number',
     }),
+    
     defineField({
       name: 'available',
       title: 'Currently Available?',
@@ -36,19 +48,20 @@ export const artworkEdition = defineType({
   ],
   preview: {
     select: {
-      size: 'size.name',
-      width: 'size.width',
-      height: 'size.height',
-      price: 'price',
+      size: 'size.name',       // Haalt naam van de maat op
       limit: 'limit',
+      type: 'type',
     },
-    prepare({ size, width, height, price, limit }) {
-      const sizeName = size || 'Unknown Size'
-      const dim = width && height ? `(${width}x${height})` : ''
-      const limitText = limit ? ` / Limit: ${limit}` : ' / Open Edition'
+    prepare({ size, limit, type }) {
+      const sizeName = size || 'Select size...';
+      const isAP = type === 'ap';
+      
+      // Tekst opbouw: "Artist Proof" of "Limit: 5"
+      const limitText = isAP ? 'Artist Proof (AP)' : (limit ? `Edition of ${limit}` : 'Open Edition');
+      
       return {
-        title: `${sizeName} ${dim}`,
-        subtitle: `€${price}${limitText}`,
+        title: sizeName,
+        subtitle: limitText,
         media: TfiRulerPencil
       }
     },
