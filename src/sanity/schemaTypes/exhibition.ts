@@ -10,7 +10,7 @@ export const exhibition = defineType({
     { name: 'general', title: 'General Info' },
     { name: 'location', title: 'Location (Venue)' },
     { name: 'story', title: 'Story & Visuals' },
-    { name: 'artworks', title: 'Artworks & Peers' }, // Hernoemd voor LLMO context
+    { name: 'artworks', title: 'Artworks & Peers' }, 
     { name: 'proof', title: 'Social Proof (E-E-A-T)' },
     { name: 'seo', title: 'SEO & AI' },
   ],
@@ -91,6 +91,16 @@ export const exhibition = defineType({
     }),
 
     // --- 3. STORY & VISUALS ---
+    // NIEUW: Main Image voor de overzichtskaartjes op de website
+    defineField({
+      name: 'mainImage',
+      title: 'Main / Cover Image',
+      description: 'The "Poster" image used on the exhibition overview page.',
+      type: 'image',
+      group: 'story',
+      options: { hotspot: true },
+    }),
+
     defineField({
       name: 'description',
       title: 'Long Description / Curatorial Text',
@@ -101,7 +111,7 @@ export const exhibition = defineType({
     }),
     defineField({
       name: 'images',
-      title: 'Exhibition Photos',
+      title: 'Exhibition Gallery Photos',
       description: 'Atmosphere shots, opening night, installation views.',
       type: 'array',
       group: 'story',
@@ -131,6 +141,7 @@ export const exhibition = defineType({
     defineField({
       name: 'exhibitedArtworks',
       title: 'Artworks in this Exhibition',
+      description: 'Add the artworks that were shown here. You can specify if they were sold or how they hung.',
       type: 'array',
       group: 'artworks',
       of: [
@@ -141,7 +152,8 @@ export const exhibition = defineType({
             select: {
               title: 'artworkReference.title',
               subtitle: 'context',
-            }
+              media: 'artworkReference.mainImage' // Toont direct het plaatje in de lijst
+            },
           },
           fields: [
             defineField({
@@ -233,4 +245,18 @@ export const exhibition = defineType({
       of: [{ type: 'string' }],
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+      date: 'startDate',
+      media: 'mainImage', // Gebruikt nu de cover image
+    },
+    prepare({ title, date, media }) {
+      return {
+        title: title,
+        subtitle: date ? new Date(date).getFullYear() : 'No date',
+        media: media,
+      }
+    },
+  },
 })
