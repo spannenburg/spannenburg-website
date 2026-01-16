@@ -115,12 +115,11 @@ export const artwork = defineType({
 
     defineField({
       name: 'material',
-      title: 'Materials / Techniques',
-      description: 'TECHNICAL SPECS: E.g., Giclée print, Piezography, Hahnemühle paper.',
+      title: 'Materials & Finishes',
+      description: 'TECHNICAL SPECS: Select the finish used for this specific artwork. Add new materials in the "Technical / Pricing" menu.',
       type: 'array',
       group: 'content',
-      of: [{ type: 'string' }],
-      options: { layout: 'tags' }
+      of: [{ type: 'reference', to: [{ type: 'material' }] }],
     }),
     defineField({
       name: 'keywords',
