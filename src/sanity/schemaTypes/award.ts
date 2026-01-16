@@ -7,98 +7,107 @@ export const award = defineType({
   type: 'document',
   icon: TfiMedall,
   groups: [
-    { name: 'details', title: 'Award Details' },
-    { name: 'proof', title: 'Proof & Jury Report' },
+    { name: 'general', title: 'Award Details' },
+    { name: 'content', title: 'Context & Jury' },
+    { name: 'media', title: 'Visual Proof' },
   ],
   fields: [
-    // --- DETAILS ---
+    // --- 1. GENERAL INFO ---
     defineField({
       name: 'title',
       title: 'Award Title',
+      description: 'The official name of the award. E.g., "Fine Art Photography Award 2026"',
       type: 'string',
-      group: 'details',
-      validation: (rule) => rule.required(),
-      description: 'E.g. "Fine Art Photography Award 2026"',
+      group: 'general',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'organization',
+      name: 'institution',
       title: 'Organization / Institution',
-      type: 'string',
-      group: 'details',
-      description: 'Who gave the award? E.g. "LensCulture" or "Sony World Photography"',
+      description: 'Who gave the award? E.g., "LensCulture", "Sony World Photography", or link to a Venue.',
+      type: 'string', // You can change this to a reference to 'venue' if it's a gallery/museum
+      group: 'general',
     }),
     defineField({
-      name: 'year',
+      name: 'date',
       title: 'Year / Date',
       type: 'date',
-      group: 'details',
-      options: {
-        dateFormat: 'YYYY',
-      },
-      validation: (rule) => rule.required(),
+      options: { dateFormat: 'YYYY' },
+      group: 'general',
     }),
     defineField({
       name: 'type',
-      title: 'Type',
+      title: 'Result / Placement',
       type: 'string',
-      group: 'details',
+      group: 'general',
       options: {
         list: [
-            { title: 'Winner (1st Place)', value: 'winner' },
-            { title: 'Runner-up / 2nd-3rd', value: 'runner_up' },
-            { title: 'Shortlisted / Finalist', value: 'shortlist' },
-            { title: 'Honorable Mention', value: 'mention' },
-            { title: 'Nominee', value: 'nominee' },
+          { title: 'Winner (1st Place)', value: 'winner' },
+          { title: 'Runner-up / 2nd-3rd', value: 'runner_up' },
+          { title: 'Shortlisted / Finalist', value: 'finalist' },
+          { title: 'Honorable Mention', value: 'honorable_mention' },
+          { title: 'Merit', value: 'merit' },
+          { title: 'Nominee', value: 'nominee' },
         ],
-        layout: 'radio'
       },
-      initialValue: 'winner'
-    }),
-    
-    // --- KOPPELING MET KUNSTWERK (De "Killer Feature") ---
-    defineField({
-        name: 'associatedArtwork',
-        title: 'Winning Artwork',
-        description: 'If this award was for a specific work, link it here.',
-        type: 'reference',
-        to: [{ type: 'artwork' }],
-        group: 'details',
     }),
 
-    // --- PROOF & CONTEXT ---
+    // --- 2. CONTEXT & JURY ---
     defineField({
-        name: 'juryReport',
-        title: 'Jury Report / Quote',
-        description: 'What did the jury say? Excellent for Authority.',
-        type: 'text',
-        rows: 4,
-        group: 'proof',
+      name: 'winningArtwork',
+      title: 'Winning Artwork',
+      description: 'If this award was for a specific work, link it here.',
+      type: 'reference',
+      to: [{ type: 'artwork' }],
+      group: 'content',
     }),
     defineField({
-        name: 'image',
-        title: 'Logo / Badge / Certificate',
-        type: 'image',
-        options: { hotspot: true },
-        group: 'proof',
+      name: 'juryReport',
+      title: 'Jury Report / Quote',
+      description: 'What did the jury say? Quotes from experts are excellent for Authority (E-E-A-T).',
+      type: 'array',
+      of: [{ type: 'block' }],
+      group: 'content',
     }),
     defineField({
-        name: 'link',
+        name: 'officialUrl',
         title: 'Link to official announcement',
         type: 'url',
-        group: 'proof',
+        group: 'content',
+      }),
+
+    // --- 3. VISUALS ---
+    defineField({
+      name: 'image',
+      title: 'Logo / Badge / Certificate',
+      description: 'Upload the official badge or a photo of the certificate.',
+      type: 'image',
+      group: 'media',
+      options: { hotspot: true },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description: 'E.g., "Winner badge for LensCulture Art Photography Awards"',
+        }
+      ]
     }),
   ],
   preview: {
     select: {
       title: 'title',
-      subtitle: 'organization',
+      inst: 'institution',
+      date: 'date',
+      type: 'type',
       media: 'image',
-      year: 'year'
     },
-    prepare({ title, subtitle, media, year }) {
+    prepare({ title, inst, date, type, media }) {
+      const year = date ? date.split('-')[0] : ''
+      const typeLabel = type ? type.replace('_', ' ').toUpperCase() : ''
       return {
-        title: title,
-        subtitle: `${year ? year.split('-')[0] : ''} - ${subtitle}`,
+        title: title || 'Untitled Award',
+        subtitle: `${year} | ${typeLabel} | ${inst || 'Independent'}`,
         media: media,
       }
     },
