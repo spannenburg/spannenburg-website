@@ -3,14 +3,14 @@ import { TfiRulerPencil } from 'react-icons/tfi'
 
 export const sizeTemplate = defineType({
   name: 'sizeTemplate',
-  title: 'Size Templates',
+  title: 'Size Templates & Base Prices',
   type: 'document',
   icon: TfiRulerPencil,
   fields: [
     defineField({
       name: 'name',
       title: 'Template Name',
-      description: 'E.g. "Medium Portrait", "Large Square", or "A4 Landscape".',
+      description: 'E.g. "Medium Portrait", "Large Square".',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -31,38 +31,30 @@ export const sizeTemplate = defineType({
     defineField({
       name: 'depth',
       title: 'Depth (cm)',
-      description: 'Optional. Only use for 3D works, boxes, or sculptures.',
+      description: 'Optional. Only for 3D works.',
       type: 'number',
     }),
 
-    // --- OPTIONAL: BASE PRICE ---
-    // Useful if you want a default price for this size, 
-    // though you can override it in the specific artwork.
+    // --- BASE PRICE (Nu Verplicht!) ---
     defineField({
       name: 'basePrice',
-      title: 'Base Price (EUR)',
-      description: 'Default price for this size (can be overridden per artwork).',
+      title: 'Global Base Price (€)',
+      description: 'The standard price for this size (e.g., 1200). APs will automatically be x1.25 this amount.',
       type: 'number',
+      validation: (Rule) => Rule.required().min(0),
     }),
   ],
-  
-  // --- THE MAGIC PREVIEW ---
-  // This ensures you see "Medium | 40W x 60H cm" in the list
   preview: {
     select: {
       title: 'name',
       width: 'width',
       height: 'height',
-      depth: 'depth',
+      price: 'basePrice',
     },
-    prepare({ title, width, height, depth }) {
-      // Logic: If depth exists, add it. If not, ignore it.
-      const d = depth ? ` x ${depth}D` : ''
-      const dimensions = `${width}W x ${height}H${d} cm`
-      
+    prepare({ title, width, height, price }) {
       return {
         title: title,
-        subtitle: dimensions, // This solves your confusion
+        subtitle: `${width}x${height} cm | Base: €${price}`,
         media: TfiRulerPencil,
       }
     },
