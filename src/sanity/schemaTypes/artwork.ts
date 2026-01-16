@@ -1,5 +1,5 @@
 import { defineField, defineType } from 'sanity'
-import { TfiPalette } from 'react-icons/tfi'
+import { TfiPalette, TfiThought } from 'react-icons/tfi' // TfiThought toegevoegd voor het AI tabblad
 
 export const artwork = defineType({
   name: 'artwork',
@@ -7,14 +7,52 @@ export const artwork = defineType({
   type: 'document',
   icon: TfiPalette,
   groups: [
+    { name: 'ai_helper', title: '🤖 AI Generator', icon: TfiThought }, // NIEUW: Eerste tabblad
     { name: 'general', title: 'Core Data' },
     { name: 'content', title: 'Narrative & SEO' }, 
     { name: 'media', title: 'Visuals' },
     { name: 'editions', title: 'Pricing & Sizes' },
-    // Group 'exhibitions' verwijderd
     { name: 'migration', title: 'Migration' },
   ],
   fields: [
+    // --- 0. AI HELPER (De Prompt) ---
+    defineField({
+      name: 'aiInstruction',
+      title: 'Copy-Paste Prompt for Gemini/ChatGPT',
+      type: 'text',
+      group: 'ai_helper',
+      rows: 15,
+      readOnly: true,
+      description: 'STEP 1: Copy this text. STEP 2: Paste into AI. STEP 3: Add your photo/URL. STEP 4: Copy the answers back here.',
+      initialValue: `
+ACT AS: A senior Fine Art Curator & SEO Specialist for Arjan Spannenburg.
+GOAL: Write high-authority (E-E-A-T), seductive metadata for a new artwork.
+TONE: 3rd person. Sophisticated, emotional, tailored for international collectors and curators.
+CONTEXT: Arjan creates Black & White, high-contrast fine art photography focusing on male vulnerability, queer identity, and classical mythology.
+
+INPUT: I will provide a photo or a URL.
+
+OUTPUT TASK: Generate the following data fields strictly.
+
+1. TITLE: A compelling English title.
+2. HEADLINE: A punchy 1-sentence description (for JSON-LD).
+3. SLUG suggestion: format "title-year" (lowercase, hyphens).
+4. CATEGORIES: Choose 1-3 from: [Portraiture, Nude, Queer Identity, Classical Myth, Conceptual].
+5. EMOTIONAL DESCRIPTION (The "Why"): 150 words. Analyze the light, composition, and emotional weight. Why should a collector buy this? Use semantic keywords naturally.
+6. VISUAL DESCRIPTION (The "What"): Literal description for AI Vision (Blind/Accessibility). "A black and white photo of..."
+7. EXTERNAL LINKS: Suggest 1 Wikipedia/RKD link relevant to the theme (e.g., St. Sebastian, Cupid, Chiaroscuro).
+8. KEYWORDS: 15 comma-separated SEO terms (mix of broad "Fine Art" and niche "Gay Art").
+9. FILE NAME: Create the optimal filename for the webp image (e.g., "arjan-spannenburg-[slug].webp").
+
+REQUIREMENT:
+- Write for "Entity Linking" (connect the art to broader concepts).
+- Use "Semantic SEO" (related terms, not just keywords).
+- Ensure the tone is "Gallery Quality" (no salesy language, but value-driven).
+
+READY? Please ask me for the image or URL.
+      `
+    }),
+
     // --- 1. CORE DATA ---
     defineField({
       name: 'title',
@@ -50,7 +88,7 @@ export const artwork = defineType({
     defineField({
       name: 'categories',
       title: 'Thematic Categories (Landing Pages)',
-      description: 'STRATEGY: Select the broad themes (e.g., Fetish, Portraiture). This automatically adds this artwork to those specific "Hub" pages on your site.',
+      description: 'STRATEGY: Select the broad themes. Automatically places artwork in "Hubs".',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
@@ -58,7 +96,7 @@ export const artwork = defineType({
     defineField({
       name: 'description',
       title: 'Emotional Description (The "Why")',
-      description: 'EEAT & STORYTELLING: Describe the concept, inspiration, and emotional depth. This tells Google you are an "Authority" with artistic intent.',
+      description: 'EEAT & STORYTELLING: Copy the "Emotional Description" from the AI output here.',
       type: 'array',
       group: 'content',
       of: [{ type: 'block' }],
@@ -66,7 +104,7 @@ export const artwork = defineType({
     defineField({
       name: 'visualDescription',
       title: 'Visual / Raw Description (The "What")',
-      description: 'AI VISION: Describe literally what is seen (e.g., "A muscular man in shadow, holding a golden bow"). Essential for AI image recognition.',
+      description: 'AI VISION: Copy the "Visual Description" here.',
       type: 'text',
       group: 'content',
     }),
@@ -75,7 +113,7 @@ export const artwork = defineType({
     defineField({
       name: 'externalReferences',
       title: 'External Authority Links (Entity Linking)',
-      description: 'SEMANTIC SEO: Link to Wikipedia or RKD entries for the subject (e.g., the myth of Cupid). This "anchors" your work to established global knowledge.',
+      description: 'SEMANTIC SEO: Link to Wikipedia or RKD entries suggested by the AI.',
       type: 'array',
       group: 'content',
       of: [
@@ -93,7 +131,7 @@ export const artwork = defineType({
     defineField({
       name: 'genre',
       title: 'Genres / Tags (Grouping)',
-      description: 'LLMO CLUSTERING: Select broadly applicable terms. These help AI agents place your work in the right art market context.',
+      description: 'Select the genres identified by the AI.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
@@ -117,7 +155,7 @@ export const artwork = defineType({
     defineField({
       name: 'material',
       title: 'Materials & Finishes',
-      description: 'TECHNICAL SPECS: Select the finish used for this specific artwork. Add new materials in the "Technical / Pricing" menu.',
+      description: 'Select the standard finish.',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'material' }] }],
@@ -126,7 +164,7 @@ export const artwork = defineType({
     defineField({
       name: 'keywords',
       title: 'SEO Keywords (Meta Tags)',
-      description: 'SEARCH INDEXING: Comma-separated terms users type in Google (e.g., "gay art amsterdam, buy art online"). Purely for search engines.',
+      description: 'Paste the comma-separated list from the AI here.',
       type: 'text',
       group: 'content',
     }),
@@ -143,7 +181,7 @@ export const artwork = defineType({
           name: 'alt',
           type: 'string',
           title: 'Alt Text (SEO)',
-          description: 'Crucial description for visually impaired users and Google Images ranking.',
+          description: 'Paste the "Visual Description" or a summary here.',
         },
       ],
     }),
@@ -157,14 +195,10 @@ export const artwork = defineType({
       of: [{ type: 'artworkEdition' }],
     }),
 
-    // --- 5. EXHIBITIONS VERWIJDERD ---
-    // Dit wordt nu beheerd vanuit het Exhibition document zelf.
-
     // --- 6. MIGRATION ---
     defineField({
       name: 'sourceUrlDutch',
       title: 'Original Dutch Website URL',
-      description: 'THE BRIDGE: Link to the original page on arjanspannenburg.nl to transfer authority.',
       type: 'url',
       group: 'migration',
     }),
