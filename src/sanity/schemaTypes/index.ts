@@ -15,7 +15,8 @@ import { siteSettings } from './siteSettings'
 import { priceTier } from './priceTier'
 import { sizeTemplate } from './sizeTemplate'
 import { artworkEdition } from './artworkEdition'
-import { artist } from './artist' // <--- ADDED: Needed for Entity Linking
+import { artist } from './artist' 
+import { material } from './material' // <--- 1. NIEUW: Importeer material
 
 import { postList } from './postList'
 import hero from './modules/hero'
@@ -33,7 +34,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   exhibition,
   category,
   award,
-  artist,           // <--- ADDED: Fixes the "Unknown type" error
+  artist,
+  material,           // <--- 2. NIEUW: Voeg toe aan de lijst
   priceTier,
   sizeTemplate,    
   artworkEdition,
