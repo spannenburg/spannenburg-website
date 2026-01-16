@@ -31,7 +31,7 @@ export const page = defineType({
     defineField({
       name: 'modules',
       title: 'Page Modules',
-      description: 'De bouwstenen van je pagina (Hero, Tekst, Grid, etc.)',
+      description: 'The building blocks of your page (Hero, Text, Grid, etc.)',
       type: 'array',
       group: 'content',
       of: [
@@ -45,32 +45,32 @@ export const page = defineType({
     defineField({
       name: 'metadata',
       title: 'Page SEO Settings',
-      type: 'metadata', // Verwijst naar je metadata.ts object
+      type: 'metadata', // References your metadata.ts object
       group: 'seo',
     }),
     defineField({
-        name: 'indexing',
-        title: 'Search Engine Indexing',
-        type: 'string',
-        group: 'seo',
-        initialValue: 'index',
-        options: {
-            list: [
-                { title: 'Allow Indexing (Default)', value: 'index' },
-                { title: 'Hide from Search Engines (NoIndex)', value: 'noindex' },
-            ],
-            layout: 'radio'
-        }
+      name: 'indexing',
+      title: 'Search Engine Indexing',
+      type: 'string',
+      group: 'seo',
+      initialValue: 'index',
+      options: {
+        list: [
+          { title: 'Allow Indexing (Default)', value: 'index' },
+          { title: 'Hide from Search Engines (NoIndex)', value: 'noindex' },
+        ],
+        layout: 'radio',
+      },
     }),
     defineField({
-        name: 'canonicalUrl',
-        title: 'Canonical URL',
-        description: 'Alleen invullen als deze pagina een kopie is van een andere pagina.',
-        type: 'url',
-        group: 'seo',
+      name: 'canonicalUrl',
+      title: 'Canonical URL',
+      description: 'Only fill this in if this page is a duplicate of another page.',
+      type: 'url',
+      group: 'seo',
     }),
   ],
-  
+
   preview: {
     select: {
       title: 'title',
