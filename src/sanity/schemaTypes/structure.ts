@@ -1,4 +1,4 @@
-import type {StructureBuilder} from 'sanity/structure'
+import type {StructureBuilder} from 'sanity/structure' 
 import {
   TfiCheckBox,
   TfiAlert,
