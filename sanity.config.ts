@@ -30,7 +30,8 @@ import {
   TfiFiles,
   TfiTag,
   TfiMoney,
-  TfiRulerPencil
+  TfiRulerPencil,
+  TfiPaintRoller // <--- 1. NIEUW: Icoon toegevoegd
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -67,6 +68,10 @@ export default defineConfig({
                   .title('Commerce & Technical')
                   .items([
                     S.listItem()
+                      .title('Materials & Finishes') // <--- 2. NIEUW: Hier beheer je de materialen
+                      .icon(TfiPaintRoller)
+                      .child(S.documentTypeList('material')),
+                    S.listItem()
                       .title('Price Tiers')
                       .icon(TfiMoney)
                       .child(S.documentTypeList('priceTier')),
@@ -85,7 +90,7 @@ export default defineConfig({
               .icon(TfiMedall)
               .child(S.documentTypeList('award')),
             S.listItem()
-              .title('Artists (Peers)') // ADDED for Entity Linking
+              .title('Artists (Peers)')
               .icon(TfiUser)
               .child(S.documentTypeList('artist')),
 
@@ -101,7 +106,7 @@ export default defineConfig({
               .icon(TfiPalette)
               .child(S.documentTypeList('artwork')),
             S.listItem()
-              .title('Thematic Hubs (Categories)') // ADDED for SEO Landing Pages
+              .title('Thematic Hubs (Categories)')
               .icon(TfiTag)
               .child(S.documentTypeList('category')),
 
@@ -128,7 +133,25 @@ export default defineConfig({
             // 6. CATCH-ALL (Prevents duplicates and handles internal types)
             ...S.documentTypeListItems().filter(
               (listItem: any) => 
-                !['siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'artworkEdition', 'metadata', 'blockContent'].includes(listItem.getId() || '')
+                ![
+                  'siteSettings', 
+                  'author', 
+                  'priceTier', 
+                  'sizeTemplate', 
+                  'venue', 
+                  'award', 
+                  'category', 
+                  'project', 
+                  'artwork', 
+                  'exhibition', 
+                  'post', 
+                  'page', 
+                  'artist', 
+                  'material', // <--- 3. NIEUW: Toegevoegd aan filter
+                  'artworkEdition', 
+                  'metadata', 
+                  'blockContent'
+                ].includes(listItem.getId() || '')
             ),
           ]),
     }),
