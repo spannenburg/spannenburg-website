@@ -21,7 +21,7 @@ export const artwork = defineType({
       title: 'Copy-Paste Prompt for Gemini/ChatGPT',
       type: 'text',
       group: 'ai_helper',
-      rows: 20,
+      rows: 25,
       readOnly: true,
       description: 'INSTRUCTION: 1. Copy this prompt. 2. Paste into AI. 3. Provide the Image URL AND the Artist\'s core concept/thoughts. 4. Copy the answers back.',
       initialValue: `
@@ -44,21 +44,22 @@ OUTPUT TASK - GENERATE THESE FIELDS:
    [Fine Art Photography, Portraiture, Monochrome / Black & White, Male Figure / Nude, Queer Identity, Classical & Mythological, Conceptual, Documentary, Fetish & Subculture, Fashion]. 
    *If the work fits none, suggest a NEW genre.*
 6. EMOTIONAL DESCRIPTION (The "Why"): 
+   - Priority: The Artist's Concept. This needs to be E-E-A-T, LLMO, GEO, SEO, and AI optimized, while remaining highly interesting for the international curator, art buyer, and collector.
+   - Secondary: Combine this with visual analysis (light, composition, contrast). 
+   - Explain the "Soul" of the work. Why is this significant? 
+   - Use semantic keywords (used by the artist or found by you) naturally.
    - Length: 200-300 words.
-   - Combine the visual analysis (light, composition, contrast) with the Artist's Concept.
-   - Explain the "Soul" of the work. Why is this significant?
-   - Use semantic keywords naturally (e.g., "Chiaroscuro", "Vulnerability", "Contemporary Male Gaze").
 7. VISUAL DESCRIPTION (The "What"): 
    - Start with: "A [Black & White / Color] [Portrait / Landscape / Square] photograph showing..."
    - Describe literally what is visible for AI Vision & Accessibility tools.
    - Length: 50-80 words.
 8. EXTERNAL LINKS (E-E-A-T): 
-   - Suggest 2-3 high-authority links. 
-   - Do NOT only use Wikipedia. Look for: Museum collections (Rijksmuseum, Tate), Art History terms (Chiaroscuro, Contrapposto), or Mythological source material.
+   - Suggest 2-3 high-authority links (Museum collections, Art History terms, Mythological sources).
    - Explain WHY this link increases the authority of the artwork.
 9. KEYWORDS: 
    - List 10-15 specific terms. 
-   - Mix specific visual elements (e.g., "Shadow", "Profile") with thematic concepts (e.g., "Intimacy", "Dutch Fine Art").
+   - Mix specific visual elements with thematic concepts.
+10. ALT TEXT: Write a specific SEO-optimized alt text for the image.
 
 TONE: Sophisticated, curated, 3rd person. No sales-talk.
 READY? Ask me for the Image and the Artist's Notes.
@@ -91,11 +92,11 @@ READY? Ask me for the Image and the Artist's Notes.
       validation: (Rule) => Rule.required(),
     }),
     
-    // --- AANGEPAST: Van String naar Date (Let op: oude data "2017" moet je opnieuw selecteren) ---
+    // --- DATUM (UI Instructie geüpdatet) ---
     defineField({
       name: 'dateCreated',
       title: 'Date Created',
-      description: 'Exact date is preferred for the Timeline. If the exact day is unknown, select January 1st of that year.',
+      description: 'Exact date is preferred for the Timeline (format yyyy-mm-dd). If the exact day is unknown, select January 1st of that year.',
       type: 'date', 
       group: 'general',
       validation: (Rule) => Rule.required(),
@@ -104,18 +105,18 @@ READY? Ask me for the Image and the Artist's Notes.
     // --- 2. NARRATIVE & SEO ---
     defineField({
       name: 'categories',
-      title: 'Thematic Hubs',
-      description: 'Which "Hubs" or "Collections" does this belong to on the website? (e.g. The "Queer" page).',
+      title: 'Categories', // AANGEPAST: Terug naar 'Categories'
+      description: 'Choose at least one category to which this artwork belongs. Only add a new category if this is essential. There are category pages with a collection of these artworks.',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
     
-    // GENRES (Vaste Lijst)
+    // GENRES (UI Instructie geüpdatet)
     defineField({
       name: 'genre',
       title: 'Genres / Tags',
-      description: 'Select the applicable genres. If a new genre is needed that is not in this list, ask the developer to add it.',
+      description: 'Mainly for SEO and JSON structuring. Select the applicable genres. If a new genre is needed that is not in this list, ask the developer to add it.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
@@ -138,7 +139,7 @@ READY? Ask me for the Image and the Artist's Notes.
     defineField({
       name: 'description',
       title: 'Emotional Description (The "Why")',
-      description: 'ESSENTIAL FOR SALES: Don\'t just describe what we see. Analyze the light, composition, and emotional weight. Explain the artist\'s intent. Why should a collector buy this? (Aim for 200-300 words).',
+      description: 'ESSENTIAL FOR SALES & SEO: Paste the "Emotional Description" from the AI output here.',
       type: 'array',
       group: 'content',
       of: [{ type: 'block' }],
@@ -199,7 +200,7 @@ READY? Ask me for the Image and the Artist's Notes.
           name: 'alt',
           type: 'string',
           title: 'Alt Text',
-          description: 'Copy the "Visual Description" here for SEO.',
+          description: 'Paste the "Alt Text" from the AI output here.',
         },
       ],
     }),
@@ -230,7 +231,6 @@ READY? Ask me for the Image and the Artist's Notes.
     prepare({ title, date, media }) {
       return {
         title: title || 'Untitled',
-        // Zorgt dat de datum netjes als jaar wordt getoond in de lijst
         subtitle: date ? new Date(date).getFullYear().toString() : 'No date',
         media: media,
       }
