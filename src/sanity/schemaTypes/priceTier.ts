@@ -9,23 +9,30 @@ export const priceTier = defineType({
   fields: [
     defineField({
       name: 'name',
-      title: 'Tier Name',
+      title: 'Tier Name / Code',
+      description: 'E.g. "Tier A", "Medium Works", or "Code 12".',
       type: 'string',
-      description: 'E.g., "Standard Small Series" or "Premium Large"',
-      validation: (rule) => rule.required(),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'price',
-      title: 'Price (incl. 9% VAT)',
+      title: 'Base Price (€)',
+      description: 'The standard value for this tier.',
       type: 'number',
-      description: 'The current price for this tier.',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-        name: 'vatPercentage',
-        title: 'VAT Percentage',
-        type: 'number',
-        initialValue: 9,
+      validation: (Rule) => Rule.required().min(0),
     }),
   ],
+  preview: {
+    select: {
+      title: 'name',
+      price: 'price',
+    },
+    prepare({ title, price }) {
+      return {
+        title: title,
+        subtitle: `€ ${price}`,
+        media: TfiMoney,
+      }
+    },
+  },
 })
