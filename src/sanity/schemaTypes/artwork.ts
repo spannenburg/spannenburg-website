@@ -9,6 +9,7 @@ export const artwork = defineType({
   groups: [
     { name: 'general', title: 'General Info' },
     { name: 'media', title: 'Visuals' },
+    { name: 'dimensions', title: 'Physical Specs' }, // New Group
     { name: 'inventory', title: 'Inventory & Pricing' },
     { name: 'migration', title: 'Migration & SEO' },
   ],
@@ -46,13 +47,6 @@ export const artwork = defineType({
       description: 'E.g. Fine Art Print on Hahnemühle Paper',
     }),
     defineField({
-      name: 'dimensions',
-      title: 'Dimensions',
-      type: 'string',
-      group: 'general',
-      description: 'E.g. 100 x 150 cm',
-    }),
-    defineField({
       name: 'description',
       title: 'Description / Story',
       type: 'array',
@@ -77,7 +71,53 @@ export const artwork = defineType({
       ],
     }),
 
-    // --- 3. INVENTORY & PRICING ---
+    // --- 3. PHYSICAL SPECS (Structured Dimensions) ---
+    defineField({
+      name: 'size',
+      title: 'Dimensions',
+      type: 'object',
+      group: 'dimensions',
+      description: 'Enter the exact physical measurements.',
+      fieldsets: [{ name: 'measurements', title: 'Measurements', options: { columns: 3 } }],
+      fields: [
+        defineField({
+          name: 'height',
+          title: 'Height',
+          type: 'number',
+          fieldset: 'measurements',
+          validation: (rule) => rule.required().positive(),
+        }),
+        defineField({
+          name: 'width',
+          title: 'Width',
+          type: 'number',
+          fieldset: 'measurements',
+          validation: (rule) => rule.required().positive(),
+        }),
+        defineField({
+          name: 'depth',
+          title: 'Depth',
+          type: 'number',
+          fieldset: 'measurements',
+          description: 'Leave 0 for flat prints/photos.',
+        }),
+        defineField({
+          name: 'unit',
+          title: 'Unit',
+          type: 'string',
+          initialValue: 'cm',
+          options: {
+            list: [
+              { title: 'Centimeters (cm)', value: 'cm' },
+              { title: 'Inches (in)', value: 'in' },
+            ],
+            layout: 'radio',
+          },
+        }),
+      ],
+    }),
+
+    // --- 4. INVENTORY & PRICING ---
     defineField({
       name: 'price',
       title: 'Price',
@@ -98,11 +138,11 @@ export const artwork = defineType({
       },
     }),
 
-    // --- 4. MIGRATION & SEO (The "Dutch Bridge") ---
+    // --- 5. MIGRATION & SEO ---
     defineField({
       name: 'sourceUrlDutch',
       title: 'Original Dutch Website URL',
-      description: 'Link to the corresponding page on arjanspannenburg.nl. Used for migration and SEO mapping.',
+      description: 'Link to the corresponding page on arjanspannenburg.nl.',
       type: 'url',
       group: 'migration',
     }),
@@ -110,8 +150,17 @@ export const artwork = defineType({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'year',
+      h: 'size.height',
+      w: 'size.width',
+      u: 'size.unit',
       media: 'mainImage',
+    },
+    prepare({ title, h, w, u, media }) {
+      return {
+        title,
+        subtitle: h && w ? `${h} x ${w} ${u}` : 'Size not set',
+        media,
+      }
     },
   },
 })
