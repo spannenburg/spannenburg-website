@@ -1,53 +1,56 @@
 import { defineField, defineType } from 'sanity'
+import { TfiRulerPencil } from 'react-icons/tfi'
 
 export const artworkEdition = defineType({
   name: 'artworkEdition',
-  title: 'Edition Details',
-  type: 'object',
+  title: 'Edition',
+  type: 'object', // It is an object inside Artwork, not a standalone document
+  icon: TfiRulerPencil,
   fields: [
     defineField({
-      name: 'sizeTemplate',
-      title: 'Select Size Template',
-      description: 'Linked to physical dimensions and the global price tier.',
+      name: 'size',
+      title: 'Size Template',
       type: 'reference',
       to: [{ type: 'sizeTemplate' }],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'orientation',
-      title: 'Orientation',
-      description: 'Determines if width and height are swapped (e.g., 60x40 vs 40x60).',
-      type: 'string',
-      initialValue: 'landscape',
-      options: {
-        list: [
-          { title: 'Landscape', value: 'landscape' },
-          { title: 'Portrait', value: 'portrait' },
-          { title: 'Square', value: 'square' },
-        ],
-        layout: 'radio',
-      },
+      name: 'price',
+      title: 'Base Price (€)',
+      description: 'The starting price for this size (with standard material).',
+      type: 'number',
+      validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
-      name: 'seller',
-      title: 'Seller / Gallery',
-      description: 'The gallery or entity selling this specific edition (e.g., Zerp for NL, or a US-based partner).',
-      type: 'reference',
-      to: [{ type: 'venue' }],
+      name: 'limit',
+      title: 'Edition Limit',
+      description: 'How many copies exist? (e.g., 5, 10, or leave empty for Open Edition).',
+      type: 'number',
     }),
     defineField({
-      name: 'stockStatus',
-      title: 'Stock Status',
-      type: 'string',
-      initialValue: 'available',
-      options: {
-        list: [
-          { title: 'Available', value: 'available' },
-          { title: 'Limited Availability', value: 'limited' },
-          { title: 'Sold Out', value: 'sold_out' },
-          { title: 'Reserved', value: 'reserved' },
-        ],
-      },
+      name: 'available',
+      title: 'Currently Available?',
+      type: 'boolean',
+      initialValue: true,
     }),
   ],
+  preview: {
+    select: {
+      size: 'size.name',
+      width: 'size.width',
+      height: 'size.height',
+      price: 'price',
+      limit: 'limit',
+    },
+    prepare({ size, width, height, price, limit }) {
+      const sizeName = size || 'Unknown Size'
+      const dim = width && height ? `(${width}x${height})` : ''
+      const limitText = limit ? ` / Limit: ${limit}` : ' / Open Edition'
+      return {
+        title: `${sizeName} ${dim}`,
+        subtitle: `€${price}${limitText}`,
+        media: TfiRulerPencil
+      }
+    },
+  },
 })
