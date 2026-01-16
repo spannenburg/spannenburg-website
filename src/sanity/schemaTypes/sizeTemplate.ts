@@ -10,53 +10,61 @@ export const sizeTemplate = defineType({
     defineField({
       name: 'name',
       title: 'Template Name',
+      description: 'E.g. "Medium Portrait", "Large Square", or "A4 Landscape".',
       type: 'string',
-      description: 'e.g., "Small Series"',
       validation: (Rule) => Rule.required(),
     }),
+    
+    // --- DIMENSIONS ---
     defineField({
       name: 'width',
-      title: 'Standard Width (Long side)',
+      title: 'Width (cm)',
       type: 'number',
-      description: 'The physical width in cm (e.g., 60)',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
       name: 'height',
-      title: 'Standard Height (Short side)',
+      title: 'Height (cm)',
       type: 'number',
-      description: 'The physical height in cm (e.g., 40)',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().min(1),
+    }),
+    defineField({
+      name: 'depth',
+      title: 'Depth (cm)',
+      description: 'Optional. Only use for 3D works, boxes, or sculptures.',
+      type: 'number',
     }),
 
-    // --- CONNECTION TO PRICE TIER ---
-    // This replaces the manual "Current Price" field.
+    // --- OPTIONAL: BASE PRICE ---
+    // Useful if you want a default price for this size, 
+    // though you can override it in the specific artwork.
     defineField({
-      name: 'priceTier',
-      title: 'Linked Price Tier',
-      description: 'Select the price for this size category. Managed in the Price Tiers menu.',
-      type: 'reference',
-      to: [{ type: 'priceTier' }],
-      validation: (Rule) => Rule.required(),
-    }),
-
-    defineField({
-        name: 'defaultEditionSize',
-        title: 'Default Edition Size',
-        type: 'string',
-        description: 'e.g., 8 + 2 AP',
+      name: 'basePrice',
+      title: 'Base Price (EUR)',
+      description: 'Default price for this size (can be overridden per artwork).',
+      type: 'number',
     }),
   ],
+  
+  // --- THE MAGIC PREVIEW ---
+  // This ensures you see "Medium | 40W x 60H cm" in the list
   preview: {
     select: {
       title: 'name',
-      w: 'width',
-      h: 'height',
+      width: 'width',
+      height: 'height',
+      depth: 'depth',
     },
-    prepare({ title, w, h }) {
+    prepare({ title, width, height, depth }) {
+      // Logic: If depth exists, add it. If not, ignore it.
+      const d = depth ? ` x ${depth}D` : ''
+      const dimensions = `${width}W x ${height}H${d} cm`
+      
       return {
-        title: `${title} (${w}x${h} cm)`,
+        title: title,
+        subtitle: dimensions, // This solves your confusion
+        media: TfiRulerPencil,
       }
-    }
-  }
+    },
+  },
 })
