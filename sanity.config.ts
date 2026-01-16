@@ -18,7 +18,6 @@ import { codeInput } from '@sanity/code-input'
 import { schemaTypes } from './src/sanity/schemaTypes'
 import resolveUrl from '@/lib/resolveUrl'
 
-// We importeren alle iconen die we nodig hebben direct hier
 import {
   TfiSettings,
   TfiUser,
@@ -33,11 +32,11 @@ import {
   TfiMoney,
   TfiRulerPencil,
   TfiPaintRoller,
-  TfiAlert,   // Voor To-Do
-  TfiImage,   // Voor To-Do
-  TfiTarget,  // Voor To-Do
-  TfiCup,     // Voor Awards
-  TfiCheckBox // Voor Categories
+  TfiAlert,
+  TfiImage,
+  TfiTarget,
+  TfiCup,
+  TfiCheckBox
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -49,12 +48,11 @@ export default defineConfig({
 
   plugins: [
     structureTool({
-      // HIER zit de logica direct in het bestand (geen import nodig)
       structure: (S: any) =>
         S.list()
           .title('Spannenburg Studio')
           .items([
-            // --- 0. 🚨 TO-DO LIST ---
+            // --- 1. 🚨 TO-DO LIST (Dashboard) ---
             S.listItem()
               .title('🚨 To-Do / Incomplete')
               .icon(TfiAlert)
@@ -99,19 +97,27 @@ export default defineConfig({
 
             S.divider(),
 
-            // --- 1. SETTINGS & PROFILE ---
-            S.listItem()
-              .title('Site Settings')
-              .icon(TfiSettings)
-              .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
-            S.listItem()
-              .title('Artist Profile')
-              .icon(TfiUser)
-              .child(S.document().schemaType('author').documentId('author')),
+            // --- 2. 🎨 CORE CONTENT (Daily Workflow) ---
+            S.documentTypeListItem('artwork').title('Artworks').icon(TfiPalette),
+            S.documentTypeListItem('project').title('Projects / Series').icon(TfiLayers),
+            S.documentTypeListItem('post').title('Journal / News').icon(TfiWrite),
 
             S.divider(),
 
-            // --- 2. SUPPORTIVE DATA ---
+            // --- 3. 🌍 CONTEXT & EVENTS ---
+            S.documentTypeListItem('exhibition').title('Exhibitions').icon(TfiMapAlt),
+            S.documentTypeListItem('venue').title('Venues / Locations').icon(TfiLocationPin),
+            S.documentTypeListItem('artist').title('Artists (Peers)').icon(TfiUser),
+
+            S.divider(),
+
+            // --- 4. 🏷️ ORGANIZATION & PROOF ---
+            S.documentTypeListItem('category').title('Categories / Hubs').icon(TfiCheckBox),
+            S.documentTypeListItem('award').title('Awards & Honors').icon(TfiMedall),
+
+            S.divider(),
+
+            // --- 5. ⚙️ TECHNICAL & COMMERCE ---
             S.listItem()
               .title('Technical / Pricing')
               .icon(TfiMoney)
@@ -119,70 +125,26 @@ export default defineConfig({
                 S.list()
                   .title('Commerce & Technical')
                   .items([
-                    S.listItem()
-                      .title('Materials & Finishes')
-                      .icon(TfiPaintRoller)
-                      .child(S.documentTypeList('material')),
-                    S.listItem()
-                      .title('Price Tiers')
-                      .icon(TfiMoney)
-                      .child(S.documentTypeList('priceTier')),
-                    S.listItem()
-                      .title('Size Templates')
-                      .icon(TfiRulerPencil)
-                      .child(S.documentTypeList('sizeTemplate')),
-                    S.listItem()
-                      .title('Categories')
-                      .icon(TfiCheckBox)
-                      .child(S.documentTypeList('category')),
+                    S.documentTypeListItem('priceTier').title('Price Tiers').icon(TfiMoney),
+                    S.documentTypeListItem('sizeTemplate').title('Size Templates').icon(TfiRulerPencil),
+                    S.documentTypeListItem('material').title('Materials & Finishes').icon(TfiPaintRoller),
                   ])
               ),
+
+            S.divider(),
+
+            // --- 6. 🖥️ WEBSITE MANAGEMENT ---
+            S.documentTypeListItem('page').title('Pages').icon(TfiFiles),
             S.listItem()
-              .title('Venues & Galleries')
-              .icon(TfiLocationPin)
-              .child(S.documentTypeList('venue')),
-            S.listItem()
-              .title('Awards & Honors')
-              .icon(TfiMedall)
-              .child(S.documentTypeList('award')),
-            S.listItem()
-              .title('Artists (Peers)')
+              .title('Artist Profile')
               .icon(TfiUser)
-              .child(S.documentTypeList('artist')),
-
-            S.divider(),
-
-            // --- 3. ART PORTFOLIO ---
+              .child(S.document().schemaType('author').documentId('author')),
             S.listItem()
-              .title('Projects / Series')
-              .icon(TfiLayers)
-              .child(S.documentTypeList('project')),
-            S.listItem()
-              .title('Artworks')
-              .icon(TfiPalette)
-              .child(S.documentTypeList('artwork')),
+              .title('Site Settings')
+              .icon(TfiSettings)
+              .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
 
-            S.divider(),
-
-            // --- 4. EXHIBITIONS & NEWS ---
-            S.listItem()
-              .title('Exhibitions')
-              .icon(TfiMapAlt)
-              .child(S.documentTypeList('exhibition')),
-            S.listItem()
-              .title('Journal / News')
-              .icon(TfiWrite)
-              .child(S.documentTypeList('post')),
-
-            S.divider(),
-
-            // --- 5. PAGES ---
-            S.listItem()
-              .title('Pages')
-              .icon(TfiFiles)
-              .child(S.documentTypeList('page')),
-
-            // --- 6. CATCH-ALL (Voor alles wat we vergeten zijn) ---
+            // --- 7. CATCH-ALL (Voor alles wat we vergeten zijn) ---
             ...S.documentTypeListItems().filter(
               (listItem: any) => 
                 ![
