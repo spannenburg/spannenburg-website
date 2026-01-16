@@ -13,8 +13,9 @@ import { metadata } from './metadata'
 import { award } from './award'
 import { siteSettings } from './siteSettings'
 import { priceTier } from './priceTier'
-import { sizeTemplate } from './sizeTemplate'     // Added
+import { sizeTemplate } from './sizeTemplate'
 import { artworkEdition } from './artworkEdition'
+import { artist } from './artist' // <--- ADDED: Needed for Entity Linking
 
 import { postList } from './postList'
 import hero from './modules/hero'
@@ -32,13 +33,14 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   exhibition,
   category,
   award,
+  artist,           // <--- ADDED: Fixes the "Unknown type" error
   priceTier,
-  sizeTemplate,    // Added
+  sizeTemplate,    
   artworkEdition,
   blockContent,
   metadata,
   hero,
   artworkGridNew,
   text,
-  postList,        
+  postList,         
 ]
