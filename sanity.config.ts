@@ -40,9 +40,9 @@ export default defineConfig({
   basePath: '/admin',
 
   plugins: [
-    // Aangepaste Desk Structuur voor een betere Workflow
+    // Aangepaste Desk Structuur (Structure Builder)
     structureTool({
-      structure: (S) =>
+      structure: (S: any) =>
         S.list()
           .title('Spannenburg Studio')
           .items([
@@ -68,7 +68,7 @@ export default defineConfig({
 
             S.divider(),
 
-            // 2. STAMDATA (Eerst invullen)
+            // 2. STAMDATA (Ondersteunend)
             S.listItem()
               .title('Venues & Galleries')
               .icon(TfiLocationPin)
@@ -114,9 +114,9 @@ export default defineConfig({
               .icon(TfiFiles)
               .child(S.documentTypeList('page')),
 
-            // Voorkom dubbele weergave van handmatige items
+            // Filter voor eventuele overige documenttypes
             ...S.documentTypeListItems().filter(
-              (listItem) => 
+              (listItem: any) => 
                 !['siteSettings', 'author', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page'].includes(listItem.getId() || '')
             ),
           ]),
