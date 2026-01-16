@@ -1,5 +1,5 @@
 import { defineField, defineType } from 'sanity'
-import { TfiPalette, TfiThought } from 'react-icons/tfi' // TfiThought toegevoegd voor het AI tabblad
+import { TfiPalette, TfiThought } from 'react-icons/tfi'
 
 export const artwork = defineType({
   name: 'artwork',
@@ -7,7 +7,7 @@ export const artwork = defineType({
   type: 'document',
   icon: TfiPalette,
   groups: [
-    { name: 'ai_helper', title: '🤖 AI Generator', icon: TfiThought }, // NIEUW: Eerste tabblad
+    { name: 'ai_helper', title: '🤖 AI Generator', icon: TfiThought },
     { name: 'general', title: 'Core Data' },
     { name: 'content', title: 'Narrative & SEO' }, 
     { name: 'media', title: 'Visuals' },
@@ -15,41 +15,53 @@ export const artwork = defineType({
     { name: 'migration', title: 'Migration' },
   ],
   fields: [
-    // --- 0. AI HELPER (De Prompt) ---
+    // --- 0. AI HELPER (De Verbeterde Prompt) ---
     defineField({
       name: 'aiInstruction',
       title: 'Copy-Paste Prompt for Gemini/ChatGPT',
       type: 'text',
       group: 'ai_helper',
-      rows: 15,
+      rows: 20,
       readOnly: true,
-      description: 'STEP 1: Copy this text. STEP 2: Paste into AI. STEP 3: Add your photo/URL. STEP 4: Copy the answers back here.',
+      description: 'INSTRUCTION: 1. Copy this prompt. 2. Paste into AI. 3. Provide the Image URL AND the Artist\'s core concept/thoughts. 4. Copy the answers back.',
       initialValue: `
-ACT AS: A senior Fine Art Curator & SEO Specialist for Arjan Spannenburg.
-GOAL: Write high-authority (E-E-A-T), seductive metadata for a new artwork.
-TONE: 3rd person. Sophisticated, emotional, tailored for international collectors and curators.
-CONTEXT: Arjan creates Black & White, high-contrast fine art photography focusing on male vulnerability, queer identity, and classical mythology.
+ACT AS: A senior Fine Art Curator & SEO Specialist (E-E-A-T Expert).
+GOAL: Create gallery-quality metadata for Arjan Spannenburg's portfolio.
+CONTEXT: Arjan creates High-Contrast Black & White fine art photography. Themes: Male vulnerability, Queer identity, Mythology.
 
-INPUT: I will provide a photo or a URL.
+INPUT REQUIRED FROM USER: 
+1. The Image (URL or upload).
+2. The Artist's Title (Strict).
+3. The Artist's Concept/Background story (Notes).
 
-OUTPUT TASK: Generate the following data fields strictly.
+OUTPUT TASK - GENERATE THESE FIELDS:
 
-1. TITLE: A compelling English title.
-2. HEADLINE: A punchy 1-sentence description (for JSON-LD).
-3. SLUG suggestion: format "title-year" (lowercase, hyphens).
-4. CATEGORIES: Choose 1-3 from: [Portraiture, Nude, Queer Identity, Classical Myth, Conceptual].
-5. EMOTIONAL DESCRIPTION (The "Why"): 150 words. Analyze the light, composition, and emotional weight. Why should a collector buy this? Use semantic keywords naturally.
-6. VISUAL DESCRIPTION (The "What"): Literal description for AI Vision (Blind/Accessibility). "A black and white photo of..."
-7. EXTERNAL LINKS: Suggest 1 Wikipedia/RKD link relevant to the theme (e.g., St. Sebastian, Cupid, Chiaroscuro).
-8. KEYWORDS: 15 comma-separated SEO terms (mix of broad "Fine Art" and niche "Gay Art").
-9. FILE NAME: Create the optimal filename for the webp image (e.g., "arjan-spannenburg-[slug].webp").
+1. TITLE: Use the EXACT title provided by the artist. Do not invent one.
+2. HEADLINE: A punchy 1-sentence description (max 160 chars). Focus on the emotion and subject. (For JSON-LD/Google snippets).
+3. SLUG: Suggest a slug based on "title-year". Why? To ensure uniqueness if titles are repeated.
+4. DATE: Estimate the exact release date (YYYY-MM-DD). If unknown, use YYYY-01-01.
+5. GENRES (Select strictly from this list, multiple allowed):
+   [Fine Art Photography, Portraiture, Monochrome / Black & White, Male Figure / Nude, Queer Identity, Classical & Mythological, Conceptual, Documentary, Fetish & Subculture, Fashion]. 
+   *If the work fits none, suggest a NEW genre.*
+6. EMOTIONAL DESCRIPTION (The "Why"): 
+   - Length: 200-300 words.
+   - Combine the visual analysis (light, composition, contrast) with the Artist's Concept.
+   - Explain the "Soul" of the work. Why is this significant?
+   - Use semantic keywords naturally (e.g., "Chiaroscuro", "Vulnerability", "Contemporary Male Gaze").
+7. VISUAL DESCRIPTION (The "What"): 
+   - Start with: "A [Black & White / Color] [Portrait / Landscape / Square] photograph showing..."
+   - Describe literally what is visible for AI Vision & Accessibility tools.
+   - Length: 50-80 words.
+8. EXTERNAL LINKS (E-E-A-T): 
+   - Suggest 2-3 high-authority links. 
+   - Do NOT only use Wikipedia. Look for: Museum collections (Rijksmuseum, Tate), Art History terms (Chiaroscuro, Contrapposto), or Mythological source material.
+   - Explain WHY this link increases the authority of the artwork.
+9. KEYWORDS: 
+   - List 10-15 specific terms. 
+   - Mix specific visual elements (e.g., "Shadow", "Profile") with thematic concepts (e.g., "Intimacy", "Dutch Fine Art").
 
-REQUIREMENT:
-- Write for "Entity Linking" (connect the art to broader concepts).
-- Use "Semantic SEO" (related terms, not just keywords).
-- Ensure the tone is "Gallery Quality" (no salesy language, but value-driven).
-
-READY? Please ask me for the image or URL.
+TONE: Sophisticated, curated, 3rd person. No sales-talk.
+READY? Ask me for the Image and the Artist's Notes.
       `
     }),
 
@@ -57,6 +69,7 @@ READY? Please ask me for the image or URL.
     defineField({
       name: 'title',
       title: 'Title / Name',
+      description: 'STRICT: The official title given by the artist. Do not change this for SEO purposes.',
       type: 'string',
       group: 'general',
       validation: (Rule) => Rule.required(),
@@ -71,67 +84,38 @@ READY? Please ask me for the image or URL.
     defineField({
       name: 'slug',
       title: 'Slug',
+      description: 'The unique URL part. We advise "title-year" to ensure uniqueness (e.g., "cupido-2024"), as titles like "Untitled" or "Portrait" are often repeated.',
       type: 'slug',
       group: 'general',
       options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
+    
+    // --- AANGEPAST: Van String naar Date (Let op: oude data "2017" moet je opnieuw selecteren) ---
     defineField({
       name: 'dateCreated',
-      title: 'Year Created',
-      type: 'string',
+      title: 'Date Created',
+      description: 'Exact date is preferred for the Timeline. If the exact day is unknown, select January 1st of that year.',
+      type: 'date', 
       group: 'general',
-      placeholder: '2017',
+      validation: (Rule) => Rule.required(),
     }),
 
     // --- 2. NARRATIVE & SEO ---
     defineField({
       name: 'categories',
-      title: 'Thematic Categories (Landing Pages)',
-      description: 'STRATEGY: Select the broad themes. Automatically places artwork in "Hubs".',
+      title: 'Thematic Hubs',
+      description: 'Which "Hubs" or "Collections" does this belong to on the website? (e.g. The "Queer" page).',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
-    defineField({
-      name: 'description',
-      title: 'Emotional Description (The "Why")',
-      description: 'EEAT & STORYTELLING: Copy the "Emotional Description" from the AI output here.',
-      type: 'array',
-      group: 'content',
-      of: [{ type: 'block' }],
-    }),
-    defineField({
-      name: 'visualDescription',
-      title: 'Visual / Raw Description (The "What")',
-      description: 'AI VISION: Copy the "Visual Description" here.',
-      type: 'text',
-      group: 'content',
-    }),
     
-    // EXTERNAL AUTHORITY LINKS
-    defineField({
-      name: 'externalReferences',
-      title: 'External Authority Links (Entity Linking)',
-      description: 'SEMANTIC SEO: Link to Wikipedia or RKD entries suggested by the AI.',
-      type: 'array',
-      group: 'content',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'label', title: 'Context Name (e.g. Wikipedia: Saint Sebastian)', type: 'string' },
-            { name: 'url', title: 'URL', type: 'url' }
-          ]
-        }
-      ]
-    }),
-
-    // GENRES (Fixed List)
+    // GENRES (Vaste Lijst)
     defineField({
       name: 'genre',
-      title: 'Genres / Tags (Grouping)',
-      description: 'Select the genres identified by the AI.',
+      title: 'Genres / Tags',
+      description: 'Select the applicable genres. If a new genre is needed that is not in this list, ask the developer to add it.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
@@ -151,22 +135,56 @@ READY? Please ask me for the image or URL.
       },
     }),
 
-    // MATERIAL (Reference)
     defineField({
-      name: 'material',
-      title: 'Materials & Finishes',
-      description: 'Select the standard finish.',
+      name: 'description',
+      title: 'Emotional Description (The "Why")',
+      description: 'ESSENTIAL FOR SALES: Don\'t just describe what we see. Analyze the light, composition, and emotional weight. Explain the artist\'s intent. Why should a collector buy this? (Aim for 200-300 words).',
       type: 'array',
       group: 'content',
-      of: [{ type: 'reference', to: [{ type: 'material' }] }],
+      of: [{ type: 'block' }],
+    }),
+    defineField({
+      name: 'visualDescription',
+      title: 'Visual / Raw Description (The "What")',
+      description: 'ACCESSIBILITY & AI: A literal description for visually impaired users and Google Vision. State if it is B&W/Color, Portrait/Landscape, and what is physically in the frame. (~50-80 words).',
+      type: 'text',
+      group: 'content',
+    }),
+    
+    // EXTERNAL AUTHORITY LINKS
+    defineField({
+      name: 'externalReferences',
+      title: 'External Authority Links (Entity Linking)',
+      description: 'AUTHORITY BUILDER: Link to high-quality external sources (Museums, Art History definitions, Myths). This connects your art to the global art canon in Google\'s eyes. Try to find 2 or 3 links.',
+      type: 'array',
+      group: 'content',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'label', title: 'Context Name (e.g. Tate Modern: Chiaroscuro)', type: 'string' },
+            { name: 'url', title: 'URL', type: 'url' }
+          ]
+        }
+      ]
     }),
 
     defineField({
       name: 'keywords',
       title: 'SEO Keywords (Meta Tags)',
-      description: 'Paste the comma-separated list from the AI here.',
+      description: 'SPECIFICITY: Don\'t just use "Art". Use specific terms like "High contrast male nude", "Rembrandt lighting", "Dutch photography". Used for search indexing.',
       type: 'text',
       group: 'content',
+    }),
+
+    // MATERIAL (Reference)
+    defineField({
+      name: 'material',
+      title: 'Materials & Finishes',
+      description: 'PRICING: Select the standard finish. The price calculation depends on this choice.',
+      type: 'array',
+      group: 'content',
+      of: [{ type: 'reference', to: [{ type: 'material' }] }],
     }),
 
     // --- 3. VISUALS ---
@@ -180,8 +198,8 @@ READY? Please ask me for the image or URL.
         {
           name: 'alt',
           type: 'string',
-          title: 'Alt Text (SEO)',
-          description: 'Paste the "Visual Description" or a summary here.',
+          title: 'Alt Text',
+          description: 'Copy the "Visual Description" here for SEO.',
         },
       ],
     }),
@@ -212,7 +230,8 @@ READY? Please ask me for the image or URL.
     prepare({ title, date, media }) {
       return {
         title: title || 'Untitled',
-        subtitle: date || 'No date',
+        // Zorgt dat de datum netjes als jaar wordt getoond in de lijst
+        subtitle: date ? new Date(date).getFullYear().toString() : 'No date',
         media: media,
       }
     },
