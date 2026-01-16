@@ -3,142 +3,159 @@ import { TfiLocationPin } from 'react-icons/tfi'
 
 export const venue = defineType({
   name: 'venue',
-  title: 'Venues / Galleries',
+  title: 'Venues & Galleries',
   type: 'document',
   icon: TfiLocationPin,
   groups: [
-    { name: 'details', title: 'Details' },
-    { name: 'location', title: 'Address & GEO' },
-    { name: 'media', title: 'Visuals & Branding' },
+    { name: 'general', title: 'General Info' },
+    { name: 'location', title: 'GEO & Address' },
+    { name: 'media', title: 'Visuals' },
   ],
   fields: [
-    // --- 1. DETAILS ---
+    // --- GENERAL INFO ---
     defineField({
       name: 'name',
       title: 'Venue Name',
+      description: 'The official name of the gallery, museum, or space.',
       type: 'string',
-      group: 'details',
-      validation: (rule) => rule.required(),
+      group: 'general',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
-        name: 'type',
-        title: 'Venue Type',
-        type: 'string',
-        group: 'details',
-        options: {
-            list: [
-                { title: 'Commercial Gallery', value: 'gallery' },
-                { title: 'Museum / Institution', value: 'museum' },
-                { title: 'Art Fair', value: 'fair' },
-                { title: 'Pop-up Location', value: 'popup' },
-                { title: 'Public Space', value: 'public' },
-            ]
-        }
+      name: 'type',
+      title: 'Venue Type',
+      description: 'Categorizing the venue helps AI and Search Engines understand the context of the location.',
+      type: 'string',
+      group: 'general',
+      options: {
+        list: [
+          { title: 'Art Gallery', value: 'ArtGallery' },
+          { title: 'Salespoint', value: 'Salespoint' },
+          { title: 'Art Fair', value: 'ArtFair' },
+          { title: 'Exhibition Space', value: 'ExhibitionSpace' },
+          { title: 'Museum', value: 'Museum' },
+          { title: 'Public Space (Outdoor)', value: 'PublicSpace' },
+          { title: 'Institution', value: 'Institution' },
+          { title: 'Other', value: 'Other' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
-        name: 'website',
-        title: 'Website',
-        type: 'url',
-        group: 'details',
+      name: 'website',
+      title: 'Website',
+      description: 'The official URL (e.g., https://www.zerp.nl). Essential for linking authority.',
+      type: 'url',
+      group: 'general',
     }),
     defineField({
-      name: 'description',
+      name: 'about',
       title: 'About the Venue',
-      description: 'Describe the reputation, history, and focus of this venue. (Great for E-E-A-T)',
+      description: 'Describe the reputation, history, and focus of this venue. (Crucial for E-E-A-T: helps verify the quality of where your work is shown).',
       type: 'array',
-      group: 'details',
+      group: 'general',
       of: [{ type: 'block' }],
     }),
 
-    // --- 2. LOCATION ---
+    // --- GEO & ADDRESS ---
     defineField({
-        name: 'city',
-        title: 'City',
-        type: 'string',
-        group: 'location',
+      name: 'address',
+      title: 'Full Address',
+      description: 'The complete address including house number (e.g., Van Oldenbarneveltstraat 120A).',
+      type: 'string',
+      group: 'location',
     }),
     defineField({
-        name: 'country',
-        title: 'Country',
-        type: 'string',
-        group: 'location',
+      name: 'postalCode',
+      title: 'Postal Code',
+      description: 'e.g., 3012 GV',
+      type: 'string',
+      group: 'location',
     }),
     defineField({
-        name: 'address',
-        title: 'Full Address',
-        type: 'text',
-        rows: 3,
-        group: 'location',
+      name: 'city',
+      title: 'City',
+      description: 'e.g., Rotterdam',
+      type: 'string',
+      group: 'location',
     }),
     defineField({
-        name: 'googleMapsUrl',
-        title: 'Google Maps Link',
-        type: 'url',
-        group: 'location',
+      name: 'country',
+      title: 'Country',
+      description: 'e.g., The Netherlands',
+      type: 'string',
+      group: 'location',
     }),
-
-    // --- 3. VISUALS & BRANDING ---
-    
-    // 3a. Logo
     defineField({
-        name: 'logo',
-        title: 'Venue Logo',
-        description: 'Upload the official logo (PNG or SVG preferred).',
-        type: 'image',
-        group: 'media',
-        fields: [
-            defineField({
-                name: 'alt',
-                type: 'string',
-                title: 'Alt Text',
-                description: 'E.g. "Logo of Zerp Galerie"',
-            }),
-        ],
+      name: 'mapLink',
+      title: 'Google Maps Link',
+      description: 'Paste the Google Maps share URL here for GEO-tagging accuracy.',
+      type: 'url',
+      group: 'location',
     }),
 
-    // 3b. Main Image
+    // --- VISUALS ---
     defineField({
-      name: 'image',
+      name: 'logo',
+      title: 'Venue Logo',
+      description: 'Upload the official logo (PNG or SVG preferred). Used for seller recognition.',
+      type: 'image',
+      group: 'media',
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description: 'E.g., "Logo of Zerp Galerie"',
+        }
+      ]
+    }),
+    defineField({
+      name: 'mainImage',
       title: 'Main Photo (Hero)',
       description: 'The primary shot used on overview pages (Exterior or best interior view).',
       type: 'image',
       group: 'media',
       options: { hotspot: true },
       fields: [
-        defineField({
+        {
           name: 'alt',
           type: 'string',
           title: 'Alt Text',
-        }),
-      ],
+          description: 'E.g., "Interior view of Zerp Galerie Rotterdam"',
+        }
+      ]
     }),
-
-    // 3c. Additional Photos
     defineField({
-        name: 'additionalPhotos',
-        title: 'Additional Venue Photos',
-        description: 'Atmosphere shots, different rooms, architectural details.',
-        type: 'array',
-        group: 'media',
-        of: [
-            {
-                type: 'image',
-                options: { hotspot: true },
-                fields: [
-                    defineField({
-                        name: 'caption',
-                        type: 'string',
-                        title: 'Caption',
-                        description: 'E.g. "Main Exhibition Hall" or "Entrance View"'
-                    }),
-                    defineField({
-                        name: 'alt',
-                        type: 'string',
-                        title: 'Alt Text',
-                    }),
-                ]
-            }
-        ]
+      name: 'gallery',
+      title: 'Additional Venue Photos',
+      description: 'Atmosphere shots, different rooms, or architectural details.',
+      type: 'array',
+      group: 'media',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            { name: 'caption', type: 'string', title: 'Caption' },
+            { name: 'alt', type: 'string', title: 'Alt Text' }
+          ]
+        }
+      ]
     }),
   ],
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'city',
+      media: 'logo',
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title: title || 'Unnamed Venue',
+        subtitle: subtitle || 'Location unknown',
+        media: media,
+      }
+    },
+  },
 })
