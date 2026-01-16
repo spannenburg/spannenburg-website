@@ -15,6 +15,8 @@ import { blockContent } from './blockContent'
 import { metadata } from './metadata'
 import { award } from './award'
 import { siteSettings } from './siteSettings'
+import { priceTier } from './priceTier'
+import { artworkEdition } from './artworkEdition'
 
 // ---------------------------------------------
 // 2. OUDE MODULES (Die los in de map staan)
@@ -44,6 +46,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   author,
   category,
   award,
+  priceTier,
+  artworkEdition,
   
   // Hulpstukken
   blockContent,
