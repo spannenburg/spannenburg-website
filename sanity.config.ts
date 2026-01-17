@@ -37,8 +37,8 @@ import {
   TfiCup,
   TfiCheckBox,
   TfiNotepad,
-  TfiStar,    // <--- NIEUW: Voor Represented Artists
-  TfiIdBadge  // <--- NIEUW: Voor Referenced Artists
+  TfiStar,
+  TfiIdBadge 
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -52,7 +52,7 @@ export default defineConfig({
     structureTool({
       structure: (S: any) =>
         S.list()
-          .title('Spannenburg Gallery') // Aangepast naar Gallery
+          .title('Spannenburg Gallery')
           .items([
             // --- 0. 🚨 SYSTEM CHECKS ---
             S.listItem()
@@ -88,8 +88,7 @@ export default defineConfig({
             
             S.divider(),
 
-            // --- 2. 🌟 THE GALLERY ROSTER (Core Business) ---
-            // Dit is de 'Author' file (Arjan e.a.), nu prominent bovenaan
+            // --- 2. 🌟 THE GALLERY ROSTER ---
             S.documentTypeListItem('author').title('Represented Artists').icon(TfiStar),
             S.documentTypeListItem('artwork').title('Artworks Inventory').icon(TfiPalette),
             S.documentTypeListItem('project').title('Projects / Series').icon(TfiLayers),
@@ -104,14 +103,13 @@ export default defineConfig({
             // --- 4. 🌍 CONTEXT & NETWORK ---
             S.documentTypeListItem('exhibition').title('Exhibitions').icon(TfiMapAlt),
             S.documentTypeListItem('venue').title('Venues / Locations').icon(TfiLocationPin),
-            // Dit is de 'Artist' file (de peers)
             S.documentTypeListItem('artist').title('Referenced Artists (Peers)').icon(TfiIdBadge),
 
             S.divider(),
 
             // --- 5. 🏷️ ORGANIZATION ---
             S.documentTypeListItem('category').title('Categories / Hubs').icon(TfiCheckBox),
-            S.documentTypeListItem('award').title('Awards & Honors').icon(TfiMedall),
+            // HIER IS DE AWARD KNOP VERWIJDERD (Want die zit nu in de Artist)
 
             S.divider(),
 
