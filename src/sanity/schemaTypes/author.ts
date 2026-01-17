@@ -1,16 +1,16 @@
 import { defineField, defineType } from 'sanity'
-import { TfiStar, TfiCup } from 'react-icons/tfi' // Cup icoon toegevoegd
+import { TfiStar, TfiCup } from 'react-icons/tfi'
 
 export const author = defineType({
-  name: 'author', 
-  title: 'Represented Artists', 
+  name: 'author',
+  title: 'Represented Artists',
   type: 'document',
   icon: TfiStar,
   groups: [
     { name: 'details', title: 'Profile Details' },
     { name: 'story', title: 'Biography & Vision' },
     { name: 'history', title: 'Education & Legacy' },
-    { name: 'awards', title: 'Awards & Honors' }, // <--- NIEUWE GROEP
+    { name: 'awards', title: 'Awards & Honors' },
     { name: 'management', title: 'Representation' },
   ],
   fields: [
@@ -72,7 +72,7 @@ export const author = defineType({
       of: [{ type: 'block' }], 
     }),
 
-    // --- 4. AWARDS (NIEUW: INGEBOUWD) ---
+    // --- 4. AWARDS (INGEBOUWD) ---
     defineField({
       name: 'awards',
       title: 'Awards & Honors',
@@ -108,7 +108,7 @@ export const author = defineType({
               title: 'Winning Artwork (Optional)',
               type: 'reference',
               to: [{ type: 'artwork' }, { type: 'project' }]
-            },),
+            }),
             defineField({
               name: 'image',
               title: 'Logo / Badge (Optional)',
@@ -129,11 +129,11 @@ export const author = defineType({
       ]
     }),
 
-    // --- 5. SOCIALS ---
-defineField({
+    // --- 5. PRICING GROUP (Centraal Beheer) ---
+    defineField({
       name: 'priceGroup',
       title: 'Price Level / Group',
-      description: 'CENTRAL PRICING: Assign this artist to a price group. This overrides individual size prices.',
+      description: 'CENTRAL PRICING: Assign this artist to a price group (e.g. "Level 2"). This overrides individual size prices.',
       type: 'reference',
       to: [{ type: 'priceGroup' }],
       group: 'management',
