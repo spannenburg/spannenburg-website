@@ -1,8 +1,7 @@
 import { defineField, defineType } from 'sanity'
-import { TfiTruck } from 'react-icons/tfi'
+import { TfiTruck, TfiWorld, TfiNotepad } from 'react-icons/tfi'
 
-// Een lijst van veelvoorkomende landen. 
-// Het systeem slaat de 'value' op (NL), jij ziet de 'title' (Netherlands).
+// Uitgebreide lijst voor de dropdown
 const countryList = [
   { title: '🇦🇹 Austria', value: 'AT' },
   { title: '🇦🇺 Australia', value: 'AU' },
@@ -38,7 +37,6 @@ const countryList = [
   { title: '🇸🇮 Slovenia', value: 'SI' },
   { title: '🇸🇰 Slovakia', value: 'SK' },
   { title: '🇺🇸 United States', value: 'US' },
-  // Voeg hier eventueel andere landen toe als je die mist
 ]
 
 export const shippingZone = defineType({
@@ -47,49 +45,119 @@ export const shippingZone = defineType({
   type: 'document',
   icon: TfiTruck,
   fields: [
+    // --- 1. ZONE DEFINITIE ---
     defineField({
       name: 'name',
       title: 'Zone Name',
-      description: 'E.g. "Benelux", "EU Zone 1", "North America"',
+      description: 'E.g. "Netherlands", "EU Zone 1", "North America"',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
+
+    defineField({
+      name: 'isGlobalFallback',
+      title: 'Is "Rest of World" / Global Fallback?',
+      description: 'Check this box to apply these rates to ALL countries NOT listed in other zones.',
+      type: 'boolean',
+      initialValue: false,
+    }),
     
-    // HIER IS DE MAGIE: DE DROPDOWN
     defineField({
       name: 'countries',
       title: 'Countries in this Zone',
-      description: 'Select the countries that fall under these rates. Codes are ISO 3166-1 alpha-2. Look up codes at: https://www.iso.org/obp/ui/',
       type: 'array',
       of: [{ type: 'string' }],
       options: {
-        list: countryList, // Hier gebruiken we de lijst van hierboven
-        layout: 'tags'     // Dit zorgt ervoor dat ze als mooie labeltjes verschijnen
+        list: countryList, 
+        layout: 'tags'
       },
-      validation: (Rule) => Rule.required().min(1)
+      hidden: ({ document }) => document?.isGlobalFallback === true,
     }),
 
+    // --- 2. CONTRACT INFO (NIEUW: Voor jouw beheer) ---
+    defineField({
+        name: 'logisticsInfo',
+        title: 'Internal Logistics Info',
+        type: 'object',
+        icon: TfiNotepad,
+        options: { collapsible: true, collapsed: true }, // Standaard dichtklappen
+        fields: [
+            defineField({
+                name: 'courier',
+                title: 'Primary Courier',
+                type: 'string',
+                options: {
+                    list: ['PostNL', 'DHL Express', 'FedEx', 'UPS', 'Art Courier', 'Other']
+                }
+            }),
+            defineField({
+                name: 'contractNote',
+                title: 'Contract / Update Note',
+                description: 'E.g. "Prices per Jan 2026 (DHL Contract #1234)"',
+                type: 'string',
+            })
+        ]
+    }),
+
+    // --- 3. DE TARIEVEN (LEEG, JIJ MOET ZE INVULLEN) ---
     defineField({
       name: 'rates',
-      title: 'Shipping Rates per Class',
+      title: 'Shipping Rates (EUR)',
+      description: 'Vul hier de actuele prijzen in. Gebruik de tabel hieronder als spiekbriefje.',
       type: 'object',
+      options: { collapsible: false },
       fields: [
-        defineField({ name: 'mailbox', title: '✉️ Mailbox Rate (€)', type: 'number', initialValue: 0 }),
-        defineField({ name: 'parcel_standard', title: '📦 Standard Parcel Rate (€)', type: 'number', initialValue: 15 }),
-        defineField({ name: 'parcel_large', title: '📦 Large Parcel Rate (€)', type: 'number', initialValue: 45 }),
-        defineField({ name: 'freight', title: '🚚 Freight / Crating Rate (€)', type: 'number', initialValue: 250 }),
+        defineField({ 
+            name: 'mailbox', 
+            title: '✉️ Brievenbuspakket (≤ 3.8cm)', 
+            description: 'Richtprijs: NL ~€4 | EU ~€10 | World ~€25',
+            type: 'number', 
+            validation: (Rule) => Rule.required().min(0)
+        }),
+        defineField({ 
+            name: 'parcel_standard', 
+            title: '📦 Standard Parcel (approx 45x60cm)', 
+            description: 'Richtprijs: NL ~€15 | EU ~€30 | World ~€80',
+            type: 'number', 
+            validation: (Rule) => Rule.required().min(0)
+        }),
+        defineField({ 
+            name: 'parcel_large', 
+            title: '📦 Large Parcel (approx 90x120cm)', 
+            description: 'Richtprijs: NL ~€40 | EU ~€90 | World ~€200',
+            type: 'number', 
+            validation: (Rule) => Rule.required().min(0)
+        }),
+        defineField({ 
+            name: 'freight', 
+            title: '🚚 Crated Freight (Oversized/Pallet)', 
+            description: 'Richtprijs: NL ~€250 | EU ~€400 | World ~€500+',
+            type: 'number', 
+            validation: (Rule) => Rule.required().min(0)
+        }),
       ]
     }),
   ],
   preview: {
     select: {
       title: 'name',
-      countries: 'countries'
+      countries: 'countries',
+      isGlobal: 'isGlobalFallback',
+      courier: 'logisticsInfo.courier'
     },
-    prepare({ title, countries }) {
-      // Omdat we nu codes opslaan (NL, BE), willen we misschien even tellen hoeveel het er zijn
+    prepare({ title, countries, isGlobal, courier }) {
+      if (isGlobal) {
+        return {
+            title: `🌍 ${title} (Global Fallback)`,
+            subtitle: courier ? `Via ${courier}` : 'Standard rates',
+            media: TfiWorld
+        }
+      }
+
       const count = countries ? countries.length : 0;
-      const subtitle = count > 0 ? `${count} countries assigned` : 'No countries assigned';
+      const subtitle = count > 0 
+        ? `${count} countries (${courier || 'No courier'})` 
+        : 'No countries assigned';
       
       return {
         title: title,
