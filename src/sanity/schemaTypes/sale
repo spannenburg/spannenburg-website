@@ -1,0 +1,130 @@
+import { defineField, defineType } from 'sanity'
+import { TfiReceipt } from 'react-icons/tfi'
+
+export const sale = defineType({
+  name: 'sale',
+  title: 'Sales & Orders',
+  type: 'document',
+  icon: TfiReceipt,
+  fields: [
+    // --- 1. STATUS & ADMIN ---
+    defineField({
+      name: 'status',
+      title: 'Order Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: '🟢 New Inquiry (Action Required)', value: 'inquiry' },
+          { title: '🟠 Reserved / Awaiting Payment', value: 'reserved' },
+          { title: '🔵 Paid / In Production', value: 'paid' },
+          { title: '🟣 Shipped', value: 'shipped' },
+          { title: '🏁 Completed', value: 'completed' },
+          { title: '❌ Cancelled', value: 'cancelled' },
+        ],
+        layout: 'radio'
+      },
+      initialValue: 'inquiry',
+    }),
+    defineField({
+      name: 'orderDate',
+      title: 'Date of Inquiry',
+      type: 'datetime',
+      initialValue: () => new Date().toISOString(),
+    }),
+
+    // --- 2. DE KLANT ---
+    defineField({
+      name: 'customer',
+      title: 'Customer Details',
+      type: 'object',
+      fields: [
+        { name: 'name', type: 'string', title: 'Full Name' },
+        { name: 'email', type: 'string', title: 'Email' },
+        { name: 'address', type: 'text', title: 'Shipping Address' },
+        { name: 'vatNumber', type: 'string', title: 'VAT Number (Optional)' },
+      ]
+    }),
+
+    // --- 3. HET KUNSTWERK ---
+    defineField({
+      name: 'artwork',
+      title: 'Purchased Artwork',
+      type: 'reference',
+      to: [{ type: 'artwork' }],
+      validation: (Rule) => Rule.required(),
+    }),
+    
+    // Welke maat/editie hebben ze gekozen?
+    defineField({
+      name: 'selectedEdition',
+      title: 'Selected Edition Size',
+      description: 'Which size template did they choose? (e.g. "Landscape 120x80")',
+      type: 'string', // We slaan de naam op als "snapshot" van dat moment
+    }),
+
+    // --- 4. HET NUMMER (De Automatisering) ---
+    defineField({
+      name: 'editionNumber',
+      title: 'Assigned Edition Number',
+      description: 'E.g. "3" (for 3/8). Automatically suggested, but adjustable.',
+      type: 'number',
+    }),
+    defineField({
+      name: 'isAP',
+      title: 'Is Artist Proof (AP)?',
+      type: 'boolean',
+      initialValue: false,
+    }),
+
+    // --- 5. AFWERKING & PRIJS ---
+    defineField({
+      name: 'finishDetails',
+      title: 'Finishing Details',
+      description: 'E.g. "Walnut Frame, Museum Glass, Dibond mount".',
+      type: 'text',
+      rows: 3,
+    }),
+    defineField({
+      name: 'priceSold',
+      title: 'Final Sale Price (ex VAT)',
+      type: 'number',
+    }),
+
+    // --- 6. DOCUMENTEN (Automatisch Gegenereerd) ---
+    defineField({
+      name: 'invoicePdf',
+      title: 'Invoice PDF',
+      type: 'file',
+      readOnly: true, // Wordt door systeem gevuld
+    }),
+    defineField({
+      name: 'certificatePdf',
+      title: 'Certificate of Authenticity (CoA)',
+      type: 'file',
+      readOnly: true, // Wordt door systeem gevuld
+    }),
+  ],
+  preview: {
+    select: {
+      customer: 'customer.name',
+      artwork: 'artwork.title',
+      status: 'status',
+      number: 'editionNumber',
+    },
+    prepare({ customer, artwork, status, number }) {
+      const statusIcons = {
+        inquiry: '🟢',
+        reserved: '🟠',
+        paid: '🔵',
+        shipped: '🟣',
+        completed: '🏁',
+        cancelled: '❌'
+      }
+      return {
+        title: `${statusIcons[status as keyof typeof statusIcons] || ''} ${customer || 'Unknown'}`,
+        subtitle: `${artwork} | Ed: ${number || '?'}`,
+        media: TfiReceipt
+      }
+    }
+  }
+})
