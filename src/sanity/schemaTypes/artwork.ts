@@ -15,7 +15,7 @@ export const artwork = defineType({
     { name: 'migration', title: 'Migration' },
   ],
   fields: [
-    // --- 0. AI HELPER (Prompt Update) ---
+    // --- 0. AI HELPER (Gallery Edition) ---
     defineField({
       name: 'aiInstruction',
       title: 'Copy-Paste Prompt for Gemini/ChatGPT',
@@ -23,36 +23,45 @@ export const artwork = defineType({
       group: 'ai_helper',
       rows: 25,
       readOnly: true,
-      description: 'INSTRUCTION: 1. Copy this prompt. 2. Paste into AI. 3. Provide the Image URL AND the Artist\'s core concept/thoughts. 4. Copy the answers back.',
+      description: 'INSTRUCTION: 1. Copy prompt. 2. Paste into AI. 3. Provide Image + ARTIST NAME. 4. Copy answers back.',
       initialValue: `
-ACT AS: A senior Fine Art Curator & SEO Specialist (E-E-A-T Expert).
-GOAL: Create gallery-quality metadata for Arjan Spannenburg's portfolio.
-CONTEXT: Arjan creates High-Contrast Black & White fine art photography. Themes: Male vulnerability, Queer identity, Mythology.
+ACT AS: A senior Fine Art Curator & SEO Specialist (Gallery Level).
+GOAL: Write high-authority (E-E-A-T) metadata for an artwork in the "Spannenburg.Art" collection.
 
 INPUT REQUIRED FROM USER: 
 1. The Image (URL or upload).
-2. The Artist's Title (Strict).
-3. The Artist's Concept/Background story (Notes).
+2. The Artist Name (e.g. "Arjan Spannenburg" or "Guest Artist").
+3. The Artist's Concept/Style Notes for this specific work.
+
+CONTEXT RULES:
+- IF Artist is "Arjan Spannenburg": Use context "Male vulnerability, High-Contrast Black & White or Color (check the uploaded image), Queer identity or Mythology" if the text or image refer or have a connection to these terms.
+- IF Artist is SOMEONE ELSE: Adapt tone and context strictly to the provided artist notes.
 
 OUTPUT TASK - GENERATE THESE FIELDS:
 
-1. TITLE: Use the EXACT title provided by the artist. Do not invent one.
-2. HEADLINE: A punchy 1-sentence description (max 160 chars). Focus on the emotion and subject. (For JSON-LD/Google snippets).
-3. SLUG: Suggest a slug based on "title-year". Why? To ensure uniqueness if titles are repeated.
-4. DATE: Estimate the exact release date (YYYY-MM-DD). If unknown, use YYYY-01-01.
-5. GENRES (Select strictly from this list, multiple allowed):
-   [Fine Art Photography, Portraiture, Monochrome / Black & White, Male Figure / Nude, Queer Identity, Classical & Mythological, Conceptual, Documentary, Fetish & Subculture, Fashion]. 
-   *If the work fits none, suggest a NEW genre.*
+1. TITLE: Use the EXACT title provided by the artist.
+2. HEADLINE: Generate a JSON headline for an image or article that is optimized for SEO, AI/LLM understanding, and audience engagement.
+ - The headline must:
+  - Be a single, punchy sentence (max 160 characters)
+  - Evoke emotion and clearly convey the subject or main idea
+  - Include one relevant keyword naturally if appropriate
+  - Be concise and compelling, avoiding fluff or generic phrases
+  - Be understandable out of context, yet aligned with the content
+  - Avoid marketing hyperbole unless factually supported
+  - Use clear, modern language suitable for both humans and AI systems
+3. SLUG: Format "artistname-title-year" (to ensure uniqueness in a multi-artist gallery).
+4. DATE: Estimate exact release date (YYYY-MM-DD).
+5. GENRES: Select relevant tags from: [Fine Art Photography, Portraiture, Monochrome, Abstract, Painting, Mixed Media, Sculpture, Digital Art, Queer Identity, Conceptual].
 6. EMOTIONAL DESCRIPTION (The "Why"): 
+   - Write for the specific Artist's persona.
+   - Explain the "Soul" of the work. Why is this significant within this artist's oeuvre?
    - Priority: The Artist's Concept. This needs to be E-E-A-T, LLMO, GEO, SEO, and AI optimized, while remaining highly interesting for the international curator, art buyer, and collector.
    - Secondary: Combine this with visual analysis (light, composition, contrast). 
    - Explain the "Soul" of the work. Why is this significant? 
    - Use semantic keywords (used by the artist or found by you) naturally.
    - Length: 200-300 words.
 7. VISUAL DESCRIPTION (The "What"): 
-   - Start with: "A [Black & White / Color] [Portrait / Landscape / Square] photograph showing..."
-   - Describe literally what is visible for AI Vision & Accessibility tools.
-   - Length: 50-80 words.
+   - Literal description for AI Vision & Accessibility (include if the artworks is Black & White or Color] and if the artwork shape is a portrait / Landscape / Square.
 8. EXTERNAL LINKS (E-E-A-T Strategy - Total 5 suggestions): 
    - 2x Wikipedia Links (Essential context).
    - 2x High-Authority Non-Wikipedia Links (Museums like Rijksmuseum/Tate, RKD, MoMA, or authoritative Art History definitions).
@@ -61,14 +70,21 @@ OUTPUT TASK - GENERATE THESE FIELDS:
 9. KEYWORDS: 
    - List 10-15 specific terms. 
    - Mix specific visual elements with thematic concepts.
-10. ALT TEXT: Write a specific SEO-optimized alt text for the image.
-11. FILENAME: Generate the optimal filename for the image file. 
-    - Format: "arjan-spannenburg-[slug]-[keyword].webp"
-    - Use lowercase and hyphens only. 
-    - Why? Google reads filenames for ranking!
-
-TONE: Sophisticated, curated, 3rd person. No sales-talk.
-READY? Ask me for the Image and the Artist's Notes.
+10. Generate a high-quality alt text for an image that is optimized for accessibility, SEO, large language models, AI vision systems, and geographic relevance.
+   - The alt text must:
+      - Clearly and objectively describe what is visible in the image
+      - Use a natural, complete sentence (no keyword lists)
+      - Be concise (maximum 125 characters)
+      - Avoid phrases like “image of” or “photo of”
+      - Include one primary keyword naturally, only if relevant
+      - Mention materials, actions, setting, and mood where visually apparent
+      - Reflect the meaning or function of the image in its page context
+      - Include geographic or cultural context only if it is factual and visible
+      - Use neutral, descriptive language without marketing claims
+      - Be understandable without surrounding text
+11. FILENAME: "artist-name-title-keyword.webp" (Crucial for SEO).
+TONE: Sophisticated, curated, 3rd person.
+READY? Ask me for the Image and Artist Details.
       `
     }),
 
@@ -81,17 +97,29 @@ READY? Ask me for the Image and the Artist's Notes.
       group: 'general',
       validation: (Rule) => Rule.required(),
     }),
+
+    // --- NIEUW: ARTIST REFERENCE (GALLERY KOPPELING) ---
+    defineField({
+      name: 'artist',
+      title: 'Artist (Creator)',
+      description: 'Select the creator of this artwork. Essential for the Multi-Artist Gallery structure.',
+      type: 'reference',
+      group: 'general',
+      to: [{ type: 'author' }], 
+      validation: (Rule) => Rule.required(),
+    }),
+
     defineField({
       name: 'headline',
       title: 'Headline (JSON-LD)',
-      description: 'A short, punchy sentence for Google results. Example: "Intense black-and-white portrait exploring vulnerability."',
+      description: 'A short, punchy sentence for Google results.',
       type: 'string',
       group: 'general',
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
-      description: 'The unique URL part. We advise "title-year" to ensure uniqueness (e.g., "cupido-2024"), as titles like "Untitled" or "Portrait" are often repeated.',
+      description: 'The unique URL part. Suggestion: "artist-title-year".',
       type: 'slug',
       group: 'general',
       options: { source: 'title', maxLength: 96 },
@@ -111,21 +139,23 @@ READY? Ask me for the Image and the Artist's Notes.
     defineField({
       name: 'categories',
       title: 'Categories', 
-      description: 'Choose at least one category to which this artwork belongs. Only add a new category if this is essential. There are category pages with a collection of these artworks.',
+      description: 'Choose at least one category to which this artwork belongs.',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
     
+    // GENRES (Uitgebreid voor Gallery)
     defineField({
       name: 'genre',
       title: 'Genres / Tags',
-      description: 'Mainly for SEO and JSON structuring. Select the applicable genres. If a new genre is needed that is not in this list, ask the developer to add it.',
+      description: 'Mainly for SEO and JSON structuring.',
       type: 'array',
       group: 'content',
       of: [{ type: 'string' }],
       options: {
         list: [
+          // Arjan's Core Genres
           { title: 'Fine Art Photography', value: 'Fine Art Photography' },
           { title: 'Portraiture', value: 'Portraiture' },
           { title: 'Monochrome / Black & White', value: 'Monochrome' },
@@ -136,6 +166,11 @@ READY? Ask me for the Image and the Artist's Notes.
           { title: 'Documentary', value: 'Documentary' },
           { title: 'Fetish & Subculture', value: 'Fetish & Subculture' },
           { title: 'Fashion', value: 'Fashion' },
+          // Nieuwe Gallery Genres
+          { title: 'Painting', value: 'Painting' },
+          { title: 'Sculpture', value: 'Sculpture' },
+          { title: 'Mixed Media', value: 'Mixed Media' },
+          { title: 'Abstract', value: 'Abstract' },
         ],
       },
     }),
@@ -151,7 +186,7 @@ READY? Ask me for the Image and the Artist's Notes.
     defineField({
       name: 'visualDescription',
       title: 'Visual / Raw Description (The "What")',
-      description: 'ACCESSIBILITY & AI: A literal description for visually impaired users and Google Vision. State if it is B&W/Color, Portrait/Landscape, and what is physically in the frame. (~50-80 words).',
+      description: 'ACCESSIBILITY & AI: A literal description for visually impaired users and Google Vision.',
       type: 'text',
       group: 'content',
     }),
@@ -159,7 +194,7 @@ READY? Ask me for the Image and the Artist's Notes.
     defineField({
       name: 'externalReferences',
       title: 'External Authority Links (Entity Linking)',
-      description: 'AUTHORITY BUILDER: The AI suggests 5 links. Select the best ones (e.g. 2 Wikipedia + 1 Museum link). This connects your art to the global art canon in Google\'s eyes.',
+      description: 'AUTHORITY BUILDER: The AI suggests 5 links. Select the best ones.',
       type: 'array',
       group: 'content',
       of: [
@@ -176,7 +211,7 @@ READY? Ask me for the Image and the Artist's Notes.
     defineField({
       name: 'keywords',
       title: 'SEO Keywords (Meta Tags)',
-      description: 'SPECIFICITY: Don\'t just use "Art". Use specific terms like "High contrast male nude", "Rembrandt lighting", "Dutch photography". Used for search indexing.',
+      description: 'SPECIFICITY: Used for search indexing.',
       type: 'text',
       group: 'content',
     }),
@@ -185,18 +220,18 @@ READY? Ask me for the Image and the Artist's Notes.
     defineField({
       name: 'material',
       title: 'Materials & Finishes',
-      description: 'PRICING: Select the standard finish. The price calculation depends on this choice.',
+      description: 'PRICING: Select the standard finish.',
       type: 'array',
       group: 'content',
       of: [{ type: 'reference', to: [{ type: 'material' }] }],
     }),
 
-    // --- 3. VISUALS (Aangepast met instructie) ---
+    // --- 3. VISUALS ---
     defineField({
       name: 'mainImage',
       title: 'Main Artwork Image',
-      // NIEUW: Instructie voor bestandsnaam
-      description: 'IMPORTANT: Before uploading, rename your file! Use the filename suggested by the AI (e.g., "arjan-spannenburg-title.webp"). This is crucial for Image SEO.',
+      // Instructie aangepast voor Artist-Generic filename
+      description: 'IMPORTANT: Before uploading, rename your file! Use: "artist-title-keyword.webp".',
       type: 'image',
       group: 'media',
       options: { hotspot: true },
@@ -232,11 +267,13 @@ READY? Ask me for the Image and the Artist's Notes.
       title: 'title',
       date: 'dateCreated',
       media: 'mainImage',
+      artist: 'artist.name' // NIEUW: Haal de artiestennaam op
     },
-    prepare({ title, date, media }) {
+    prepare({ title, date, media, artist }) {
       return {
         title: title || 'Untitled',
-        subtitle: date ? new Date(date).getFullYear().toString() : 'No date',
+        // NIEUW: Toon "Artiest | Jaar"
+        subtitle: `${artist || 'No Artist'} | ${date ? new Date(date).getFullYear().toString() : 'No date'}`,
         media: media,
       }
     },
