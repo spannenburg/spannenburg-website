@@ -1,5 +1,5 @@
 import { defineField, defineType } from 'sanity'
-import { TfiReceipt } from 'react-icons/tfi'
+import { TfiReceipt, TfiWallet, TfiCommentAlt } from 'react-icons/tfi'
 
 export const sale = defineType({
   name: 'sale',
@@ -56,6 +56,7 @@ export const sale = defineType({
         { name: 'email', type: 'string', title: 'Email' },
         { name: 'phone', type: 'string', title: 'Phone' },
         { name: 'address', type: 'text', title: 'Billing/Shipping Address' },
+        { name: 'vatNumber', type: 'string', title: 'VAT Number (Business only)' },
       ]
     }),
 
@@ -68,7 +69,6 @@ export const sale = defineType({
       validation: (Rule) => Rule.required(),
     }),
     
-    // AANPASSING 1: Dropdown naar je Size Templates (Veiliger dan typen)
     defineField({
       name: 'selectedSize',
       title: 'Selected Size',
@@ -78,11 +78,10 @@ export const sale = defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // AANPASSING 2: Nummer keuze (Handmatig invoeren, maar duidelijk)
     defineField({
       name: 'editionNumber',
       title: 'Assigned Edition Number',
-      description: '⚠️ Check the artwork inventory first! Enter the specific number (e.g. 3).',
+      description: '⚠️ Check inventory first! Enter the specific number (e.g. 3).',
       type: 'number',
       validation: (Rule) => Rule.required(),
     }),
@@ -93,38 +92,91 @@ export const sale = defineType({
       initialValue: false,
     }),
 
-    // --- 4. PRODUCTIE & UITVOERING (NIEUW) ---
+    // --- 4. PRODUCTIE & WENSEN ---
     defineField({
         name: 'production',
-        title: 'Production & Finish',
+        title: 'Production & Wishes',
         type: 'object',
         options: { collapsible: false },
         fields: [
-            // Dropdown naar je Materialen (Veiliger dan typen)
             defineField({
                 name: 'material',
                 title: 'Print Material',
                 type: 'reference',
                 to: [{ type: 'material' }],
-                description: 'Which paper/material is used?'
             }),
-            // Vrij veld voor lijstwerk
             defineField({
-                name: 'framing',
-                title: 'Framing / Mounting Details',
+                name: 'remarks',
+                title: 'Customer Wishes / Framing / Notes',
+                description: 'E.g. "Walnut box frame, Museum Glass, Delivery after June 1st".',
                 type: 'text',
-                rows: 2,
-                placeholder: 'E.g. Walnut box frame, Museum Glass, Dibond mount...'
+                rows: 3,
+                icon: TfiCommentAlt
             })
         ]
     }),
 
-    // --- 5. FINANCIEEL ---
+    // --- 5. FINANCIEEL (UITGEBREID) ---
     defineField({
-      name: 'priceSold',
-      title: 'Sold Price (EUR)',
-      description: 'Final agreed price (excl. VAT if applicable)',
-      type: 'number',
+      name: 'financials',
+      title: 'Financial Calculation',
+      type: 'object',
+      icon: TfiWallet,
+      options: { collapsible: false },
+      fields: [
+        // A. Basis Kunstwerk
+        defineField({
+            name: 'listPrice',
+            title: 'List Price (Catalogusprijs)',
+            description: 'The standard price according to the website.',
+            type: 'number',
+        }),
+        defineField({
+            name: 'discountAmount',
+            title: 'Discount Amount (Korting)',
+            description: 'Optional discount given.',
+            type: 'number',
+        }),
+        defineField({
+            name: 'priceSold',
+            title: 'Agreed Artwork Price (Excl. VAT)',
+            description: 'Base price for the artwork (List Price - Discount).',
+            type: 'number',
+            validation: (Rule) => Rule.required(),
+        }),
+
+        // B. Extra Kosten (Jouw verzoek)
+        defineField({
+            name: 'additionalCosts',
+            title: 'Additional Costs (Framing/Glass)',
+            description: 'Costs for framing, mounting, special glass, etc.',
+            type: 'number',
+            initialValue: 0
+        }),
+        defineField({
+            name: 'transportCosts',
+            title: 'Transport / Shipping Costs',
+            description: 'Crating and shipping fees.',
+            type: 'number',
+            initialValue: 0
+        }),
+
+        // C. BTW
+        defineField({
+            name: 'vatRate',
+            title: 'VAT Rate',
+            description: 'Which VAT rate applies to this invoice?',
+            type: 'string',
+            options: {
+                list: [
+                    { title: '21% (Standard Art/Framing)', value: '21' },
+                    { title: '9% (Low/Special)', value: '9' },
+                    { title: '0% (Export/Business)', value: '0' },
+                ]
+            },
+            initialValue: '9'
+        })
+      ]
     }),
   ],
   preview: {
@@ -133,19 +185,24 @@ export const sale = defineType({
       artwork: 'artwork.title',
       status: 'status',
       number: 'editionNumber',
-      size: 'selectedSize.width', // We pakken even breedte voor de preview
-      material: 'production.material.name'
+      price: 'financials.priceSold',
+      extra: 'financials.additionalCosts',
+      transport: 'financials.transportCosts',
+      size: 'selectedSize.width',
     },
-    prepare({ customer, artwork, status, number, size, material }) {
+    prepare({ customer, artwork, status, number, price, extra, transport, size }) {
       const icons = { inquiry: '🟢', reserved: '🟠', paid: '🔵', shipped: '🟣', completed: '🏁', cancelled: '❌' };
       const statusIcon = icons[status as keyof typeof icons] || '⚪';
       
-      const sizeText = size ? ` | Size: ${size}cm` : '';
-      const matText = material ? ` on ${material}` : '';
+      // Totale waarde schatting voor preview (puur visueel)
+      const totalEstim = (price || 0) + (extra || 0) + (transport || 0);
+      
+      const sizeText = size ? ` | ${size}cm` : '';
+      const priceText = totalEstim ? ` | €${totalEstim}` : '';
 
       return {
         title: `${statusIcon} ${customer || 'New Order'}`,
-        subtitle: `${artwork} (#${number})${sizeText}${matText}`,
+        subtitle: `${artwork} (#${number})${sizeText}${priceText}`,
         media: TfiReceipt
       }
     }
