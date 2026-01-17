@@ -128,8 +128,18 @@ export const author = defineType({
         }
       ]
     }),
-    
+
     // --- 5. SOCIALS ---
+defineField({
+      name: 'priceGroup',
+      title: 'Price Level / Group',
+      description: 'CENTRAL PRICING: Assign this artist to a price group. This overrides individual size prices.',
+      type: 'reference',
+      to: [{ type: 'priceGroup' }],
+      group: 'management',
+    }),
+    
+    // --- 6. SOCIALS ---
     defineField({
       name: 'socialLinks',
       title: 'Social Media Links',
@@ -146,7 +156,7 @@ export const author = defineType({
       ]
     }),
 
-    // --- 6. MANAGEMENT ---
+    // --- 7. MANAGEMENT ---
     defineField({
       name: 'isRepresentedByUs',
       title: 'Represented by Spannenburg.Art?',
