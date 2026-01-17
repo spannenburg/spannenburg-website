@@ -19,15 +19,16 @@ import { material } from './material'
 import { note } from './note'
 import { priceGroup } from './priceGroup'
 
-// --- 2. PAGE MODULES (HERSTELD) ---
-// Deze bestanden zijn nodig voor de Page Builder
+// --- 2. PAGE MODULES & EXTRAS ---
+// Deze bestanden stonden in je lijst, maar misten in de export
 import { hero } from './hero'
-import { text } from './text' // Bevat waarschijnlijk name: 'text-module'
-import { artworkGrid } from './artworkGrid' // Bevat waarschijnlijk name: 'artwork-grid'
+import { text } from './text'            // Bevat name: 'text-module' of 'text'
+import { artworkGrid } from './artworkGrid' 
 import { metadata } from './metadata'
+import { postList } from './postList'    // Deze zag ik ook in je lijst staan
 
 export const schemaTypes: SchemaTypeDefinition[] = [
-  // Core
+  // Core Documents
   post,
   author,
   category,
@@ -45,8 +46,11 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   material,
   note,
   priceGroup,
+
+  // Page Builder Modules & Components
   hero,
   text,
   artworkGrid,
   metadata,
+  postList,
 ]
