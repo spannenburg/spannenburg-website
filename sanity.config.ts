@@ -28,7 +28,6 @@ import {
   TfiMapAlt,
   TfiWrite,
   TfiFiles,
-  TfiTag,
   TfiMoney,
   TfiRulerPencil,
   TfiPaintRoller,
@@ -36,7 +35,8 @@ import {
   TfiImage,
   TfiTarget,
   TfiCup,
-  TfiCheckBox
+  TfiCheckBox,
+  TfiNotepad // <--- NIEUW ICOON
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -52,9 +52,9 @@ export default defineConfig({
         S.list()
           .title('Spannenburg Studio')
           .items([
-            // --- 1. 🚨 TO-DO LIST (Dashboard) ---
+            // --- 0. 🚨 SYSTEM TO-DO ---
             S.listItem()
-              .title('🚨 To-Do / Incomplete')
+              .title('🚨 System Checks')
               .icon(TfiAlert)
               .child(
                 S.list()
@@ -63,41 +63,30 @@ export default defineConfig({
                     S.listItem()
                       .title('Artworks missing Image')
                       .icon(TfiImage)
-                      .child(
-                        S.documentList()
-                          .title('Artworks missing Image')
-                          .filter('_type == "artwork" && !defined(mainImage)')
-                      ),
+                      .child(S.documentList().title('Artworks missing Image').filter('_type == "artwork" && !defined(mainImage)')),
                     S.listItem()
                       .title('Artworks missing Story')
                       .icon(TfiWrite)
-                      .child(
-                        S.documentList()
-                          .title('Artworks missing Story')
-                          .filter('_type == "artwork" && !defined(description)')
-                      ),
+                      .child(S.documentList().title('Artworks missing Story').filter('_type == "artwork" && !defined(description)')),
                     S.listItem()
                       .title('Artworks missing SEO')
                       .icon(TfiTarget)
-                      .child(
-                        S.documentList()
-                          .title('Artworks missing SEO')
-                          .filter('_type == "artwork" && !defined(keywords)')
-                      ),
+                      .child(S.documentList().title('Artworks missing SEO').filter('_type == "artwork" && !defined(keywords)')),
                     S.listItem()
                       .title('Empty Projects')
                       .icon(TfiLayers)
-                      .child(
-                        S.documentList()
-                          .title('Empty Projects')
-                          .filter('_type == "project" && !defined(artworks)')
-                      ),
+                      .child(S.documentList().title('Empty Projects').filter('_type == "project" && !defined(artworks)')),
                   ])
               ),
 
+            // --- 1. 📝 MY NOTES (NIEUW!) ---
+            S.divider(),
+            S.documentTypeListItem('note')
+              .title('My Ideas & Notes')
+              .icon(TfiNotepad),
             S.divider(),
 
-            // --- 2. 🎨 CORE CONTENT (Daily Workflow) ---
+            // --- 2. 🎨 CORE CONTENT ---
             S.documentTypeListItem('artwork').title('Artworks').icon(TfiPalette),
             S.documentTypeListItem('project').title('Projects / Series').icon(TfiLayers),
             S.documentTypeListItem('post').title('Journal / News').icon(TfiWrite),
@@ -144,27 +133,12 @@ export default defineConfig({
               .icon(TfiSettings)
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
 
-            // --- 7. CATCH-ALL (Voor alles wat we vergeten zijn) ---
+            // --- 7. CATCH-ALL ---
             ...S.documentTypeListItems().filter(
               (listItem: any) => 
                 ![
-                  'siteSettings', 
-                  'author', 
-                  'priceTier', 
-                  'sizeTemplate', 
-                  'venue', 
-                  'award', 
-                  'category', 
-                  'project', 
-                  'artwork', 
-                  'exhibition', 
-                  'post', 
-                  'page', 
-                  'artist', 
-                  'material',
-                  'artworkEdition', 
-                  'metadata', 
-                  'blockContent'
+                  'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 
+                  'note' // <--- VERGEET DEZE NIET TE FILTEREN
                 ].includes(listItem.getId() || '')
             ),
           ]),
