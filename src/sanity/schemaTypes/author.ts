@@ -1,14 +1,15 @@
 import { defineField, defineType } from 'sanity'
-import { TfiUser } from 'react-icons/tfi'
+import { TfiStar } from 'react-icons/tfi' // Aangepast naar Ster voor "Main Artist"
 
 export const author = defineType({
-  name: 'author', // INTERNE NAAM: Blijft 'author'
-  title: 'Artist Profile (Gallery)', // EXTERNE TITEL: Zichtbaar in Studio
+  name: 'author', // INTERNE NAAM: Blijft 'author' (Data behoud)
+  title: 'Represented Artists', // EXTERNE TITEL: Aangepast voor duidelijkheid
   type: 'document',
-  icon: TfiUser,
+  icon: TfiStar,
   groups: [
     { name: 'details', title: 'Profile Details' },
-    { name: 'story', title: 'Biography & CV' },
+    { name: 'story', title: 'Biography & Vision' },
+    { name: 'history', title: 'Education & Legacy' }, // NIEUWE GROEP voor CV/Opleiding
     { name: 'management', title: 'Representation' },
   ],
   fields: [
@@ -73,12 +74,13 @@ export const author = defineType({
       of: [{ type: 'block' }],
     }),
 
-    // --- 3. CV ---
+    // --- 3. CV & EDUCATION (Aangepast voor Single Source of Truth) ---
     defineField({
-      name: 'cv',
-      title: 'Curriculum Vitae (Exhibitions)',
+      name: 'cv', // NAAM BLIJFT 'cv' -> Je verliest GEEN data!
+      title: 'Education & Historical CV', // Titel aangepast
+      description: '⚠️ NOTE: Do NOT list new exhibitions here. They are automatically fetched from the "Exhibitions" module. Use this field ONLY for Education, Awards, and old exhibitions (pre-2024).',
       type: 'array',
-      group: 'story',
+      group: 'history', // Verplaatst naar history groep
       of: [{ type: 'block' }], 
     }),
     
