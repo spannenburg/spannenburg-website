@@ -66,15 +66,17 @@ export const sale = defineType({
       title: 'Purchased Artwork',
       type: 'reference',
       to: [{ type: 'artwork' }],
+      options: { disableNew: true }, // <--- AANGEPAST: Je mag hier geen nieuwe kunst maken, alleen kiezen
       validation: (Rule) => Rule.required(),
     }),
     
     defineField({
       name: 'selectedSize',
       title: 'Selected Size',
-      description: 'Choose the size template intended for this print.',
+      description: 'Select the standard size. Do NOT edit the template itself.',
       type: 'reference',
       to: [{ type: 'sizeTemplate' }],
+      options: { disableNew: true }, // <--- AANGEPAST: Blokkeert het aanmaken van nieuwe maten
       validation: (Rule) => Rule.required(),
     }),
 
@@ -104,6 +106,7 @@ export const sale = defineType({
                 title: 'Print Material',
                 type: 'reference',
                 to: [{ type: 'material' }],
+                options: { disableNew: true }, // <--- AANGEPAST: Blokkeert nieuwe materialen maken
             }),
             defineField({
                 name: 'remarks',
@@ -116,7 +119,7 @@ export const sale = defineType({
         ]
     }),
 
-    // --- 5. FINANCIEEL (UITGEBREID) ---
+    // --- 5. FINANCIEEL ---
     defineField({
       name: 'financials',
       title: 'Financial Calculation',
@@ -145,7 +148,7 @@ export const sale = defineType({
             validation: (Rule) => Rule.required(),
         }),
 
-        // B. Extra Kosten (Jouw verzoek)
+        // B. Extra Kosten
         defineField({
             name: 'additionalCosts',
             title: 'Additional Costs (Framing/Glass)',
@@ -194,7 +197,6 @@ export const sale = defineType({
       const icons = { inquiry: '🟢', reserved: '🟠', paid: '🔵', shipped: '🟣', completed: '🏁', cancelled: '❌' };
       const statusIcon = icons[status as keyof typeof icons] || '⚪';
       
-      // Totale waarde schatting voor preview (puur visueel)
       const totalEstim = (price || 0) + (extra || 0) + (transport || 0);
       
       const sizeText = size ? ` | ${size}cm` : '';
