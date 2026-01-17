@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 import { ThListIcon } from '@sanity/icons'
 
 export const artworkGrid = defineType({
-  name: 'artworkGrid',
+  name: 'artwork-grid', // <--- HIER ZAT DE FOUT (was artworkGrid)
   title: 'Artwork / Series Grid',
   type: 'object',
   icon: ThListIcon,
