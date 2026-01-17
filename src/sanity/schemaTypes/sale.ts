@@ -50,6 +50,7 @@ export const sale = defineType({
       name: 'customer',
       title: 'Customer Details',
       type: 'object',
+      options: { collapsible: true, collapsed: false },
       fields: [
         { name: 'name', type: 'string', title: 'Full Name' },
         { name: 'email', type: 'string', title: 'Email' },
@@ -58,7 +59,7 @@ export const sale = defineType({
       ]
     }),
 
-    // --- 3. HET KUNSTWERK ---
+    // --- 3. HET KUNSTWERK & EDITIE ---
     defineField({
       name: 'artwork',
       title: 'Purchased Artwork',
@@ -67,35 +68,62 @@ export const sale = defineType({
       validation: (Rule) => Rule.required(),
     }),
     
-    // Omdat een artwork meerdere maten heeft, moeten we tekstueel opslaan wat er gekocht is
-    // Anders raakt de historie corrupt als je later maten aanpast.
+    // AANPASSING 1: Dropdown naar je Size Templates (Veiliger dan typen)
     defineField({
-      name: 'selectedEditionName',
-      title: 'Selected Edition (Snapshot)',
-      description: 'E.g. "Landscape 120x80"',
-      type: 'string', 
+      name: 'selectedSize',
+      title: 'Selected Size',
+      description: 'Choose the size template intended for this print.',
+      type: 'reference',
+      to: [{ type: 'sizeTemplate' }],
       validation: (Rule) => Rule.required(),
     }),
 
-    // --- 4. HET NUMMER ---
+    // AANPASSING 2: Nummer keuze (Handmatig invoeren, maar duidelijk)
     defineField({
       name: 'editionNumber',
       title: 'Assigned Edition Number',
-      description: 'Which specific number gets assigned? (e.g. 3 of 6)',
+      description: '⚠️ Check the artwork inventory first! Enter the specific number (e.g. 3).',
       type: 'number',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'isAP',
-      title: 'Is Artist Proof?',
+      title: 'Is Artist Proof (AP)?',
       type: 'boolean',
       initialValue: false,
+    }),
+
+    // --- 4. PRODUCTIE & UITVOERING (NIEUW) ---
+    defineField({
+        name: 'production',
+        title: 'Production & Finish',
+        type: 'object',
+        options: { collapsible: false },
+        fields: [
+            // Dropdown naar je Materialen (Veiliger dan typen)
+            defineField({
+                name: 'material',
+                title: 'Print Material',
+                type: 'reference',
+                to: [{ type: 'material' }],
+                description: 'Which paper/material is used?'
+            }),
+            // Vrij veld voor lijstwerk
+            defineField({
+                name: 'framing',
+                title: 'Framing / Mounting Details',
+                type: 'text',
+                rows: 2,
+                placeholder: 'E.g. Walnut box frame, Museum Glass, Dibond mount...'
+            })
+        ]
     }),
 
     // --- 5. FINANCIEEL ---
     defineField({
       name: 'priceSold',
       title: 'Sold Price (EUR)',
+      description: 'Final agreed price (excl. VAT if applicable)',
       type: 'number',
     }),
   ],
@@ -105,16 +133,19 @@ export const sale = defineType({
       artwork: 'artwork.title',
       status: 'status',
       number: 'editionNumber',
-      channel: 'salesChannel'
+      size: 'selectedSize.width', // We pakken even breedte voor de preview
+      material: 'production.material.name'
     },
-    prepare({ customer, artwork, status, number, channel }) {
+    prepare({ customer, artwork, status, number, size, material }) {
       const icons = { inquiry: '🟢', reserved: '🟠', paid: '🔵', shipped: '🟣', completed: '🏁', cancelled: '❌' };
       const statusIcon = icons[status as keyof typeof icons] || '⚪';
-      const channelLabel = channel === 'online' ? '🌐' : '🏛️';
+      
+      const sizeText = size ? ` | Size: ${size}cm` : '';
+      const matText = material ? ` on ${material}` : '';
 
       return {
-        title: `${statusIcon} ${customer || 'Unknown Customer'}`,
-        subtitle: `${channelLabel} ${artwork} | Ed: #${number}`,
+        title: `${statusIcon} ${customer || 'New Order'}`,
+        subtitle: `${artwork} (#${number})${sizeText}${matText}`,
         media: TfiReceipt
       }
     }
