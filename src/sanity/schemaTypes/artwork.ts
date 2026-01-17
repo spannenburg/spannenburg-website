@@ -246,6 +246,19 @@ READY? Ask me for the Image and Artist Details.
     }),
 
     // --- 4. PRICING & EDITIONS ---
+    // NIEUW: De teller staat nu hier, in de 'editions' groep.
+    defineField({
+      name: 'inventoryStats',
+      title: 'Inventory Stats (Auto-updated)',
+      type: 'object',
+      group: 'editions',
+      readOnly: true, // Wordt door je systeem geüpdatet
+      fields: [
+        { name: 'soldCount', type: 'number', title: 'Regular Sold', initialValue: 0 },
+        { name: 'apSold', type: 'number', title: 'AP Sold', initialValue: 0 },
+      ]
+    }),
+
     defineField({
       name: 'editions',
       title: 'Available Editions',
@@ -267,12 +280,11 @@ READY? Ask me for the Image and Artist Details.
       title: 'title',
       date: 'dateCreated',
       media: 'mainImage',
-      artist: 'artist.name' // NIEUW: Haal de artiestennaam op
+      artist: 'artist.name'
     },
     prepare({ title, date, media, artist }) {
       return {
         title: title || 'Untitled',
-        // NIEUW: Toon "Artiest | Jaar"
         subtitle: `${artist || 'No Artist'} | ${date ? new Date(date).getFullYear().toString() : 'No date'}`,
         media: media,
       }
