@@ -36,7 +36,9 @@ import {
   TfiTarget,
   TfiCup,
   TfiCheckBox,
-  TfiNotepad // <--- NIEUW ICOON
+  TfiNotepad,
+  TfiStar,    // <--- NIEUW: Voor Represented Artists
+  TfiIdBadge  // <--- NIEUW: Voor Referenced Artists
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -50,9 +52,9 @@ export default defineConfig({
     structureTool({
       structure: (S: any) =>
         S.list()
-          .title('Spannenburg Studio')
+          .title('Spannenburg Gallery') // Aangepast naar Gallery
           .items([
-            // --- 0. 🚨 SYSTEM TO-DO ---
+            // --- 0. 🚨 SYSTEM CHECKS ---
             S.listItem()
               .title('🚨 System Checks')
               .icon(TfiAlert)
@@ -79,34 +81,41 @@ export default defineConfig({
                   ])
               ),
 
-            // --- 1. 📝 MY NOTES (NIEUW!) ---
             S.divider(),
-            S.documentTypeListItem('note')
-              .title('My Ideas & Notes')
-              .icon(TfiNotepad),
+            
+            // --- 1. 📝 IDEAS ---
+            S.documentTypeListItem('note').title('My Ideas & Notes').icon(TfiNotepad),
+            
             S.divider(),
 
-            // --- 2. 🎨 CORE CONTENT ---
-            S.documentTypeListItem('artwork').title('Artworks').icon(TfiPalette),
+            // --- 2. 🌟 THE GALLERY ROSTER (Core Business) ---
+            // Dit is de 'Author' file (Arjan e.a.), nu prominent bovenaan
+            S.documentTypeListItem('author').title('Represented Artists').icon(TfiStar),
+            S.documentTypeListItem('artwork').title('Artworks Inventory').icon(TfiPalette),
             S.documentTypeListItem('project').title('Projects / Series').icon(TfiLayers),
+
+            S.divider(),
+
+            // --- 3. 📣 MARKETING & NEWS ---
             S.documentTypeListItem('post').title('Journal / News').icon(TfiWrite),
 
             S.divider(),
 
-            // --- 3. 🌍 CONTEXT & EVENTS ---
+            // --- 4. 🌍 CONTEXT & NETWORK ---
             S.documentTypeListItem('exhibition').title('Exhibitions').icon(TfiMapAlt),
             S.documentTypeListItem('venue').title('Venues / Locations').icon(TfiLocationPin),
-            S.documentTypeListItem('artist').title('Artists (Peers)').icon(TfiUser),
+            // Dit is de 'Artist' file (de peers)
+            S.documentTypeListItem('artist').title('Referenced Artists (Peers)').icon(TfiIdBadge),
 
             S.divider(),
 
-            // --- 4. 🏷️ ORGANIZATION & PROOF ---
+            // --- 5. 🏷️ ORGANIZATION ---
             S.documentTypeListItem('category').title('Categories / Hubs').icon(TfiCheckBox),
             S.documentTypeListItem('award').title('Awards & Honors').icon(TfiMedall),
 
             S.divider(),
 
-            // --- 5. ⚙️ TECHNICAL & COMMERCE ---
+            // --- 6. ⚙️ TECHNICAL & COMMERCE ---
             S.listItem()
               .title('Technical / Pricing')
               .icon(TfiMoney)
@@ -122,23 +131,18 @@ export default defineConfig({
 
             S.divider(),
 
-            // --- 6. 🖥️ WEBSITE MANAGEMENT ---
+            // --- 7. 🖥️ SITE MANAGEMENT ---
             S.documentTypeListItem('page').title('Pages').icon(TfiFiles),
-            S.listItem()
-              .title('Artist Profile')
-              .icon(TfiUser)
-              .child(S.document().schemaType('author').documentId('author')),
             S.listItem()
               .title('Site Settings')
               .icon(TfiSettings)
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
 
-            // --- 7. CATCH-ALL ---
+            // --- CATCH-ALL ---
             ...S.documentTypeListItems().filter(
               (listItem: any) => 
                 ![
-                  'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 
-                  'note' // <--- VERGEET DEZE NIET TE FILTEREN
+                  'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 'note'
                 ].includes(listItem.getId() || '')
             ),
           ]),
