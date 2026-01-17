@@ -16,7 +16,8 @@ import { priceTier } from './priceTier'
 import { sizeTemplate } from './sizeTemplate'
 import { artworkEdition } from './artworkEdition'
 import { artist } from './artist' 
-import { material } from './material' // <--- 1. NIEUW: Importeer material
+import { material } from './material'
+import { note } from './note' // <--- 1. NIEUW: Importeer material
 
 import { postList } from './postList'
 import hero from './modules/hero'
@@ -35,7 +36,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   category,
   award,
   artist,
-  material,           // <--- 2. NIEUW: Voeg toe aan de lijst
+  material,  
   priceTier,
   sizeTemplate,    
   artworkEdition,
@@ -44,5 +45,6 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   hero,
   artworkGridNew,
   text,
-  postList,         
+  postList,
+  note,          // <--- 2. NIEUW: Voeg toe aan de lijst
 ]
