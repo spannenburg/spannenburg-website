@@ -2,220 +2,136 @@ import { defineField, defineType } from 'sanity'
 import { TfiUser } from 'react-icons/tfi'
 
 export const author = defineType({
-  name: 'author',
-  title: 'Artist / Author',
+  name: 'author', // Let op: technische naam houden we even op 'author' voor backward compatibility, in de studio heet het 'Artist'
+  title: 'Artist Profile',
   type: 'document',
   icon: TfiUser,
   groups: [
-    { name: 'general', title: 'General Info' },
-    { name: 'story', title: 'Biography & Philosophy' },
-    { name: 'authority', title: 'Credentials (E-E-A-T)' },
-    { name: 'contact', title: 'Contact & Socials' },
-    { name: 'seo', title: 'SEO & AI' },
+    { name: 'details', title: 'Profile Details' },
+    { name: 'story', title: 'Biography & CV' },
+    { name: 'management', title: 'Representation' }, // Nieuwe groep voor je vraag
   ],
   fields: [
-    // --- 1. GENERAL INFO ---
+    // --- 1. IDENTITEIT ---
     defineField({
       name: 'name',
-      title: 'Full Name',
+      title: 'Artist Name',
       type: 'string',
-      group: 'general',
-      validation: (rule) => rule.required(),
-      description: 'Official artist name (e.g. Arjan Spannenburg).',
+      group: 'details',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
+      description: 'The URL for the artist page (e.g. /artists/arjan-spannenburg)',
       type: 'slug',
-      group: 'general',
+      group: 'details',
       options: {
         source: 'name',
         maxLength: 96,
       },
-      validation: (rule) => rule.required(),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'image',
-      title: 'Profile Picture',
+      title: 'Artist Portrait',
       type: 'image',
-      group: 'general',
+      group: 'details',
       options: { hotspot: true },
       fields: [
-        defineField({
-          name: 'caption',
-          type: 'string',
-          title: 'Caption / Credit',
-          description: 'E.g. "Self-portrait, 2026"',
-        }),
-        defineField({
+        {
           name: 'alt',
           type: 'string',
           title: 'Alt Text',
-          description: 'E.g. "Portrait of fine art photographer Arjan Spannenburg"',
-        }),
-      ],
-    }),
-    defineField({
-        name: 'birthInfo',
-        title: 'Birth Information',
-        description: 'Important for Knowledge Graph & Museum archives.',
-        type: 'object',
-        group: 'general',
-        fields: [
-            defineField({name: 'birthDate', type: 'date', title: 'Date of Birth', initialValue: '1978-05-04'}),
-            defineField({name: 'birthPlace', type: 'string', title: 'Place of Birth', initialValue: 'Texel, NL'}),
-        ]
-    }),
-    defineField({
-        name: 'location',
-        title: 'Studio Location',
-        type: 'string',
-        group: 'general',
-        description: 'City, Country (e.g. "Utrecht, The Netherlands"). Crucial for Local SEO.',
-    }),
-    // Representatie (Sponsor/Galerie)
-    defineField({
-        name: 'representedBy',
-        title: 'Represented By (Gallery)',
-        type: 'reference',
-        to: [{ type: 'venue' }],
-        group: 'general',
-        description: 'Primary gallery representation (e.g. Zerp Galerie).',
+          description: 'Descriptive text for the portrait.',
+        }
+      ]
     }),
 
-    // --- 2. STORY & PHILOSOPHY (LLMO Goldmine) ---
+    // --- 2. BIOGRAFIE & STATEMENT ---
     defineField({
       name: 'shortBio',
-      title: 'Short Bio (Elevator Pitch)',
-      description: 'Used for social media, footers, and meta descriptions (< 50 words).',
+      title: 'Short Bio (Summary)',
+      description: 'Used for cards and previews. Max 3 sentences.',
       type: 'text',
-      rows: 3,
       group: 'story',
+      rows: 3,
     }),
     defineField({
-      name: 'biography',
+      name: 'bio',
       title: 'Full Biography',
-      description: 'The life story, journey (Afghanistan -> Art), and background.',
+      description: 'The complete life story and career background.',
       type: 'array',
       group: 'story',
       of: [{ type: 'block' }],
     }),
     defineField({
-        name: 'artistStatement',
-        title: 'Artist Statement / Philosophy',
-        description: 'The "Why". Your artistic vision. AI uses this to understand your themes (Vulnerability, Identity).',
-        type: 'array',
-        group: 'story',
-        of: [{ type: 'block' }],
-    }),
-    defineField({
-        name: 'topics',
-        title: 'Artistic Themes (KnowsAbout)',
-        description: 'Specific themes for Knowledge Graph (e.g. Male Vulnerability, LGBTQ+ Identity).',
-        type: 'array',
-        group: 'story',
-        of: [{ type: 'string' }],
-        options: {
-            list: [
-                { title: 'Fine Art Photography', value: 'Fine Art Photography' },
-                { title: 'Black and White Photography', value: 'Black and White Photography' },
-                { title: 'Male Nude Art', value: 'Male Nude Art' },
-                { title: 'LGBTQ+ Identity', value: 'LGBTQ+ Identity' },
-                { title: 'Clair-obscur', value: 'Clair-obscur' },
-                { title: 'Male Vulnerability', value: 'Male Vulnerability' },
-                { title: 'Identity Formation', value: 'Identity Formation' },
-            ]
-        }
+      name: 'statement',
+      title: 'Artist Statement',
+      description: 'The philosophy behind the work. "Why do I create?"',
+      type: 'array',
+      group: 'story',
+      of: [{ type: 'block' }],
     }),
 
-    // --- 3. AUTHORITY & CREDENTIALS (E-E-A-T) ---
+    // --- 3. CV & CAREER PROOF ---
     defineField({
-        name: 'cv',
-        title: 'Downloadable CV (PDF)',
-        type: 'file',
-        group: 'authority',
+      name: 'cv',
+      title: 'Curriculum Vitae (Exhibitions)',
+      description: 'List solo and group exhibitions, education, and collections.',
+      type: 'array',
+      group: 'story',
+      of: [{ type: 'block' }], 
     }),
     
-    // *** AANGEPAST: NU GEKOPPELD AAN HET 'AWARD' DOCUMENT ***
+    // --- 4. CONTACT & SOCIALS ---
     defineField({
-        name: 'awards',
-        title: 'Awards & Honors',
-        description: 'Select awards from your database.',
-        type: 'array',
-        group: 'authority',
-        of: [
-            {
-                type: 'reference', // <--- Verwijst nu naar je award bestand
-                to: [{ type: 'award' }]
-            }
-        ]
-    }),
-
-    defineField({
-        name: 'education',
-        title: 'Education (AlumniOf)',
-        type: 'array',
-        group: 'authority',
-        of: [
-            {
-                type: 'object',
-                fields: [
-                    defineField({name: 'period', type: 'string', title: 'Year(s)'}),
-                    defineField({name: 'institution', type: 'string', title: 'School / Institution'}),
-                    defineField({name: 'degree', type: 'string', title: 'Degree / Course'}),
-                ]
-            }
-        ]
-    }),
-
-    // --- 4. CONTACT & SOCIALS (Trust Graph) ---
-    defineField({
-        name: 'email',
-        title: 'Contact Email',
-        type: 'string',
-        group: 'contact',
-    }),
-    defineField({
-        name: 'socials',
-        title: 'Social Media & Profiles (SameAs)',
-        description: 'Add Links to WikiData, Instagram, LinkedIn, etc.',
-        type: 'array',
-        group: 'contact',
-        of: [
-            {
-                type: 'object',
-                fields: [
-                    defineField({
-                        name: 'platform', 
-                        type: 'string', 
-                        title: 'Platform',
-                        options: {
-                            list: ['Instagram', 'LinkedIn', 'Facebook', 'Artsy', 'LensCulture', 'Wikipedia/Commons', 'WikiData', 'Vogue', 'Other']
-                        }
-                    }),
-                    defineField({name: 'url', type: 'url', title: 'Profile URL'}),
-                ],
-                preview: {
-                    select: { title: 'platform', subtitle: 'url' }
-                }
-            }
-        ]
-    }),
-
-    // --- 5. SEO ---
-    defineField({
-      name: 'seoKeywords',
-      title: 'Personal SEO Keywords',
-      description: 'E.g. "Dutch Fine Art Photographer", "Queer Artist Holland".',
+      name: 'socialLinks',
+      title: 'Social Media Links',
       type: 'array',
-      group: 'seo',
-      of: [{ type: 'string' }],
+      group: 'details',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'platform', title: 'Platform (e.g. Instagram)', type: 'string' },
+            { name: 'url', title: 'URL', type: 'url' }
+          ]
+        }
+      ]
+    }),
+
+    // --- 5. GALLERY MANAGEMENT (Jouw Vraag) ---
+    defineField({
+      name: 'isRepresentedByUs',
+      title: 'Represented by Spannenburg.Art?',
+      description: 'CHECK: Does this gallery actively represent/sell this artist? UNCHECK: If this artist is only mentioned for exhibitions/SEO (E-E-A-T).',
+      type: 'boolean',
+      group: 'management',
+      initialValue: false, // Standaard uit, tenzij jij het aanvinkt
+    }),
+
+    defineField({
+      name: 'representedByVenues',
+      title: 'Represented by Other Galleries (Venues)',
+      description: 'OPTIONAL: Select external galleries (Venues) that also represent this artist. Good for E-E-A-T (Cross-referencing).',
+      type: 'array',
+      group: 'management',
+      of: [{ type: 'reference', to: [{ type: 'venue' }] }], // Hier koppel je aan Venues
     }),
   ],
   preview: {
     select: {
       title: 'name',
       media: 'image',
+      isUs: 'isRepresentedByUs'
+    },
+    prepare({ title, media, isUs }) {
+      return {
+        title: title,
+        subtitle: isUs ? '✅ Represented by Us' : 'Guest / Peer',
+        media: media,
+      }
     },
   },
 })
