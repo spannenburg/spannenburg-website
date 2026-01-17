@@ -18,7 +18,8 @@ import { sizeTemplate } from './sizeTemplate'
 import { material } from './material'
 import { note } from './note'
 import { priceGroup } from './priceGroup'
-import { sale } from './sale' // <--- NIEUW: De enige toevoeging
+import { sale } from './sale'
+import { shippingZone } from './shippingZone' // <--- NIEUW: Importeer de verzendzones
 
 // --- 2. PAGE MODULES & EXTRAS ---
 import { hero } from './hero'
@@ -46,7 +47,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   material,
   note,
   priceGroup,
-  sale, // <--- NIEUW: Toegevoegd aan de lijst
+  sale,
+  shippingZone, // <--- NIEUW: Toegevoegd aan de lijst
 
   // Page Builder Modules & Components
   hero,
