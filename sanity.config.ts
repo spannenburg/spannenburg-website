@@ -39,7 +39,7 @@ import {
   TfiNotepad,
   TfiStar,
   TfiIdBadge,
-  TfiBarChart // <--- NIEUW: Icoon voor Price Groups
+  TfiBarChart // <--- 1. NIEUW: Icoon voor Price Groups
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -122,7 +122,7 @@ export default defineConfig({
                 S.list()
                   .title('Commerce & Technical')
                   .items([
-                    // NIEUW: De Price Groups
+                    // 2. NIEUW: De Price Groups toegevoegd aan de lijst
                     S.documentTypeListItem('priceGroup').title('Price Groups (Levels)').icon(TfiBarChart),
                     
                     S.documentTypeListItem('priceTier').title('Price Tiers').icon(TfiMoney),
@@ -145,7 +145,7 @@ export default defineConfig({
               (listItem: any) => 
                 ![
                   'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 'note',
-                  'priceGroup' // <--- NIEUW: Toegevoegd aan filter zodat hij niet dubbel verschijnt
+                  'priceGroup' // <--- 3. NIEUW: Toegevoegd aan filter zodat hij niet dubbel verschijnt
                 ].includes(listItem.getId() || '')
             ),
           ]),
