@@ -5,13 +5,17 @@ export const blockContent = defineType({
   title: 'Block Content',
   name: 'blockContent',
   type: 'array',
+  
+  // --- NIEUW: De Instructie voor de gebruiker ---
+  description: 'Write your content here. 💡 Tip: Use "Heading 2" for main sections and "Heading 3" for sub-sections. Do NOT use "Heading 1" (this is reserved for the main page title).',
+
   of: [
     defineArrayMember({
       title: 'Block',
       type: 'block',
       styles: [
         { title: 'Normal', value: 'normal' },
-        { title: 'Heading 2', value: 'h2' }, // H1 bewaren we voor de paginatitel
+        { title: 'Heading 2', value: 'h2' }, // H1 is bewust weggelaten
         { title: 'Heading 3', value: 'h3' },
         { title: 'Quote', value: 'blockquote' },
       ],
@@ -24,6 +28,7 @@ export const blockContent = defineType({
           { title: 'Strong', value: 'strong' },
           { title: 'Emphasis', value: 'em' },
           { title: 'Code', value: 'code' },
+          { title: 'Underline', value: 'underline' }, // Heb ik toegevoegd, handig voor links
         ],
         annotations: [
           {
@@ -52,7 +57,7 @@ export const blockContent = defineType({
       },
     }),
     
-    // --- 1. VERBETERDE AFBEELDINGEN ---
+    // --- 1. VERBETERDE AFBEELDINGEN (Jouw code) ---
     defineArrayMember({
       type: 'image',
       icon: TfiImage,
@@ -74,7 +79,7 @@ export const blockContent = defineType({
       ],
     }),
 
-    // --- 2. VIDEO ONDERSTEUNING ---
+    // --- 2. VIDEO ONDERSTEUNING (Jouw code) ---
     defineArrayMember({
       name: 'videoEmbed',
       type: 'object',
