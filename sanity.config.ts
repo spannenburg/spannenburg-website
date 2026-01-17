@@ -40,7 +40,8 @@ import {
   TfiStar,
   TfiIdBadge,
   TfiBarChart,
-  TfiLayoutListThumb // <--- NIEUW: Icoon voor de grote lijst
+  TfiLayoutListThumb,
+  TfiReceipt // <--- 1. NIEUW: Icoon voor Sales
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -56,22 +57,21 @@ export default defineConfig({
         S.list()
           .title('Spannenburg Gallery')
           .items([
-            // --- 0. 🚨 ACTION CENTER (VERNIEUWD) ---
+            // --- 0. 🚨 ACTION CENTER ---
             S.listItem()
-              .title('Action Center') // Was 'System Checks'
+              .title('Action Center')
               .icon(TfiAlert)
               .child(
                 S.list()
                   .title('To Do / Fixes')
                   .items([
-                    // 1. DE "ALLES-IN-ÉÉN" LIJST (NIEUW)
+                    // 1. DE "ALLES-IN-ÉÉN" LIJST
                     S.listItem()
                       .title('⚠️ Show ALL Issues')
                       .icon(TfiLayoutListThumb)
                       .child(
                         S.documentList()
                           .title('All Items Needing Attention')
-                          // Deze query zoekt ALLES tegelijk:
                           .filter(`
                             (_type == "artwork" && !defined(mainImage)) || 
                             (_type == "artwork" && !defined(description)) ||
@@ -84,37 +84,31 @@ export default defineConfig({
                     S.divider(),
 
                     // 2. SPECIFIEKE CATEGORIEËN
-                    // Check: Venues zonder foto (NIEUW)
                     S.listItem()
                       .title('Venues missing Image') 
                       .icon(TfiLocationPin)
                       .child(S.documentList().title('Venues missing Image').filter('_type == "venue" && !defined(image)')),
 
-                    // Check: Artiesten zonder bio (NIEUW)
                     S.listItem()
                       .title('Artists missing Bio') 
                       .icon(TfiUser)
                       .child(S.documentList().title('Artists missing Bio').filter('_type == "author" && !defined(bio)')),
 
-                    // Check: Kunstwerken zonder foto (BESTOND AL)
                     S.listItem()
                       .title('Artworks missing Image')
                       .icon(TfiImage)
                       .child(S.documentList().title('Artworks missing Image').filter('_type == "artwork" && !defined(mainImage)')),
                     
-                    // Check: Kunstwerken zonder tekst (BESTOND AL)
                     S.listItem()
                       .title('Artworks missing Story')
                       .icon(TfiWrite)
                       .child(S.documentList().title('Artworks missing Story').filter('_type == "artwork" && !defined(description)')),
                     
-                    // Check: Kunstwerken zonder SEO (BESTOND AL)
                     S.listItem()
                       .title('Artworks missing SEO')
                       .icon(TfiTarget)
                       .child(S.documentList().title('Artworks missing SEO').filter('_type == "artwork" && !defined(keywords)')),
                     
-                    // Check: Lege Projecten (BESTOND AL)
                     S.listItem()
                       .title('Empty Projects')
                       .icon(TfiLayers)
@@ -141,19 +135,24 @@ export default defineConfig({
 
             S.divider(),
 
-            // --- 4. 🌍 CONTEXT & NETWORK ---
+            // --- 4. 💼 SALES & ORDERS (NIEUW) ---
+            S.documentTypeListItem('sale').title('Sales & Orders').icon(TfiReceipt),
+
+            S.divider(),
+
+            // --- 5. 🌍 CONTEXT & NETWORK ---
             S.documentTypeListItem('exhibition').title('Exhibitions').icon(TfiMapAlt),
             S.documentTypeListItem('venue').title('Venues / Locations').icon(TfiLocationPin),
             S.documentTypeListItem('artist').title('Referenced Artists (Peers)').icon(TfiIdBadge),
 
             S.divider(),
 
-            // --- 5. 🏷️ ORGANIZATION ---
+            // --- 6. 🏷️ ORGANIZATION ---
             S.documentTypeListItem('category').title('Categories / Hubs').icon(TfiCheckBox),
 
             S.divider(),
 
-            // --- 6. ⚙️ TECHNICAL & COMMERCE ---
+            // --- 7. ⚙️ TECHNICAL & COMMERCE ---
             S.listItem()
               .title('Technical / Pricing')
               .icon(TfiMoney)
@@ -170,7 +169,7 @@ export default defineConfig({
 
             S.divider(),
 
-            // --- 7. 🖥️ SITE MANAGEMENT ---
+            // --- 8. 🖥️ SITE MANAGEMENT ---
             S.documentTypeListItem('page').title('Pages').icon(TfiFiles),
             S.listItem()
               .title('Site Settings')
@@ -181,7 +180,8 @@ export default defineConfig({
             ...S.documentTypeListItems().filter(
               (listItem: any) => 
                 ![
-                  'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 'note', 'priceGroup'
+                  'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 'note', 'priceGroup', 
+                  'sale' // <--- 2. NIEUW: Toegevoegd aan filter zodat hij niet dubbel verschijnt
                 ].includes(listItem.getId() || '')
             ),
           ]),
