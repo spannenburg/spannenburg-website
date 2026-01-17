@@ -7,14 +7,14 @@ export const sale = defineType({
   type: 'document',
   icon: TfiReceipt,
   fields: [
-    // --- 1. STATUS & ADMIN ---
+    // --- 1. STATUS & KANAAL ---
     defineField({
       name: 'status',
       title: 'Order Status',
       type: 'string',
       options: {
         list: [
-          { title: '🟢 New Inquiry (Action Required)', value: 'inquiry' },
+          { title: '🟢 New Inquiry / Draft', value: 'inquiry' },
           { title: '🟠 Reserved / Awaiting Payment', value: 'reserved' },
           { title: '🔵 Paid / In Production', value: 'paid' },
           { title: '🟣 Shipped', value: 'shipped' },
@@ -26,8 +26,21 @@ export const sale = defineType({
       initialValue: 'inquiry',
     }),
     defineField({
+      name: 'salesChannel',
+      title: 'Sales Channel',
+      type: 'string',
+      options: {
+        list: [
+            { title: 'Online (Website)', value: 'online' },
+            { title: 'Gallery / Offline', value: 'gallery' },
+            { title: 'Art Fair', value: 'fair' }
+        ]
+      },
+      initialValue: 'online'
+    }),
+    defineField({
       name: 'orderDate',
-      title: 'Date of Inquiry',
+      title: 'Date of Sale',
       type: 'datetime',
       initialValue: () => new Date().toISOString(),
     }),
@@ -40,8 +53,8 @@ export const sale = defineType({
       fields: [
         { name: 'name', type: 'string', title: 'Full Name' },
         { name: 'email', type: 'string', title: 'Email' },
-        { name: 'address', type: 'text', title: 'Shipping Address' },
-        { name: 'vatNumber', type: 'string', title: 'VAT Number (Optional)' },
+        { name: 'phone', type: 'string', title: 'Phone' },
+        { name: 'address', type: 'text', title: 'Billing/Shipping Address' },
       ]
     }),
 
@@ -54,54 +67,36 @@ export const sale = defineType({
       validation: (Rule) => Rule.required(),
     }),
     
-    // Welke maat/editie hebben ze gekozen?
+    // Omdat een artwork meerdere maten heeft, moeten we tekstueel opslaan wat er gekocht is
+    // Anders raakt de historie corrupt als je later maten aanpast.
     defineField({
-      name: 'selectedEdition',
-      title: 'Selected Edition Size',
-      description: 'Which size template did they choose? (e.g. "Landscape 120x80")',
-      type: 'string', // We slaan de naam op als "snapshot" van dat moment
+      name: 'selectedEditionName',
+      title: 'Selected Edition (Snapshot)',
+      description: 'E.g. "Landscape 120x80"',
+      type: 'string', 
+      validation: (Rule) => Rule.required(),
     }),
 
-    // --- 4. HET NUMMER (De Automatisering) ---
+    // --- 4. HET NUMMER ---
     defineField({
       name: 'editionNumber',
       title: 'Assigned Edition Number',
-      description: 'E.g. "3" (for 3/8). Automatically suggested, but adjustable.',
+      description: 'Which specific number gets assigned? (e.g. 3 of 6)',
       type: 'number',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'isAP',
-      title: 'Is Artist Proof (AP)?',
+      title: 'Is Artist Proof?',
       type: 'boolean',
       initialValue: false,
     }),
 
-    // --- 5. AFWERKING & PRIJS ---
-    defineField({
-      name: 'finishDetails',
-      title: 'Finishing Details',
-      description: 'E.g. "Walnut Frame, Museum Glass, Dibond mount".',
-      type: 'text',
-      rows: 3,
-    }),
+    // --- 5. FINANCIEEL ---
     defineField({
       name: 'priceSold',
-      title: 'Final Sale Price (ex VAT)',
+      title: 'Sold Price (EUR)',
       type: 'number',
-    }),
-
-    // --- 6. DOCUMENTEN (Automatisch Gegenereerd) ---
-    defineField({
-      name: 'invoicePdf',
-      title: 'Invoice PDF',
-      type: 'file',
-      readOnly: true, // Wordt door systeem gevuld
-    }),
-    defineField({
-      name: 'certificatePdf',
-      title: 'Certificate of Authenticity (CoA)',
-      type: 'file',
-      readOnly: true, // Wordt door systeem gevuld
     }),
   ],
   preview: {
@@ -110,19 +105,16 @@ export const sale = defineType({
       artwork: 'artwork.title',
       status: 'status',
       number: 'editionNumber',
+      channel: 'salesChannel'
     },
-    prepare({ customer, artwork, status, number }) {
-      const statusIcons = {
-        inquiry: '🟢',
-        reserved: '🟠',
-        paid: '🔵',
-        shipped: '🟣',
-        completed: '🏁',
-        cancelled: '❌'
-      }
+    prepare({ customer, artwork, status, number, channel }) {
+      const icons = { inquiry: '🟢', reserved: '🟠', paid: '🔵', shipped: '🟣', completed: '🏁', cancelled: '❌' };
+      const statusIcon = icons[status as keyof typeof icons] || '⚪';
+      const channelLabel = channel === 'online' ? '🌐' : '🏛️';
+
       return {
-        title: `${statusIcons[status as keyof typeof statusIcons] || ''} ${customer || 'Unknown'}`,
-        subtitle: `${artwork} | Ed: ${number || '?'}`,
+        title: `${statusIcon} ${customer || 'Unknown Customer'}`,
+        subtitle: `${channelLabel} ${artwork} | Ed: #${number}`,
         media: TfiReceipt
       }
     }
