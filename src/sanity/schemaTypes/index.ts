@@ -18,14 +18,14 @@ import { sizeTemplate } from './sizeTemplate'
 import { material } from './material'
 import { note } from './note'
 import { priceGroup } from './priceGroup'
+import { sale } from './sale' // <--- NIEUW: De enige toevoeging
 
 // --- 2. PAGE MODULES & EXTRAS ---
-// Deze bestanden stonden in je lijst, maar misten in de export
 import { hero } from './hero'
-import { text } from './text'            // Bevat name: 'text-module' of 'text'
+import { text } from './text'
 import { artworkGrid } from './artworkGrid' 
 import { metadata } from './metadata'
-import { postList } from './postList'    // Deze zag ik ook in je lijst staan
+import { postList } from './postList'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Core Documents
@@ -46,6 +46,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   material,
   note,
   priceGroup,
+  sale, // <--- NIEUW: Toegevoegd aan de lijst
 
   // Page Builder Modules & Components
   hero,
