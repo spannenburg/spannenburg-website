@@ -66,17 +66,17 @@ export const sale = defineType({
       title: 'Purchased Artwork',
       type: 'reference',
       to: [{ type: 'artwork' }],
-      options: { disableNew: true }, // <--- AANGEPAST: Je mag hier geen nieuwe kunst maken, alleen kiezen
+      options: { disableNew: true },
       validation: (Rule) => Rule.required(),
     }),
     
     defineField({
       name: 'selectedSize',
       title: 'Selected Size',
-      description: 'Select the standard size. Do NOT edit the template itself.',
+      description: 'Select the standard size.',
       type: 'reference',
       to: [{ type: 'sizeTemplate' }],
-      options: { disableNew: true }, // <--- AANGEPAST: Blokkeert het aanmaken van nieuwe maten
+      options: { disableNew: true },
       validation: (Rule) => Rule.required(),
     }),
 
@@ -106,7 +106,7 @@ export const sale = defineType({
                 title: 'Print Material',
                 type: 'reference',
                 to: [{ type: 'material' }],
-                options: { disableNew: true }, // <--- AANGEPAST: Blokkeert nieuwe materialen maken
+                options: { disableNew: true },
             }),
             defineField({
                 name: 'remarks',
@@ -119,65 +119,57 @@ export const sale = defineType({
         ]
     }),
 
-    // --- 5. FINANCIEEL ---
+    // --- 5. FACTUUR DATA (VERSIMPELD) ---
     defineField({
       name: 'financials',
-      title: 'Financial Calculation',
+      title: 'Invoice Data (Inputs only)',
+      description: 'Enter the FINAL amounts to be invoiced. No calculations here.',
       type: 'object',
       icon: TfiWallet,
       options: { collapsible: false },
       fields: [
-        // A. Basis Kunstwerk
+        // Gewoon de 3 componenten van de factuur
         defineField({
-            name: 'listPrice',
-            title: 'List Price (Catalogusprijs)',
-            description: 'The standard price according to the website.',
-            type: 'number',
-        }),
-        defineField({
-            name: 'discountAmount',
-            title: 'Discount Amount (Korting)',
-            description: 'Optional discount given.',
-            type: 'number',
-        }),
-        defineField({
-            name: 'priceSold',
-            title: 'Agreed Artwork Price (Excl. VAT)',
-            description: 'Base price for the artwork (List Price - Discount).',
+            name: 'amountArtwork',
+            title: 'Artwork Price (Netto)',
+            description: 'The agreed price for the print itself (after any discounts).',
             type: 'number',
             validation: (Rule) => Rule.required(),
         }),
-
-        // B. Extra Kosten
         defineField({
-            name: 'additionalCosts',
-            title: 'Additional Costs (Framing/Glass)',
-            description: 'Costs for framing, mounting, special glass, etc.',
+            name: 'amountFraming',
+            title: 'Framing / Finishing Costs',
+            description: 'Total cost for framing, glass, mounting.',
             type: 'number',
             initialValue: 0
         }),
         defineField({
-            name: 'transportCosts',
-            title: 'Transport / Shipping Costs',
-            description: 'Crating and shipping fees.',
+            name: 'amountShipping',
+            title: 'Shipping / Crating Costs',
             type: 'number',
             initialValue: 0
         }),
 
-        // C. BTW
+        // BTW en Notities
         defineField({
             name: 'vatRate',
             title: 'VAT Rate',
-            description: 'Which VAT rate applies to this invoice?',
             type: 'string',
             options: {
                 list: [
-                    { title: '21% (Standard Art/Framing)', value: '21' },
-                    { title: '9% (Low/Special)', value: '9' },
+                    { title: '21% (Standard)', value: '21' },
+                    { title: '9% (Low)', value: '9' },
                     { title: '0% (Export/Business)', value: '0' },
                 ]
             },
             initialValue: '9'
+        }),
+        defineField({
+            name: 'calculationNotes',
+            title: 'Internal Notes on Price',
+            description: 'Why is this the price? (e.g. "Given 10% fair discount", "Includes special glass").',
+            type: 'text',
+            rows: 2
         })
       ]
     }),
@@ -188,9 +180,9 @@ export const sale = defineType({
       artwork: 'artwork.title',
       status: 'status',
       number: 'editionNumber',
-      price: 'financials.priceSold',
-      extra: 'financials.additionalCosts',
-      transport: 'financials.transportCosts',
+      price: 'financials.amountArtwork',
+      extra: 'financials.amountFraming',
+      transport: 'financials.amountShipping',
       size: 'selectedSize.width',
     },
     prepare({ customer, artwork, status, number, price, extra, transport, size }) {
@@ -200,7 +192,7 @@ export const sale = defineType({
       const totalEstim = (price || 0) + (extra || 0) + (transport || 0);
       
       const sizeText = size ? ` | ${size}cm` : '';
-      const priceText = totalEstim ? ` | €${totalEstim}` : '';
+      const priceText = totalEstim ? ` | Total: €${totalEstim}` : '';
 
       return {
         title: `${statusIcon} ${customer || 'New Order'}`,
