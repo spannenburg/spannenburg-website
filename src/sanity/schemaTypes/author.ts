@@ -2,14 +2,14 @@ import { defineField, defineType } from 'sanity'
 import { TfiUser } from 'react-icons/tfi'
 
 export const author = defineType({
-  name: 'author', // Let op: technische naam houden we even op 'author' voor backward compatibility, in de studio heet het 'Artist'
-  title: 'Artist Profile',
+  name: 'author', // INTERNE NAAM: Blijft 'author'
+  title: 'Artist Profile (Gallery)', // EXTERNE TITEL: Zichtbaar in Studio
   type: 'document',
   icon: TfiUser,
   groups: [
     { name: 'details', title: 'Profile Details' },
     { name: 'story', title: 'Biography & CV' },
-    { name: 'management', title: 'Representation' }, // Nieuwe groep voor je vraag
+    { name: 'management', title: 'Representation' },
   ],
   fields: [
     // --- 1. IDENTITEIT ---
@@ -43,7 +43,6 @@ export const author = defineType({
           name: 'alt',
           type: 'string',
           title: 'Alt Text',
-          description: 'Descriptive text for the portrait.',
         }
       ]
     }),
@@ -74,11 +73,10 @@ export const author = defineType({
       of: [{ type: 'block' }],
     }),
 
-    // --- 3. CV & CAREER PROOF ---
+    // --- 3. CV ---
     defineField({
       name: 'cv',
       title: 'Curriculum Vitae (Exhibitions)',
-      description: 'List solo and group exhibitions, education, and collections.',
       type: 'array',
       group: 'story',
       of: [{ type: 'block' }], 
@@ -101,23 +99,23 @@ export const author = defineType({
       ]
     }),
 
-    // --- 5. GALLERY MANAGEMENT (Jouw Vraag) ---
+    // --- 5. GALLERY MANAGEMENT ---
     defineField({
       name: 'isRepresentedByUs',
       title: 'Represented by Spannenburg.Art?',
-      description: 'CHECK: Does this gallery actively represent/sell this artist? UNCHECK: If this artist is only mentioned for exhibitions/SEO (E-E-A-T).',
+      description: 'CHECK: If we sell this artist. UNCHECK: If strictly for SEO/Context.',
       type: 'boolean',
       group: 'management',
-      initialValue: false, // Standaard uit, tenzij jij het aanvinkt
+      initialValue: false, 
     }),
 
     defineField({
       name: 'representedByVenues',
       title: 'Represented by Other Galleries (Venues)',
-      description: 'OPTIONAL: Select external galleries (Venues) that also represent this artist. Good for E-E-A-T (Cross-referencing).',
+      description: 'Which external galleries represent this artist? (Good for Authority building).',
       type: 'array',
       group: 'management',
-      of: [{ type: 'reference', to: [{ type: 'venue' }] }], // Hier koppel je aan Venues
+      of: [{ type: 'reference', to: [{ type: 'venue' }] }], 
     }),
   ],
   preview: {
@@ -129,7 +127,7 @@ export const author = defineType({
     prepare({ title, media, isUs }) {
       return {
         title: title,
-        subtitle: isUs ? '✅ Represented by Us' : 'Guest / Peer',
+        subtitle: isUs ? '✅ Represented Artist' : 'Profile only',
         media: media,
       }
     },
