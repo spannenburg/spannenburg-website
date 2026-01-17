@@ -1,50 +1,42 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-import { page } from './page'
-import { post } from './post'
-import { artwork } from './artwork'
-import { project } from './project'
-import { venue } from './venue'
-import { exhibition } from './exhibition'
-import { author } from './author'
-import { category } from './category'
+// Importeer al je bestanden
 import { blockContent } from './blockContent'
-import { metadata } from './metadata'
+import { category } from './category'
+import { post } from './post'
+import { author } from './author'
+import { artwork } from './artwork'
+import { artworkEdition } from './artworkEdition'
+import { project } from './project'
+import { exhibition } from './exhibition'
+import { venue } from './venue'
+import { artist } from './artist'
+import { page } from './page'
 import { siteSettings } from './siteSettings'
 import { priceTier } from './priceTier'
 import { sizeTemplate } from './sizeTemplate'
-import { artworkEdition } from './artworkEdition'
-import { artist } from './artist' 
 import { material } from './material'
-import { note } from './note' 
-import { priceGroup } from './priceGroup' //  <--- 1. NIEUW: Importeer material
+import { note } from './note'
+import { priceGroup } from './priceGroup'
 
-import { postList } from './postList'
-import hero from './modules/hero'
-import artworkGridNew from './modules/artworkGrid' 
-import text from './modules/text'
+// Let op: 'award' is hier verwijderd omdat die nu in author zit.
 
 export const schemaTypes: SchemaTypeDefinition[] = [
-  siteSettings,
-  author,
-  page,
   post,
-  artwork,
-  project,
-  venue,
-  exhibition,
+  author,
   category,
-  artist,
-  material,  
-  priceTier,
-  sizeTemplate,    
-  artworkEdition,
   blockContent,
-  metadata,
-  hero,
-  artworkGridNew,
-  text,
-  postList,
+  artwork,
+  artworkEdition,
+  project,
+  exhibition,
+  venue,
+  artist,
+  page,
+  siteSettings,
+  priceTier,
+  sizeTemplate,
+  material,
   note,
-  priceGroup'     // <--- 2. NIEUW: Voeg toe aan de lijst
+  priceGroup, // Hier zat de typfout, nu opgelost met een komma
 ]
