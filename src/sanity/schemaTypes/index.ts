@@ -1,6 +1,6 @@
 import { type SchemaTypeDefinition } from 'sanity'
 
-// Importeer al je bestanden
+// --- 1. CORE CONTENT ---
 import { blockContent } from './blockContent'
 import { category } from './category'
 import { post } from './post'
@@ -19,9 +19,16 @@ import { material } from './material'
 import { note } from './note'
 import { priceGroup } from './priceGroup'
 
-// Let op: 'award' is hier verwijderd omdat die nu in author zit.
+// --- 2. PAGE MODULES & EXTRAS ---
+// Deze bestanden stonden in je lijst, maar misten in de export
+import { hero } from './hero'
+import { text } from './text'            // Bevat name: 'text-module' of 'text'
+import { artworkGrid } from './artworkGrid' 
+import { metadata } from './metadata'
+import { postList } from './postList'    // Deze zag ik ook in je lijst staan
 
 export const schemaTypes: SchemaTypeDefinition[] = [
+  // Core Documents
   post,
   author,
   category,
@@ -38,5 +45,12 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   sizeTemplate,
   material,
   note,
-  priceGroup, // Hier zat de typfout, nu opgelost met een komma
+  priceGroup,
+
+  // Page Builder Modules & Components
+  hero,
+  text,
+  artworkGrid,
+  metadata,
+  postList,
 ]
