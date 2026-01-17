@@ -10,7 +10,6 @@ import { author } from './author'
 import { category } from './category'
 import { blockContent } from './blockContent'
 import { metadata } from './metadata'
-import { award } from './award'
 import { siteSettings } from './siteSettings'
 import { priceTier } from './priceTier'
 import { sizeTemplate } from './sizeTemplate'
@@ -34,7 +33,6 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   venue,
   exhibition,
   category,
-  award,
   artist,
   material,  
   priceTier,
