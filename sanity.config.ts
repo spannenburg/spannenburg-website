@@ -41,7 +41,8 @@ import {
   TfiIdBadge,
   TfiBarChart,
   TfiLayoutListThumb,
-  TfiReceipt // <--- 1. NIEUW: Icoon voor Sales
+  TfiReceipt,
+  TfiTruck // <--- 1. NIEUW: Icoon voor Shipping
 } from 'react-icons/tfi'
 
 export default defineConfig({
@@ -135,7 +136,7 @@ export default defineConfig({
 
             S.divider(),
 
-            // --- 4. 💼 SALES & ORDERS (NIEUW) ---
+            // --- 4. 💼 SALES & ORDERS ---
             S.documentTypeListItem('sale').title('Sales & Orders').icon(TfiReceipt),
 
             S.divider(),
@@ -164,6 +165,8 @@ export default defineConfig({
                     S.documentTypeListItem('priceTier').title('Price Tiers').icon(TfiMoney),
                     S.documentTypeListItem('sizeTemplate').title('Size Templates').icon(TfiRulerPencil),
                     S.documentTypeListItem('material').title('Materials & Finishes').icon(TfiPaintRoller),
+                    // 2. NIEUW: Shipping Zones toegevoegd aan het menu
+                    S.documentTypeListItem('shippingZone').title('Shipping Zones').icon(TfiTruck),
                   ])
               ),
 
@@ -181,7 +184,8 @@ export default defineConfig({
               (listItem: any) => 
                 ![
                   'siteSettings', 'author', 'priceTier', 'sizeTemplate', 'venue', 'award', 'category', 'project', 'artwork', 'exhibition', 'post', 'page', 'artist', 'material', 'artworkEdition', 'metadata', 'blockContent', 'note', 'priceGroup', 
-                  'sale' // <--- 2. NIEUW: Toegevoegd aan filter zodat hij niet dubbel verschijnt
+                  'sale',
+                  'shippingZone' // <--- 3. NIEUW: Toegevoegd aan filter zodat hij niet dubbel verschijnt
                 ].includes(listItem.getId() || '')
             ),
           ]),
