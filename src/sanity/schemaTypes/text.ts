@@ -1,28 +1,35 @@
 import { defineField, defineType } from 'sanity'
-import { TfiText } from 'react-icons/tfi'
+import { BlockContentIcon } from '@sanity/icons'
 
 export const text = defineType({
-  name: 'text-module', // Let op: deze technische naam wordt gezocht!
-  title: 'Text Module',
+  name: 'text-module', // Dit is de naam die page.ts zoekt
+  title: 'Text Block',
   type: 'object',
-  icon: TfiText,
+  icon: BlockContentIcon,
   fields: [
     defineField({
       name: 'heading',
-      title: 'Heading',
+      title: 'Heading (Optional)',
       type: 'string',
     }),
     defineField({
       name: 'body',
       title: 'Body Text',
       type: 'array',
-      of: [{ type: 'block' }],
+      of: [{ type: 'block' }], // Standaard rich text editor
     }),
   ],
   preview: {
-    select: { title: 'heading' },
-    prepare({ title }) {
-      return { title: title || 'Text Block', media: TfiText }
-    }
-  }
+    select: {
+      title: 'heading',
+      blocks: 'body',
+    },
+    prepare({ title, blocks }) {
+      return {
+        title: title || 'Text Block',
+        subtitle: blocks?.[0]?.children?.[0]?.text || 'No text content',
+        media: BlockContentIcon,
+      }
+    },
+  },
 })
