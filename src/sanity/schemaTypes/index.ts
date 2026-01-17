@@ -16,7 +16,8 @@ import { sizeTemplate } from './sizeTemplate'
 import { artworkEdition } from './artworkEdition'
 import { artist } from './artist' 
 import { material } from './material'
-import { note } from './note' // <--- 1. NIEUW: Importeer material
+import { note } from './note' 
+import { priceGroup } from './priceGroup' //  <--- 1. NIEUW: Importeer material
 
 import { postList } from './postList'
 import hero from './modules/hero'
@@ -44,5 +45,6 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   artworkGridNew,
   text,
   postList,
-  note,          // <--- 2. NIEUW: Voeg toe aan de lijst
+  note,
+  priceGroup'     // <--- 2. NIEUW: Voeg toe aan de lijst
 ]
