@@ -27,7 +27,11 @@ import { text } from './text'
 import { artworkGrid } from './artworkGrid' 
 import { metadata } from './metadata'
 import { postList } from './postList'
-import { mapModule } from './map' // <--- NIEUW: Importeer de map module (vanuit dezelfde map)
+
+// --- NIEUWE MODULES (Alles in dezelfde schemaTypes map) ---
+import { mapModule } from './map' 
+import { imageModule } from './image' // <--- Toegevoegd
+import { videoModule } from './video' // <--- Toegevoegd
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Core Documents
@@ -57,5 +61,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   artworkGrid,
   metadata,
   postList,
-  mapModule, // <--- NIEUW: Toegevoegd aan de lijst
+  mapModule,
+  imageModule, // <--- Toegevoegd aan de lijst
+  videoModule, // <--- Toegevoegd aan de lijst
 ]
