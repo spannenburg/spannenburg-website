@@ -45,12 +45,31 @@ export const post = defineType({
       options: { source: 'title' },
       validation: (Rule) => Rule.required(),
     }),
+    // --- NEW: MAIN COVER IMAGE (Essential for lists) ---
+    defineField({
+      name: 'mainImage',
+      title: 'Main Cover Image',
+      description: 'The primary image shown in the news overview and as the header of the article.',
+      type: 'image',
+      group: 'content',
+      options: { hotspot: true },
+      fields: [
+        { name: 'alt', type: 'string', title: 'Alt Text', validation: (Rule) => Rule.required() }
+      ]
+    }),
+    // --- UPDATED: BODY WITH NEW MODULES ---
     defineField({
       name: 'body',
       title: 'Body Text',
       type: 'array',
       group: 'content',
-      of: [{ type: 'block' }, { type: 'image' }],
+      of: [
+        { type: 'block' },          // Standard text
+        { type: 'image' },          // Your original basic image (kept for safety)
+        { type: 'image-module' },   // NEW: Advanced Image module
+        { type: 'video-module' },   // NEW: YouTube module
+        { type: 'map' },            // NEW: Map module
+      ],
     }),
 
     // --- 2. RELATIONS (The Logic Hub) ---
@@ -111,6 +130,14 @@ export const post = defineType({
       title: 'Excerpt (LLMO Summary)',
       type: 'text',
       rows: 3,
+      group: 'seo',
+    }),
+    // --- NEW: CANONICAL URL ---
+    defineField({
+      name: 'canonicalUrl',
+      title: 'Canonical URL',
+      description: 'Use ONLY if this content is a duplicate of another English page. Otherwise, leave empty.',
+      type: 'url',
       group: 'seo',
     }),
   ],
