@@ -1,12 +1,28 @@
 import '@/styles/app.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-
-// --- HIER ZIT DE WIJZIGING ---
-// We verwijzen nu naar de map 'components' die we net gemaakt hebben
-// De '@' staat voor de map 'src'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+
+// --- NIEUW: JSON-LD DATA (SEO & AI) ---
+// Dit vertelt Google en AI bots wie je bent.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ArtGallery', // Definieert je organisatie type
+  name: 'Spannenburg.Art',
+  url: 'https://www.spannenburg.art',
+  description: 'Contemporary Art & Photography',
+  email: 'Arjan@spannenburg.art',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'NL'
+  },
+  // Vul hier later je echte social links in
+  sameAs: [
+    'https://www.instagram.com/arjanspannenburg',
+    // 'https://www.facebook.com/jouw-pagina'
+  ]
+}
 
 export default async function RootLayout({
 	children,
@@ -15,21 +31,26 @@ export default async function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			{/* We behouden 'bg-canvas' en 'text-ink' zodat het SanityPress thema blijft werken */}
 			<body className="bg-canvas text-ink min-h-screen flex flex-col">
 				
-				{/* 1. De Header */}
+				{/* 1. SEO: Injecteer de JSON-LD data voor Google/AI */}
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				/>
+
+				{/* 2. De Header */}
 				<Header />
 
-				{/* 2. De Inhoud van de pagina */}
+				{/* 3. De Inhoud van de pagina */}
 				<main className="flex-1">
 					{children}
 				</main>
 
-				{/* 3. De Footer */}
+				{/* 4. De Footer */}
 				<Footer />
 
-				{/* 4. Analytics & SpeedInsights (standaard van template) */}
+				{/* 5. Analytics & SpeedInsights */}
 				<Analytics />
 				<SpeedInsights />
 			</body>
