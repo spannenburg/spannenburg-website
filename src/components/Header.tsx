@@ -13,21 +13,35 @@ export default function Header() {
         {/* NAVIGATIE MENU (Rechts) */}
         <nav>
           <ul className="flex space-x-8">
+            {/* 1. ARTWORKS */}
             <li>
-              <Link href="/artists" className="text-sm font-medium uppercase tracking-wide text-gray-600 hover:text-black">
-                Artists
+              <Link href="/artworks" className="text-sm font-medium uppercase tracking-wide text-gray-600 hover:text-black">
+                Artworks
               </Link>
             </li>
+
+            {/* 2. FAQ */}
+            <li>
+              <Link href="/faq" className="text-sm font-medium uppercase tracking-wide text-gray-600 hover:text-black">
+                FAQ
+              </Link>
+            </li>
+
+            {/* 3. JOURNAL (Strategisch de beste keuze) */}
             <li>
               <Link href="/journal" className="text-sm font-medium uppercase tracking-wide text-gray-600 hover:text-black">
                 Journal
               </Link>
             </li>
+
+            {/* 4. ABOUT */}
             <li>
               <Link href="/about" className="text-sm font-medium uppercase tracking-wide text-gray-600 hover:text-black">
                 About
               </Link>
             </li>
+
+            {/* 5. CONTACT */}
             <li>
               <Link href="/contact" className="text-sm font-medium uppercase tracking-wide text-gray-600 hover:text-black">
                 Contact
