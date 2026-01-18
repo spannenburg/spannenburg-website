@@ -19,7 +19,7 @@ import { material } from './material'
 import { note } from './note'
 import { priceGroup } from './priceGroup'
 import { sale } from './sale'
-import { shippingZone } from './shippingZone' // <--- NIEUW: Importeer de verzendzones
+import { shippingZone } from './shippingZone'
 
 // --- 2. PAGE MODULES & EXTRAS ---
 import { hero } from './hero'
@@ -27,6 +27,7 @@ import { text } from './text'
 import { artworkGrid } from './artworkGrid' 
 import { metadata } from './metadata'
 import { postList } from './postList'
+import { mapModule } from './map' // <--- NIEUW: Importeer de map module (vanuit dezelfde map)
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Core Documents
@@ -48,7 +49,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   note,
   priceGroup,
   sale,
-  shippingZone, // <--- NIEUW: Toegevoegd aan de lijst
+  shippingZone,
 
   // Page Builder Modules & Components
   hero,
@@ -56,4 +57,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   artworkGrid,
   metadata,
   postList,
+  mapModule, // <--- NIEUW: Toegevoegd aan de lijst
 ]
