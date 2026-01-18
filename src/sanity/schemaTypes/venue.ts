@@ -16,35 +16,48 @@ export const venue = defineType({
     defineField({
       name: 'name',
       title: 'Venue Name',
-      description: 'The official name of the location. Example: "Zerp Galerie" or "Stadhuis Almere".',
+      description: 'The official name of the location. Example: "Zerp Galerie", "Stadhuis Almere" or "The New York Times".',
       type: 'string',
       group: 'general',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'type',
-      title: 'Venue Type',
-      description: 'Select the official category. This is used for JSON-LD structured data to boost GEO-authority.',
+      title: 'Organization Type',
+      description: 'Select the category. Crucial for E-E-A-T: distinguish between physical Exhibition locations and Media publishers (for Awards/Press).',
       type: 'string',
       group: 'general',
       options: {
         list: [
+          // --- FYSIEKE LOCATIES (Exposities) ---
           { title: 'Art Gallery', value: 'ArtGallery' },
+          { title: 'Museum', value: 'Museum' },
+          { title: 'Art Fair', value: 'Event' },
+          { title: 'Festival (Cultural Event)', value: 'Festival' },
+          { title: 'Institution (General)', value: 'Organization' },
+          { title: 'Educational Organization (Academy/Uni)', value: 'EducationalOrganization' },
+          { title: 'Foundation / NGO', value: 'NGO' },
+          { title: 'Government Building (e.g. City Hall)', value: 'GovernmentBuilding' },
+          { title: 'Library', value: 'Library' },
+          { title: 'Church / Religious Building', value: 'PlaceOfWorship' },
+          { title: 'Public Park / Outdoor', value: 'Park' },
           { title: 'International Bank / Financial Inst.', value: 'FinancialService' },
           { title: 'Store / Salespoint', value: 'Store' },
           { title: 'Local Business / Corporate Office', value: 'LocalBusiness' },
-          { title: 'Museum', value: 'Museum' },
-          { title: 'Government Building (e.g. City Hall)', value: 'GovernmentBuilding' },
-          { title: 'Foundation / NGO', value: 'NGO' },
-          { title: 'Educational Organization (Academy/Uni)', value: 'EducationalOrganization' },
-          { title: 'Library', value: 'Library' },
-          { title: 'Institution (General)', value: 'Organization' },
-          { title: 'Art Fair', value: 'Event' },
-          { title: 'Festival (Cultural Event)', value: 'Festival' },
-          { title: 'Public Park / Outdoor', value: 'Park' },
-          { title: 'Church / Religious Building', value: 'PlaceOfWorship' },
           { title: 'Hotel', value: 'Hotel' },
           { title: 'Private Residence / Studio', value: 'Residence' },
+          
+          // --- DIVIDER ---
+          { title: '-------------------------', value: '_divider' },
+
+          // --- MEDIA & PUBLICATIES (Awards / Reviews) ---
+          { title: '📰 Newspaper', value: 'Newspaper' },
+          { title: '📖 Magazine / Journal', value: 'Magazine' },
+          { title: '📻 Radio Station', value: 'RadioStation' },
+          { title: '📺 TV Channel / Broadcaster', value: 'TelevisionStation' },
+          { title: '🌐 Online Publication / Blog', value: 'WebSite' },
+          
+          // --- OVERIG ---
           { title: 'Other / General Place', value: 'Place' },
         ],
       },
@@ -59,8 +72,8 @@ export const venue = defineType({
     }),
     defineField({
       name: 'about',
-      title: 'About the Venue',
-      description: 'Describe the reputation, history, and focus of this venue. Example: "A leading contemporary art gallery in Rotterdam focusing on photography and mixed media." (Crucial for E-E-A-T).',
+      title: 'About the Venue / Organization',
+      description: 'Describe the reputation, history, and focus. Example: "A leading contemporary art gallery..." or "A national daily newspaper...".',
       type: 'array',
       group: 'general',
       of: [{ type: 'block' }],
@@ -70,7 +83,7 @@ export const venue = defineType({
     defineField({
       name: 'address',
       title: 'Full Address',
-      description: 'Street name and house number. Example: "Van Oldenbarneveltstraat 120A".',
+      description: 'Street name and house number. Example: "Van Oldenbarneveltstraat 120A". (Leave empty for Online-only media).',
       type: 'string',
       group: 'location',
     }),
@@ -106,8 +119,8 @@ export const venue = defineType({
     // --- 3. VISUALS ---
     defineField({
       name: 'logo',
-      title: 'Venue Logo',
-      description: 'Upload the official logo (PNG or SVG preferred). Used for seller recognition in search results.',
+      title: 'Logo',
+      description: 'Upload the official logo (PNG or SVG preferred). Essential for Awards badges and Press sections.',
       type: 'image',
       group: 'media',
       fields: [
@@ -137,7 +150,7 @@ export const venue = defineType({
     }),
     defineField({
       name: 'gallery',
-      title: 'Additional Venue Photos',
+      title: 'Additional Photos',
       description: 'Atmosphere shots, different rooms, architectural details.',
       type: 'array',
       group: 'media',
@@ -157,12 +170,25 @@ export const venue = defineType({
     select: {
       title: 'name',
       subtitle: 'city',
+      type: 'type',
       media: 'logo',
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, subtitle, type, media }) {
+      // Kleine logica om type netjes te tonen in de lijst
+      const typeIcons:Record<string, string> = {
+        'Newspaper': '📰',
+        'Magazine': '📖',
+        'RadioStation': '📻',
+        'TelevisionStation': '📺',
+        'WebSite': '🌐',
+        'ArtGallery': '🎨',
+        'Museum': '🏛️'
+      };
+      const icon = typeIcons[type] || '📍';
+
       return {
         title: title || 'Unnamed Venue',
-        subtitle: subtitle || 'Location unknown',
+        subtitle: `${icon} ${type || 'No Type'} | ${subtitle || 'No City'}`,
         media: media,
       }
     },
