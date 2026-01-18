@@ -1,17 +1,38 @@
 import { client } from "@/sanity/lib/client"
 import Modules from "@/components/Modules"
 
-// We zoeken de pagina met slug '/' (Homepage) OF de pagina die 'Home' heet.
+// HIER IS DE UPDATE: De query haalt nu alle data op voor al je modules
 const HOME_QUERY = `
   *[_type == "page" && (slug.current == "/" || slug.current == "home")][0]{
     title,
     modules[]{
       ...,
+      
+      // 1. Voor de Hero achtergrond
       bgImage{
         ...,
         asset->{
           url
         }
+      },
+
+      // 2. Voor de losse Image Module
+      image{
+        ...,
+        asset->{
+          url
+        }
+      },
+
+      // 3. Voor de Artwork Grid (We halen de gelinkte kunstwerken op)
+      artworks[]->{
+        _id,
+        title,
+        "slug": slug.current,
+        price,
+        availability,
+        "artistName": artist->name,
+        "imageUrl": photos[0].asset->url
       }
     }
   }
@@ -31,7 +52,7 @@ export default async function HomePage() {
             <li>Maak een nieuwe pagina</li>
             <li>Titel: <strong>Home</strong></li>
             <li>Slug: <strong>/</strong> (of 'home')</li>
-            <li>Voeg bij 'Page Modules' een <strong>Hero</strong> toe</li>
+            <li>Voeg bij 'Page Modules' een <strong>Hero</strong>, <strong>Tekst</strong> of <strong>Kunst Grid</strong> toe</li>
             <li>Klik op <strong>Publish</strong></li>
           </ol>
         </div>
