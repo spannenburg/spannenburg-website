@@ -116,6 +116,14 @@ export const venue = defineType({
       type: 'url',
       group: 'location',
     }),
+    // --- HIER ZAT HET GEMIS: DIT VELD IS TOEGEVOEGD ---
+    defineField({
+      name: 'geolocation',
+      title: 'Geographic Location (Coordinates)',
+      description: 'Click on the map to set the exact pin location. This is used to render the interactive map on the website.',
+      type: 'geopoint', 
+      group: 'location',
+    }),
 
     // --- 3. VISUALS ---
     defineField({
@@ -175,7 +183,6 @@ export const venue = defineType({
       media: 'logo',
     },
     prepare({ title, subtitle, type, media }) {
-      // Kleine logica om type netjes te tonen in de lijst
       const typeIcons:Record<string, string> = {
         'Newspaper': '📰',
         'Magazine': '📖',
