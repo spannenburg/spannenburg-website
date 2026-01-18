@@ -1,9 +1,12 @@
 import '@/styles/app.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-// De regel met 'sonner' is hier weggehaald
-import Header from '@/ui/header'
-import Footer from '@/ui/footer'
+
+// --- HIER ZIT DE WIJZIGING ---
+// We verwijzen nu naar de map 'components' die we net gemaakt hebben
+// De '@' staat voor de map 'src'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 export default async function RootLayout({
 	children,
@@ -12,7 +15,9 @@ export default async function RootLayout({
 }) {
 	return (
 		<html lang="en">
+			{/* We behouden 'bg-canvas' en 'text-ink' zodat het SanityPress thema blijft werken */}
 			<body className="bg-canvas text-ink min-h-screen flex flex-col">
+				
 				{/* 1. De Header */}
 				<Header />
 
@@ -24,7 +29,7 @@ export default async function RootLayout({
 				{/* 3. De Footer */}
 				<Footer />
 
-				{/* 4. Analytics (mag blijven) */}
+				{/* 4. Analytics & SpeedInsights (standaard van template) */}
 				<Analytics />
 				<SpeedInsights />
 			</body>
