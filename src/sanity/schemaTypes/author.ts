@@ -98,13 +98,12 @@ export const author = defineType({
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
-            // --- AANGEPAST: NU EEN REFERENCE NAAR VENUE ---
             defineField({
               name: 'organization',
               title: 'Organization / Institution',
               description: 'Select the venue that granted the award (Enhances E-E-A-T).',
               type: 'reference',
-              to: [{ type: 'venue' }], // Koppeling naar Venue
+              to: [{ type: 'venue' }], 
             }),
             defineField({
               name: 'associatedArtwork',
@@ -112,18 +111,27 @@ export const author = defineType({
               type: 'reference',
               to: [{ type: 'artwork' }, { type: 'project' }]
             }),
+            // --- HIER IS DE ALT TEXT TOEGEVOEGD ---
             defineField({
               name: 'image',
               title: 'Award Badge / Specific Logo (Optional)',
               description: 'If left empty, we can fallback to the Venue logo in the frontend.',
-              type: 'image'
+              type: 'image',
+              options: { hotspot: true },
+              fields: [
+                {
+                  name: 'alt',
+                  type: 'string',
+                  title: 'Alternative Text',
+                  description: 'Describe the logo for screen readers and SEO (e.g. "Golden Lion Award Logo").',
+                }
+              ]
             })
           ],
           preview: {
             select: { 
               title: 'title', 
               year: 'year', 
-              // We halen nu de NAAM op van de gelinkte venue via de pijl -> syntax
               venueName: 'organization->name', 
               media: 'image' 
             },
