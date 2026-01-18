@@ -34,6 +34,7 @@ export const venue = defineType({
           { title: 'Museum', value: 'Museum' },
           { title: 'Art Fair', value: 'Event' },
           { title: 'Festival (Cultural Event)', value: 'Festival' },
+          { title: 'Theater / Performing Arts', value: 'PerformingArtsTheater' },
           { title: 'Institution (General)', value: 'Organization' },
           { title: 'Educational Organization (Academy/Uni)', value: 'EducationalOrganization' },
           { title: 'Foundation / NGO', value: 'NGO' },
