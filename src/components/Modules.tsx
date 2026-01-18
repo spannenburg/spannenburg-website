@@ -1,9 +1,6 @@
 import Hero from './modules/Hero'
-
-// Hier importeren we straks de andere blokken zodra we ze gebouwd hebben:
-// import TextModule from './modules/TextModule'
-// import ArtworkGrid from './modules/ArtworkGrid'
-// ... etc
+// 1. NIEUWE IMPORT: Hier halen we de TextModule op
+import TextModule from './modules/TextModule'
 
 export default function Modules({ modules }: { modules: any[] }) {
   // Veiligheidscheck: zijn er wel modules?
@@ -19,27 +16,27 @@ export default function Modules({ modules }: { modules: any[] }) {
           case 'hero':
             return <Hero key={module._key} module={module} />
 
-          // --- 2. TEKST (Nog te bouwen) ---
+          // --- 2. TEKST ---
           case 'text-module':
-            // return <TextModule key={module._key} module={module} />
-            return <Placeholder key={module._key} title="Tekst Module" />
+            // HIER DE WIJZIGING: We gebruiken nu de echte module in plaats van de placeholder
+            return <TextModule key={module._key} module={module} />
 
           // --- 3. ARTWORK GRID (Nog te bouwen) ---
           case 'artwork-grid':
-             // return <ArtworkGrid key={module._key} module={module} />
-             return <Placeholder key={module._key} title="Kunst Grid Module" />
+              // return <ArtworkGrid key={module._key} module={module} />
+              return <Placeholder key={module._key} title="Kunst Grid Module" />
 
           // --- 4. MAP / KAART (Nog te bouwen) ---
           case 'map':
-             return <Placeholder key={module._key} title="Google Maps Module" />
+              return <Placeholder key={module._key} title="Google Maps Module" />
 
           // --- 5. AFBEELDING (Nog te bouwen) ---
           case 'image-module':
-             return <Placeholder key={module._key} title="Losse Afbeelding" />
+              return <Placeholder key={module._key} title="Losse Afbeelding" />
 
           // --- 6. VIDEO (Nog te bouwen) ---
           case 'video-module':
-             return <Placeholder key={module._key} title="Youtube Video" />
+              return <Placeholder key={module._key} title="Youtube Video" />
 
           // --- ONBEKEND BLOK ---
           default:
