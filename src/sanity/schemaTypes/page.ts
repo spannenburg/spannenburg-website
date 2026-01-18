@@ -38,8 +38,10 @@ export const page = defineType({
       group: 'content',
       of: [
         { type: 'hero' },
-        { type: 'text-module' }, // Let op: zorg dat in text.ts de name 'text-module' is
+        { type: 'text-module' }, 
         { type: 'artwork-grid' },
+        // --- HIER ZAT HET GEMIS: DEZE REGEL IS TOEGEVOEGD ---
+        { type: 'map' }, 
       ],
     }),
 
@@ -110,7 +112,7 @@ export const page = defineType({
     select: {
       title: 'title',
       slug: 'slug.current',
-      media: 'socialImage' // Leuke toevoeging: toon de social image in de preview als die er is
+      media: 'socialImage'
     },
     prepare({ title, slug, media }) {
       return {
