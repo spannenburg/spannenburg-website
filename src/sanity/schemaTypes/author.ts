@@ -98,10 +98,13 @@ export const author = defineType({
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
+            // --- AANGEPAST: NU EEN REFERENCE NAAR VENUE ---
             defineField({
               name: 'organization',
               title: 'Organization / Institution',
-              type: 'string',
+              description: 'Select the venue that granted the award (Enhances E-E-A-T).',
+              type: 'reference',
+              to: [{ type: 'venue' }], // Koppeling naar Venue
             }),
             defineField({
               name: 'associatedArtwork',
@@ -111,16 +114,23 @@ export const author = defineType({
             }),
             defineField({
               name: 'image',
-              title: 'Logo / Badge (Optional)',
+              title: 'Award Badge / Specific Logo (Optional)',
+              description: 'If left empty, we can fallback to the Venue logo in the frontend.',
               type: 'image'
             })
           ],
           preview: {
-            select: { title: 'title', year: 'year', org: 'organization', media: 'image' },
-            prepare({ title, year, org, media }) {
+            select: { 
+              title: 'title', 
+              year: 'year', 
+              // We halen nu de NAAM op van de gelinkte venue via de pijl -> syntax
+              venueName: 'organization->name', 
+              media: 'image' 
+            },
+            prepare({ title, year, venueName, media }) {
               return {
                 title: title,
-                subtitle: `${year} | ${org || ''}`,
+                subtitle: `${year} | ${venueName || 'Organization not selected'}`,
                 media: media || TfiCup
               }
             }
