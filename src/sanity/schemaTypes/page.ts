@@ -40,8 +40,10 @@ export const page = defineType({
         { type: 'hero' },
         { type: 'text-module' }, 
         { type: 'artwork-grid' },
-        // --- HIER ZAT HET GEMIS: DEZE REGEL IS TOEGEVOEGD ---
         { type: 'map' }, 
+        // --- NEW MODULES ADDED HERE ---
+        { type: 'image-module' }, 
+        { type: 'video-module' }, 
       ],
     }),
 
@@ -103,6 +105,14 @@ export const page = defineType({
       name: 'canonicalUrl',
       title: 'Canonical URL',
       description: 'Only fill this in if this page is a duplicate of another page to prevent "duplicate content" penalties.',
+      type: 'url',
+      group: 'seo',
+    }),
+    // --- NEW: DUTCH TRANSLATION LINK ---
+    defineField({
+      name: 'dutchPageUrl',
+      title: 'Dutch Version URL',
+      description: 'Paste the link to the corresponding page on your Dutch website. Used for "hreflang" to tell Google these pages are connected.',
       type: 'url',
       group: 'seo',
     }),
