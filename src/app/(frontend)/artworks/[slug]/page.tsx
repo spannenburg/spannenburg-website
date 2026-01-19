@@ -6,23 +6,33 @@ import { PortableText } from "next-sanity"
 export default async function ArtworkPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  // UPDATE: We halen nu de data specifiek uit de velden van jouw schema
+  // UPDATED QUERY: Matches src/sanity/schemaTypes/artwork.ts exactly
   const artwork = await client.fetch(`
     *[_type == "artwork" && slug.current == $slug][0]{
       title,
+      headline,
       "artistName": artist->name,
       description,
+      visualDescription,
       dateCreated,
-      availability,
+      keywords,
+      "categories": categories[]->title,
+      "genres": genre,
+      externalReferences,
       
-      // We pakken de prijs en afmetingen uit de eerste editie in de lijst
-      "price": editions[0].price,
-      "dimensions": editions[0].dimensions,
+      // Fetching the editions array for pricing and sizes
+      editions[]{
+        name,
+        dimensions,
+        price,
+        stock
+      },
       
-      // We halen de tekst-titel van het materiaal op
-      "medium": material[0]->title,
+      // Fetching material titles from references
+      "materials": material[]->title,
 
-      "imageUrl": mainImage.asset->url
+      "imageUrl": mainImage.asset->url,
+      "altText": mainImage.alt
     }
   `, { slug })
 
@@ -31,66 +41,128 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
   const year = artwork.dateCreated ? new Date(artwork.dateCreated).getFullYear() : null
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <Link href="/artworks" className="text-sm text-gray-500 hover:text-black mb-8 inline-block">
-        ← Back to all artworks
+    <div className="container mx-auto px-4 py-12 max-w-6xl font-sans text-gray-900">
+      <Link href="/artworks" className="text-xs uppercase tracking-widest text-gray-400 hover:text-black mb-12 inline-block transition-colors">
+        ← Back to Collection
       </Link>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
         
-        {/* AFBEELDING */}
-        <div className="bg-gray-50 aspect-[4/5] relative">
-          {artwork.imageUrl ? (
-            <img 
-              src={artwork.imageUrl} 
-              alt={artwork.title} 
-              className="object-contain w-full h-full"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              No Image Found
+        {/* LEFT COLUMN: THE VISUAL (7/12) */}
+        <div className="lg:col-span-7 space-y-8">
+          <div className="bg-white shadow-sm overflow-hidden border border-gray-100">
+            {artwork.imageUrl ? (
+              <img 
+                src={artwork.imageUrl} 
+                alt={artwork.altText || artwork.title} 
+                className="w-full h-auto object-contain"
+              />
+            ) : (
+              <div className="aspect-square flex items-center justify-center bg-gray-50 text-gray-300">No Image</div>
+            )}
+          </div>
+          
+          {/* Visual Description for AI Vision & SEO */}
+          {artwork.visualDescription && (
+            <div className="p-6 bg-gray-50 border-l-2 border-gray-200">
+              <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2 font-bold">Visual Analysis</h4>
+              <p className="text-sm text-gray-500 italic leading-relaxed">{artwork.visualDescription}</p>
             </div>
           )}
         </div>
 
-        {/* INFORMATIE */}
-        <div>
-          <h1 className="text-3xl font-bold mb-2 uppercase tracking-wide">{artwork.title}</h1>
-          
-          {artwork.artistName && (
-            <p className="text-xl text-gray-600 mb-6">{artwork.artistName}</p>
-          )}
-
-          <div className="space-y-4 text-gray-800 border-t border-gray-200 pt-6">
-             {artwork.price && artwork.availability !== 'sold' && (
-               <p className="text-2xl font-medium">€ {artwork.price}</p>
-             )}
-             
-             {artwork.availability === 'sold' && (
-               <p className="text-xl font-bold text-red-600 uppercase">Sold</p>
-             )}
-
-             {artwork.medium && (
-               <p><span className="font-bold text-sm uppercase tracking-wide text-gray-500 w-24 inline-block">Medium:</span> {artwork.medium}</p>
-             )}
-             {artwork.dimensions && (
-               <p><span className="font-bold text-sm uppercase tracking-wide text-gray-500 w-24 inline-block">Size:</span> {artwork.dimensions}</p>
-             )}
-             {year && (
-               <p><span className="font-bold text-sm uppercase tracking-wide text-gray-500 w-24 inline-block">Year:</span> {year}</p>
-             )}
-          </div>
-
-          {/* Beschrijving met PortableText voorkomt de crash */}
-          {artwork.description && (
-            <div className="mt-8 prose prose-sm text-gray-600 max-w-none">
-              <PortableText value={artwork.description} />
+        {/* RIGHT COLUMN: THE DATA (5/12) */}
+        <div className="lg:col-span-5 space-y-10">
+          <header className="space-y-4">
+            <div className="space-y-1">
+              {artwork.artistName && (
+                <p className="text-sm uppercase tracking-widest text-gray-400">{artwork.artistName}</p>
+              )}
+              <h1 className="text-4xl font-light tracking-tight">{artwork.title}</h1>
             </div>
+            
+            {artwork.headline && (
+              <p className="text-lg text-gray-600 font-serif italic border-l-2 border-black pl-4 py-1">
+                "{artwork.headline}"
+              </p>
+            )}
+          </header>
+
+          {/* PRICING & EDITIONS SECTION */}
+          <section className="space-y-6 pt-6 border-t border-gray-100">
+             <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-gray-400">Editions & Pricing</h3>
+             <div className="space-y-4">
+               {artwork.editions?.map((edition: any, index: number) => (
+                 <div key={index} className="flex justify-between items-end pb-4 border-b border-gray-50 last:border-0">
+                    <div>
+                      <p className="text-sm font-medium">{edition.name || 'Standard Edition'}</p>
+                      <p className="text-xs text-gray-500">{edition.dimensions}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-light text-black">€ {edition.price}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-gray-400">
+                        {edition.stock > 0 ? 'In Stock' : 'Upon Request'}
+                      </p>
+                    </div>
+                 </div>
+               ))}
+             </div>
+          </section>
+
+          {/* EMOTIONAL DESCRIPTION (Rich Text) */}
+          <section className="space-y-4">
+            <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-gray-400">The Narrative</h3>
+            {artwork.description && (
+              <div className="prose prose-sm prose-gray leading-relaxed max-w-none prose-p:text-gray-700">
+                <PortableText value={artwork.description} />
+              </div>
+            )}
+          </section>
+
+          {/* TECHNICAL METADATA */}
+          <section className="grid grid-cols-2 gap-y-6 pt-6 border-t border-gray-100 text-sm">
+            <div>
+              <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Materials</p>
+              <p>{artwork.materials?.join(', ') || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Year</p>
+              <p>{year || 'Unspecified'}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Genres</p>
+              <p className="text-xs">{artwork.genres?.join(', ')}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Categories</p>
+              <p className="text-xs">{artwork.categories?.join(', ')}</p>
+            </div>
+          </section>
+
+          {/* ENTITY LINKING (E-E-A-T) */}
+          {artwork.externalReferences && artwork.externalReferences.length > 0 && (
+            <section className="space-y-4 pt-6 border-t border-gray-100">
+               <h3 className="text-xs uppercase tracking-[0.3em] font-bold text-gray-400">Authority & Context</h3>
+               <div className="flex flex-wrap gap-2">
+                 {artwork.externalReferences.map((ref: any, i: number) => (
+                   <a 
+                     key={i} 
+                     href={ref.url} 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     className="text-[10px] uppercase tracking-widest border border-gray-200 px-3 py-2 hover:bg-black hover:text-white transition-all"
+                   >
+                     {ref.label} ↗
+                   </a>
+                 ))}
+               </div>
+            </section>
           )}
-          
-          <div className="mt-10">
-             <Link href="/contact" className="bg-black text-white px-8 py-3 uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors">
-               Inquire about this work
+
+          {/* CALL TO ACTION */}
+          <div className="pt-10">
+             <Link href="/contact" className="w-full block text-center bg-black text-white px-8 py-5 uppercase tracking-[0.3em] text-[10px] font-bold hover:bg-gray-800 transition-all shadow-xl">
+               Inquire about this piece
              </Link>
           </div>
         </div>
