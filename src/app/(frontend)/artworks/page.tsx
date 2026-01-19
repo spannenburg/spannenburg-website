@@ -7,16 +7,15 @@ export const metadata = {
 }
 
 export default async function ArtworksPage() {
-  // We halen alle kunstwerken op. 
-  // We sorteren op datum (nieuwste eerst) of titel. Hier staat 'nieuwste eerst'.
-  // We pakken de eerste foto uit de reeks (photos[0]) als hoofdafbeelding.
+  // AANGEPAST: We halen nu 'mainImage' op (zoals in je schema staat)
+  // in plaats van 'photos'.
   const artworks = await client.fetch(`
     *[_type == "artwork"]|order(_createdAt desc){
       _id,
       title,
       "slug": slug.current,
       "artistName": artist->name,
-      "imageUrl": photos[0].asset->url,
+      "imageUrl": mainImage.asset->url,
       price,
       availability
     }
@@ -49,12 +48,12 @@ export default async function ArtworksPage() {
                     className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                    No Image Available
+                  <div className="flex items-center justify-center h-full text-gray-400 text-sm flex-col">
+                    <span>No Image Available</span>
                   </div>
                 )}
                 
-                {/* Label als het verkocht is (optioneel) */}
+                {/* Label als het verkocht is */}
                 {work.availability === 'sold' && (
                   <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 uppercase">
                     Sold
@@ -70,7 +69,6 @@ export default async function ArtworksPage() {
                 <h2 className="text-lg font-medium text-black group-hover:text-gray-600 transition-colors">
                   {work.title}
                 </h2>
-                {/* Prijs (Alleen tonen als beschikbaar) */}
                 {work.price && work.availability !== 'sold' && (
                   <p className="text-sm text-gray-400 mt-1">
                     € {work.price}
