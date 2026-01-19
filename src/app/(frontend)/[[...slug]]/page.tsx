@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
-// We importeren JOUW nieuwe modules manager (niet die uit ui/modules)
+// We importeren JOUW nieuwe modules manager
 import Modules from '@/components/Modules'
 
-// 1. DE NIEUWE QUERY
-// We schrijven de query hier zelf, zodat we zeker weten dat alle data
-// voor jouw kunstwerken, video's en maps wordt meegezonden.
+// 1. DE NIEUWE QUERY (AANGEPAST)
+// Verschil met jouw oude code: Het stukje "|| ($slug == '/' && slug.current == 'home')"
+// Dit zorgt ervoor dat de homepage werkt, ongeacht of je hem '/' of 'home' noemt in Sanity.
 const PAGE_QUERY = `
-  *[_type == "page" && slug.current == $slug][0]{
+  *[_type == "page" && (slug.current == $slug || ($slug == '/' && slug.current == 'home'))][0]{
     title,
     metadata,
     modules[]{
@@ -32,8 +32,8 @@ const PAGE_QUERY = `
   }
 `
 
-// 2. GENERATE STATIC PARAMS (Optioneel, maar maakt je site sneller)
-// Dit vertelt Next.js welke pagina's er bestaan zodat hij ze vooraf kan bouwen.
+// 2. GENERATE STATIC PARAMS
+// (Identiek aan jouw oude code: zorgt voor snelle pagina's)
 export async function generateStaticParams() {
   const slugs = await client.fetch<string[]>(
     `*[_type == "page" && defined(slug.current)].slug.current`
@@ -48,7 +48,7 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
   // Maak van de losse stukjes URL één string. Geen slug = Homepage ('/')
   const slugString = slug ? slug.join('/') : '/'
 
-  // Haal de data op met jouw specifieke query
+  // Haal de data op met de verbeterde query
   const page = await client.fetch(PAGE_QUERY, { slug: slugString })
 
   if (!page) {
@@ -60,9 +60,9 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
           <div className="bg-blue-50 text-blue-900 p-6 rounded-lg text-left max-w-md border border-blue-200">
             <p className="font-bold mb-2">Te doen in Sanity Studio:</p>
             <ul className="list-disc ml-5 space-y-1 text-sm">
-              <li>Maak een nieuwe <strong>Page</strong> aan.</li>
-              <li>Titel: <strong>Home</strong>.</li>
-              <li>Slug: <strong>/</strong> (enkele slash).</li>
+              <li>Zorg dat je een pagina hebt met titel <strong>Home</strong>.</li>
+              {/* Hier is de tekst iets aangepast om aan te geven dat 'home' nu ook mag */}
+              <li>De slug mag <strong>/</strong> OF <strong>home</strong> zijn.</li>
               <li>Voeg modules toe (Hero, Artwork Grid, etc).</li>
               <li>Klik op <strong>Publish</strong>.</li>
             </ul>
@@ -82,9 +82,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug?: st
   const { slug } = await params
   const slugString = slug ? slug.join('/') : '/'
 
-  // We doen een lichte query puur voor de titel en omschrijving
+  // Ook hier de query aangepast zodat de SEO titel ook werkt als de slug 'home' is
   const page = await client.fetch(
-    `*[_type == "page" && slug.current == $slug][0]{ title, metadata }`, 
+    `*[_type == "page" && (slug.current == $slug || ($slug == '/' && slug.current == 'home'))][0]{ title, metadata }`, 
     { slug: slugString }
   )
 
