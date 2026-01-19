@@ -35,14 +35,11 @@ export default function ArtworkGrid({ module }: { module: any }) {
                   </div>
                 )}
               </div>
-              <h3 className="text-lg font-medium text-center group-hover:text-gray-600 transition-colors">
+              
+              {/* Alleen de titel, met de originele styling */}
+              <h3 className="text-lg font-medium text-center group-hover:text-gray-600 transition-colors duration-700">
                 {art.title}
               </h3>
-              {art.artistName && (
-                <p className="text-sm text-gray-500 text-center uppercase tracking-wide">
-                  {art.artistName}
-                </p>
-              )}
             </Link>
           ))}
         </div>
