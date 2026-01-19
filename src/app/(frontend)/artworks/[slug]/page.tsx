@@ -6,6 +6,7 @@ import { PortableText } from "next-sanity"
 export default async function ArtworkPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
+  // GEOPTIMALISEERDE QUERY
   const artwork = await client.fetch(`
     *[_type == "artwork" && slug.current == $slug][0]{
       title,
@@ -24,7 +25,8 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
         stock,
         "isAP": name match "*AP*"
       },
-      "materials": material[]->title,
+      // Expliciete query voor materialen om lege velden te voorkomen
+      "materials": material[]->{title}.title,
       "imageUrl": mainImage.asset->url,
       "altText": mainImage.alt
     }
@@ -55,7 +57,6 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
               <div className="aspect-square flex items-center justify-center bg-gray-50 text-gray-300">No Image</div>
             )}
           </div>
-          {/* Ruimte gereserveerd voor toekomstige expositiefoto's */}
         </div>
 
         {/* RECHTER KOLOM: VOLGORDE VOLGENS SPECIFICATIE */}
@@ -67,7 +68,7 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
               {artwork.artistName && (
                 <p className="text-sm uppercase tracking-widest text-gray-400">{artwork.artistName}</p>
               )}
-              <h1 className="text-4xl font-light tracking-tight leading-tight">{artwork.title}</h1>
+              <h1 className="text-4xl font-light tracking-tight leading-tight uppercase">{artwork.title}</h1>
             </div>
             {artwork.headline && (
               <p className="text-lg text-gray-600 font-serif italic border-l-2 border-black pl-4 py-1 leading-snug">
@@ -89,7 +90,7 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
           {/* 3. VISUAL ANALYSIS */}
           {artwork.visualDescription && (
             <section className="space-y-4 pt-8 border-t border-gray-100">
-              <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Visual Analysis</h4>
+              <h4 className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold italic">Visual Analysis</h4>
               <p className="text-sm text-gray-500 italic leading-relaxed">{artwork.visualDescription}</p>
             </section>
           )}
@@ -102,7 +103,6 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
                  <div key={index} className="space-y-2 pb-6 border-b border-gray-50 last:border-0">
                     <div className="flex justify-between items-start">
                       <div>
-                        {/* Editie details */}
                         <p className="text-sm font-medium uppercase tracking-wider">
                           {edition.dimensions} 
                           <span className="text-gray-400 ml-2 font-normal">
@@ -113,7 +113,6 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
                           Stock: {edition.stock || 'Contact for info'}
                         </p>
                       </div>
-                      {/* Prijs direct naast de betreffende editie */}
                       <div className="text-right">
                         <p className="text-xl font-light text-black">
                           {edition.price ? `€ ${edition.price}` : 'Price on request'}
@@ -124,16 +123,18 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
                ))}
              </div>
 
-             {/* Materialen onder de edities en prijzen */}
+             {/* Materialen */}
              {artwork.materials && artwork.materials.length > 0 && (
                 <div className="pt-4">
                   <p className="text-[10px] text-gray-300 uppercase font-bold mb-1 tracking-widest">Available Materials</p>
-                  <p className="text-xs text-gray-600 leading-relaxed">{artwork.materials.join(' / ')}</p>
+                  <p className="text-xs text-gray-600 leading-relaxed italic">
+                    {artwork.materials.join(' / ')}
+                  </p>
                 </div>
              )}
           </section>
 
-          {/* OVERIGE META DATA (Jaar, Categorieën) */}
+          {/* OVERIGE META DATA */}
           <section className="grid grid-cols-2 gap-y-8 pt-10 border-t border-gray-100 text-sm">
             <div>
               <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Year</p>
@@ -142,6 +143,10 @@ export default async function ArtworkPage({ params }: { params: Promise<{ slug: 
             <div>
               <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Categories</p>
               <p className="text-xs">{artwork.categories?.join(', ')}</p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-[10px] uppercase font-bold text-gray-300 mb-1">Genres</p>
+              <p className="text-[11px] text-gray-500 tracking-wide">{artwork.genres?.join(', ')}</p>
             </div>
           </section>
 
