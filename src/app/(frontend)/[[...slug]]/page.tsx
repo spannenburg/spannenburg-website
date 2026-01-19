@@ -1,39 +1,39 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { client } from '@/sanity/lib/client'
-// We importeren JOUW nieuwe modules manager
 import Modules from '@/components/Modules'
 
-// 1. DE NIEUWE QUERY (AANGEPAST)
-// Verschil met jouw oude code: Het stukje "|| ($slug == '/' && slug.current == 'home')"
-// Dit zorgt ervoor dat de homepage werkt, ongeacht of je hem '/' of 'home' noemt in Sanity.
+// 1. DE GECORRIGEERDE QUERY
+// Matched nu exact met je backend schema namen
 const PAGE_QUERY = `
   *[_type == "page" && (slug.current == $slug || ($slug == '/' && slug.current == 'home'))][0]{
     title,
-    metadata,
+    seoTitle,
+    metaDescription,
+    "ogImage": socialImage.asset->url,
     modules[]{
       ...,
       
-      // Specifiek voor HERO & IMAGE
+      // Fix voor Image en Hero modules
       bgImage{ ..., asset->{url} },
       image{ ..., asset->{url} },
 
-      // Specifiek voor KUNST GRID (Details ophalen!)
+      // Fix voor het Artwork Grid (matchen met artwork.ts schema)
       artworks[]->{
         _id,
         title,
         "slug": slug.current,
-        price,
+        // We halen de prijs uit de eerste editie voor het geval je die later toch wilt tonen
+        "price": editions[0].price,
         availability,
         "artistName": artist->name,
-        "imageUrl": photos[0].asset->url
+        // CRUCIAAL: mainImage gebruiken in plaats van photos[0]
+        "imageUrl": mainImage.asset->url
       }
     }
   }
 `
 
-// 2. GENERATE STATIC PARAMS
-// (Identiek aan jouw oude code: zorgt voor snelle pagina's)
 export async function generateStaticParams() {
   const slugs = await client.fetch<string[]>(
     `*[_type == "page" && defined(slug.current)].slug.current`
@@ -41,30 +41,24 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug: slug.split('/') }))
 }
 
-// 3. DE PAGINA ZELF
 export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params
-  
-  // Maak van de losse stukjes URL één string. Geen slug = Homepage ('/')
   const slugString = slug ? slug.join('/') : '/'
 
-  // Haal de data op met de verbeterde query
   const page = await client.fetch(PAGE_QUERY, { slug: slugString })
 
   if (!page) {
-    // Speciale hulp voor de homepage setup
     if (slugString === '/') {
        return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 font-sans">
-          <h1 className="text-3xl font-bold mb-4">Spannenburg.Art Setup</h1>
-          <div className="bg-blue-50 text-blue-900 p-6 rounded-lg text-left max-w-md border border-blue-200">
-            <p className="font-bold mb-2">Te doen in Sanity Studio:</p>
-            <ul className="list-disc ml-5 space-y-1 text-sm">
-              <li>Zorg dat je een pagina hebt met titel <strong>Home</strong>.</li>
-              {/* Hier is de tekst iets aangepast om aan te geven dat 'home' nu ook mag */}
-              <li>De slug mag <strong>/</strong> OF <strong>home</strong> zijn.</li>
-              <li>Voeg modules toe (Hero, Artwork Grid, etc).</li>
-              <li>Klik op <strong>Publish</strong>.</li>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 font-sans text-gray-900">
+          <h1 className="text-3xl font-light uppercase tracking-widest mb-4">Spannenburg.Art Setup</h1>
+          <div className="bg-gray-50 p-8 border border-gray-200 text-left max-w-md">
+            <p className="font-bold mb-4 uppercase text-xs tracking-widest text-gray-400">Todo in Sanity Studio:</p>
+            <ul className="list-disc ml-5 space-y-2 text-sm text-gray-600">
+              <li>Maak een pagina aan met de titel <strong>Home</strong>.</li>
+              <li>Zorg dat de slug <strong>home</strong> is (of laat hem leeg voor /).</li>
+              <li>Voeg je modules toe (Hero, Artwork Grid, etc).</li>
+              <li>Vergeet niet op <strong>Publish</strong> te klikken.</li>
             </ul>
           </div>
         </div>
@@ -73,25 +67,35 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
     notFound()
   }
 
-  // Hier laden we JOUW modules in
   return <Modules modules={page?.modules} />
 }
 
-// 4. METADATA (SEO)
+// 4. GECORRIGEERDE METADATA FUNCTIE
 export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }): Promise<Metadata> {
   const { slug } = await params
   const slugString = slug ? slug.join('/') : '/'
 
-  // Ook hier de query aangepast zodat de SEO titel ook werkt als de slug 'home' is
+  // We halen specifiek de SEO velden op die je in page.ts hebt gedefinieerd
   const page = await client.fetch(
-    `*[_type == "page" && (slug.current == $slug || ($slug == '/' && slug.current == 'home'))][0]{ title, metadata }`, 
+    `*[_type == "page" && (slug.current == $slug || ($slug == '/' && slug.current == 'home'))][0]{ 
+      title, 
+      seoTitle, 
+      metaDescription, 
+      "ogImage": socialImage.asset->url 
+    }`, 
     { slug: slugString }
   )
 
   if (!page) return {}
 
   return {
-    title: page.title || 'Spannenburg.Art',
-    description: page.metadata?.description,
+    // Gebruik seoTitle als die er is, anders de gewone paginatitel
+    title: page.seoTitle || page.title || 'Spannenburg.Art',
+    description: page.metaDescription,
+    openGraph: {
+      title: page.seoTitle || page.title,
+      description: page.metaDescription,
+      images: page.ogImage ? [{ url: page.ogImage }] : [],
+    },
   }
 }
